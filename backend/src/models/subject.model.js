@@ -25,12 +25,7 @@ const subjectSchema = new Schema({
       year: {
         type: Number,
         required: true,
-        default: null,
-      },
-      name: {
-        type: String,
-        required: true,
-        default: null,
+        default: "no year",
       },
       code: {
         type: String,
@@ -38,15 +33,16 @@ const subjectSchema = new Schema({
         trim: true,
         unique: true,
         sparse: true,
-        default: null
+        minlength: 4,
+        default: "no code"
       },
       description: {
         type: String,
-        default: null,
+        default: "no description",
       },
       documentationLink: {
         type: String,
-        default: null,
+        default: "no link",
         validate: {
           validator: (v) => {
             const urlRegex = /^(ftp|http|https):\/\/[^ "]+$/;
@@ -57,8 +53,10 @@ const subjectSchema = new Schema({
       },
       keyTopics: [
         {
-          type: String,
-          default: null,
+          topicName: {
+            type: String,
+            default: "no topics",
+          }
         },
       ],
     },

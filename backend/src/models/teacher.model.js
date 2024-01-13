@@ -31,7 +31,7 @@ const teacherSchema = new Schema(
     },
     DOB: {
       type: Date,
-      required: true,
+      required: true
     },
     address: {
       type: String,
@@ -51,6 +51,7 @@ const teacherSchema = new Schema(
     joiningDate: {
       type: Date,
       required: true,
+      default: Date.now(),
     },
     leavingDate: {
       type: Date,

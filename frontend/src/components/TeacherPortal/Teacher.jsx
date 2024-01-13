@@ -1,20 +1,26 @@
 import React from "react";
-import TrRegisteration from "./TrRegisteration/TrRegisteration"
-import TrPayments from "./TrPayments/TrPayments"
-import SideBar from "./SideBar/SideBar"
 import { Route, Routes } from "react-router-dom";
-import TrDash from "./DashboardTeacher/TrDash";
-import NotFound from "../Not-Found/NotFound";
+import { lazy, Suspense } from "react";
+import LoaderTr from "./LoaderTr/LoaderTr"
+
+const TrRegisteration = lazy(()=> import("./TrRegisteration/TrRegisteration")) 
+const TrPayments = lazy(()=> import("./TrPayments/TrPayments")) 
+const SideBar = lazy(()=> import("./SideBar/SideBar")) 
+const TrDash = lazy(()=> import("./DashboardTeacher/TrDash"))
+const NotFound = lazy(()=> import("../Not-Found/NotFound"))
+
 const Teacher = () => {
   return (
     <div className="flex">
       <SideBar/>
-      <Routes>
-        <Route path="/teacher-dash" element={< TrDash/>} />
-        <Route path="/*" element={< NotFound/>} />
-        <Route path="/teacher-registeration" element={< TrRegisteration/>} />
-        <Route path="/teacher-payments" element={< TrPayments/>} />
-      </Routes>
+      <Suspense fallback={<LoaderTr/>}>
+        <Routes>
+          <Route path="/teacher-dash" element={< TrDash/>} />
+          <Route path="/*" element={< NotFound/>} />
+          <Route path="/teacher-registeration" element={< TrRegisteration/>} />
+          <Route path="/teacher-payments" element={< TrPayments/>} />
+        </Routes>
+      </Suspense>
     </div>
   )
 };

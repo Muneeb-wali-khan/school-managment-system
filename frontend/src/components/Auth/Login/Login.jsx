@@ -1,6 +1,7 @@
 import React from "react";
 import NavHome from "../../Home/NavHome/NavHome";
 import { useNavigate } from "react-router-dom";
+import {toast} from "react-hot-toast"
 
 const Login = () => {
   const logerNamed = sessionStorage.getItem("logerName")
@@ -20,6 +21,10 @@ const Login = () => {
     const username2 = "teacher09"
     const password2 = "1122"
 
+    const email3 = "an@gmail.com"
+    const username3 = "admin09"
+    const password3 = "1122"
+
     const userlogedIn = {
       username: e.target?.username.value,
       email: e.target?.email.value,
@@ -27,15 +32,22 @@ const Login = () => {
     }
 
     if(userlogedIn.email === email && userlogedIn.username === username && userlogedIn.password === password){
-       alert(`Welcome ${userlogedIn.username} email: ${userlogedIn.email}`)
+      //  alert(`Welcome ${userlogedIn.username} email: ${userlogedIn.email}`)
+      toast.success("loged in successfully student")
        navigate('/student-portal/student-dash')
     }
     else if(userlogedIn.email === email2 && userlogedIn.username === username2 && userlogedIn.password === password2){
-      alert(`Welcome ${userlogedIn.username} email: ${userlogedIn.email}`)
+      // alert(`Welcome ${userlogedIn.username} email: ${userlogedIn.email}`)
+      toast.success("loged in successfully teacher")
       navigate('/teacher-portal/teacher-dash')
    }
+    else if(userlogedIn.email === email3 && userlogedIn.username === username3 && userlogedIn.password === password3){
+      // alert(`Welcome ${userlogedIn.username} email: ${userlogedIn.email}`)
+      toast.success("loged in successfully Admin saab")
+      navigate('/admin-portal/admin-dash')
+   }
     else{
-      return alert("wrong email/password or username")
+      return toast.error("wrong email/password or username")
     }
 
     console.log(userlogedIn);

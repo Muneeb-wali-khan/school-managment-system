@@ -258,6 +258,9 @@
         background-color: rebeccapurple !important;
 
     }
+    .menuan{
+        background-color: darkmagenta !important;
+    }
     ::-webkit-scrollbar {
         width: 6px; /* You can adjust the width as needed */
     }
