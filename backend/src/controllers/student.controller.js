@@ -5,8 +5,6 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { cloudinaryUploadImg } from "../utils/cloudinary.js";
 
-
-
 // all students --admin
 const getAllStudent = asyncHandler(async (req, res, next) => {
   const students = await Student.find();
@@ -15,8 +13,6 @@ const getAllStudent = asyncHandler(async (req, res, next) => {
     .status(200)
     .json(new ApiResponse(200, students, "Students fetched successfully"));
 });
-
-
 
 // student by id
 const getStudentById = asyncHandler(async (req, res, next) => {
@@ -30,8 +26,6 @@ const getStudentById = asyncHandler(async (req, res, next) => {
     .status(200)
     .json(new ApiResponse(200, student, "Student fetched successfully"));
 });
-
-
 
 // add student --admin
 const addStudent = asyncHandler(async (req, res, next) => {
@@ -138,9 +132,7 @@ const addStudent = asyncHandler(async (req, res, next) => {
 });
 
 
-
 // update student
-
 const updateStudent = asyncHandler(async (req, res, next) => {
   const {
     firstName,
@@ -171,16 +163,14 @@ const updateStudent = asyncHandler(async (req, res, next) => {
   // Find the class of the  student by className of student ClassName id
   const MatchOldClass = await Class.findById(student?.className);
 
-
   const validClass = await Class.findOne({ className });
-  if(!validClass){
-    throw new ApiError(404, "class not found !")
+  if (!validClass) {
+    throw new ApiError(404, "class not found !");
   }
 
   if (
     validClass &&
     validClass?._id.toString() === MatchOldClass?._id.toString()
-
   ) {
     const updatedStudent = await Student.findByIdAndUpdate(
       req.params.id,
@@ -240,7 +230,7 @@ const updateStudent = asyncHandler(async (req, res, next) => {
     );
 
     //remove student from class
-    if(MatchOldClass && MatchOldClass?.students !== null){
+    if (MatchOldClass && MatchOldClass?.students !== null) {
       MatchOldClass.students = MatchOldClass.students.filter(
         (std) => std.toString() !== student._id.toString()
       );
@@ -263,7 +253,6 @@ const updateStudent = asyncHandler(async (req, res, next) => {
 
   // console.log(oldClass);
 });
-
 
 
 const addAcademicRecordStudent = asyncHandler(async (req, res, next) => {
@@ -310,9 +299,7 @@ const addAcademicRecordStudent = asyncHandler(async (req, res, next) => {
 });
 
 
-
-const updatedStudentAcedamicRecord = asyncHandler(async(req, res)=>{
-  
+const updatedStudentAcedamicRecord = asyncHandler(async (req, res) => {
   const {
     recordId,
     year,
@@ -325,53 +312,64 @@ const updatedStudentAcedamicRecord = asyncHandler(async(req, res)=>{
     totalMarks,
   } = req.body;
 
-  const findStudent = await Student.findById(req.params.id)
+  const findStudent = await Student.findById(req.params.id);
   if (!findStudent) {
     throw new ApiError(404, "Student not found!");
   }
 
-  const record = findStudent.academicHistory.find((r)=> r._id.toString() === recordId ) 
+  const record = findStudent.academicHistory.find(
+    (r) => r._id.toString() === recordId
+  );
 
   if (!record) {
     throw new ApiError(404, "Academic record not found!");
   }
 
+  const updatedRecord = (record.year = year || record.year);
+  record.pClass = pClass || record.pClass;
+  record.exam = exam || record.exam;
+  record.grade = grade || record.grade;
+  record.percentage = percentage || record.percentage;
+  record.positionInClass = positionInClass || record.positionInClass;
+  record.marksObtained = marksObtained || record.marksObtained;
+  record.totalMarks = totalMarks || record.totalMarks;
+  console.log("done");
 
-
-    const updatedRecord = record.year = year || record.year
-    record.pClass = pClass || record.pClass
-    record.exam = exam || record.exam
-    record.grade = grade || record.grade
-    record.percentage = percentage || record.percentage
-    record.positionInClass = positionInClass || record.positionInClass
-    record.marksObtained = marksObtained || record.marksObtained
-    record.totalMarks = totalMarks || record.totalMarks
-    console.log("done");
-
-    if(!updatedRecord){
-      throw new ApiError(404, "record not updated")
-    }
-    console.log(updatedRecord);
-
-  const save =   await findStudent.save()
-  
-  if(save){
-    return res.status(201)
-    .json(
-      new ApiResponse(201, updatedRecord, "record updated successfuly")
-    )
+  if (!updatedRecord) {
+    throw new ApiError(404, "record not updated");
   }
+  console.log(updatedRecord);
+
+  const save = await findStudent.save();
+
+  if (save) {
+    return res
+      .status(201)
+      .json(new ApiResponse(201, updatedRecord, "record updated successfuly"));
+  }
+});
 
 
-})
+const deleteStudent = asyncHandler(async (req, res) => {
+  // const student = await Student.findByIdAndDelete(req.params.id)
+  const removeStFromClass = await Class.findOne({ students: {$in: req.params?.id} });
+  if(!removeStFromClass){
+    throw new ApiError(404, "Student not found!");
+  }
+  console.log(removeStFromClass);
+  // if (!student) {
+  //   throw new ApiError(404, "Student not found!");
+  // }
 
-
+  // return res.status(200).json(new ApiResponse(200, null, "Student deleted successfully"))
+});
 
 export {
   addStudent,
   getAllStudent,
   getStudentById,
   updateStudent,
+  deleteStudent,
   addAcademicRecordStudent,
-  updatedStudentAcedamicRecord
+  updatedStudentAcedamicRecord,
 };

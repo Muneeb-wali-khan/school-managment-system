@@ -128,6 +128,8 @@ const addTeacher = asyncHandler(async (req, res, next) => {
     );
 });
 
+
+
 // update teacher --admin
 const updateTeacher = asyncHandler(async (req, res, next) => {
   const {
@@ -146,14 +148,15 @@ const updateTeacher = asyncHandler(async (req, res, next) => {
   } = req.body;
 
   const existingTeacher = await Teacher.findById(req.params.id);
+  const oldsubject = await Subject.findOne({
+    subjectName: existingTeacher?.subject,
+  });
+
+
   if (!existingTeacher) {
     throw new ApiError(400, `Teacher not found !`);
   }
-  const existingSubject = await Subject.findOne({
-    subjectName: changeToUpperCase(subject),
-  });
-
-  if (!existingSubject) {
+  if (!oldsubject) {
     throw new ApiError(400, `${subject} Subject not found !`);
   }
 
@@ -162,7 +165,9 @@ const updateTeacher = asyncHandler(async (req, res, next) => {
     joiningDate || existingTeacher?.joiningDate
   );
 
-  if (changeToUpperCase(subject) === existingTeacher?.subject) {
+
+
+  if (subject && changeToUpperCase(subject) === existingTeacher?.subject) {
     // if subject name not changed
     const teacher = await Teacher.findByIdAndUpdate(
       req.params.id,
@@ -174,24 +179,34 @@ const updateTeacher = asyncHandler(async (req, res, next) => {
         email,
         phone,
         address,
-        gender: changeToUpperCase(gender),
+        gender: gender && changeToUpperCase(gender),
         DOB: parsedDOB,
         joiningDate: parsedJoiningDate,
-        bloodGroup: bloodGroup.toUpperCase(),
-        subject: changeToUpperCase(subject),
+        bloodGroup: bloodGroup && bloodGroup.toUpperCase(),
+        subject: subject && changeToUpperCase(subject),
       },
       { new: true },
       { validateBeforeSave: false }
     );
+
+    const isTeacherInSubjectTeachersArray = await Subject.findOne({teachers: {$in: req.params?.id}})
+    if(isTeacherInSubjectTeachersArray === null){
+      const subjectExists = await Subject.findOne({
+        subjectName: changeToUpperCase(subject),
+      });
+      subjectExists?.teachers?.push(existingTeacher?._id);
+      await subjectExists.save({ validateBeforeSave: false });
+      console.log("save");
+    }
 
     console.log(" sub name not changed");
 
     return res
       .status(200)
       .json(new ApiResponse(200, teacher, "Teacher updated successfully"));
-  }
-   else {
+  } else {
     console.log(" sub name changed");
+
     // if subject name  change
     const teacher = await Teacher.findByIdAndUpdate(
       req.params.id,
@@ -213,13 +228,13 @@ const updateTeacher = asyncHandler(async (req, res, next) => {
       { validateBeforeSave: false }
     );
 
-    if (existingSubject) {
-      const removeSubject = existingSubject.teachers.filter(
-        (id) => id._id.toString() !== existingTeacher._id
-      );
+    if (oldsubject) {
+      const removeSubject = (oldsubject.teachers = oldsubject?.teachers?.filter(
+        (id) => id.toString() !== existingTeacher?._id.toString()
+      ));
       if (removeSubject) {
         console.log("done deleted");
-        await existingSubject.save({ validateBeforeSave: false });
+        await oldsubject.save({ validateBeforeSave: false });
       }
     }
 
@@ -237,6 +252,9 @@ const updateTeacher = asyncHandler(async (req, res, next) => {
       .json(new ApiResponse(200, teacher, "Teacher updated successfully"));
   }
 });
+
+
+
 
 // add classes to ClassesTuaght array of single teacher
 export { addTeacher, updateTeacher, getAllTeachers };

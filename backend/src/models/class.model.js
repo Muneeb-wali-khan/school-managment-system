@@ -11,13 +11,13 @@ const classSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'Teacher'
   },
-  
   students: [
     {
       type: Schema.Types.ObjectId,
       ref: 'Student'
     }
   ],
+
   subjects: [
     {
       type: Schema.Types.ObjectId,

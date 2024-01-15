@@ -1,13 +1,14 @@
 import { Router } from "express";
 import { upload } from "../middlewares/multer.js";
 import { BothTeacherAdmin, isAdmin, jwtVerify } from "../middlewares/auth.middleware.js";
-import { addAcademicRecordStudent, addStudent, getAllStudent, getStudentById, updateStudent, updatedStudentAcedamicRecord } from "../controllers/student.controller.js";
+import { addAcademicRecordStudent, addStudent, deleteStudent, getAllStudent, getStudentById, updateStudent, updatedStudentAcedamicRecord } from "../controllers/student.controller.js";
 const router = Router();
 
 
 
 // --admin 
 router.route("/update-student/:id").put(jwtVerify,BothTeacherAdmin, updateStudent)
+router.route("/remove-student/:id").delete(jwtVerify,BothTeacherAdmin, deleteStudent)
 router.route("/student/:id").get(jwtVerify, getStudentById)
 
 router.route("/add-student-academic-record/:id").post(jwtVerify,BothTeacherAdmin, addAcademicRecordStudent)

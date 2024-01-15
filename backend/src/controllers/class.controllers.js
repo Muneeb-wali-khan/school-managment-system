@@ -3,93 +3,230 @@ import { Teacher } from "../models/teacher.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-
-
+import { Subject } from "../models/subject.model.js";
+import { changeToUpperCase } from "../utils/toUpperCase.js";
 
 //  all-classes
-const allClasses  = asyncHandler(async(req, res)=>{ 
-    const findclass = await Class.find({}).populate("students")
+const allClasses = asyncHandler(async (req, res) => {
+  const findclass = await Class.find({}).populate("students");
 
-    if(!findclass){
-        throw new ApiError(400, "No Classes found !")
-    }
+  if (!findclass) {
+    throw new ApiError(400, "No Classes found !");
+  }
 
-    return res.status(200).json(
-      new ApiResponse(200, findclass, "class")
-    )
-
-})
-
+  return res.status(200).json(new ApiResponse(200, findclass, "class"));
+});
 
 // add-classes
-const addClass = asyncHandler(async (req, res, next) => {
-    const {className, email, fullName} = req.body;
+const addClass = asyncHandler(async (req, res) => {
+  const { className, email, fullName, subjects } = req.body;
 
-    if([className, email, fullName].some((fields)=> fields?.trim() === "")){
-        throw new ApiError(400, "all feilds are required !")
+  const spl = subjects?.split(",");
+
+  if (spl?.length < 3) {
+    if (!subjects?.match(",")) {
+      throw new ApiError(
+        400,
+        "subjects must ends with trailing commas ex: subject1, subject2 !"
+      );
     }
-    const findteacher = await Teacher.findOne({$or:[{email}, {fullName}]})
-    if(!findteacher){
-        throw new ApiError(400, "teacher with email/fullName not found")
-    }
+  }
 
-    const classExist = await Class.findOne({className: className?.toUpperCase()});
-    const teacherExist = await Class.findById(findteacher?._id);
+  if ([className, email, fullName].some((fields) => fields?.trim() === "")) {
+    throw new ApiError(400, "all feilds are required !");
+  }
+  const findteacher = await Teacher.findOne({ $or: [{ email }, { fullName }] });
+  if (!findteacher) {
+    throw new ApiError(400, "teacher with email/fullName not found");
+  }
 
-    if(classExist){
-        throw new ApiError(400,'ClassName already exist');
-    }
-    if(teacherExist){
-        throw new ApiError(400,'Class teacher already assigned to another class');
-    }
+  const classExist = await Class.findOne({
+    className: className?.toUpperCase(),
+  });
+  const teacherExist = await Class.findById(findteacher?._id);
 
+  const firstlattertoUpperCaseSubjects = spl?.map((sub) =>
+    changeToUpperCase(sub)
+  );
+  const findSubjects = await Subject.find({
+    subjectName: { $in: firstlattertoUpperCaseSubjects },
+  });
+  // map over find subjects
+  const existingSubjects = findSubjects?.map((sub) => sub?.subjectName);
+  // check if user provides subjects/subject are present in existingSubjects
+  const nonExistingSubjects = firstlattertoUpperCaseSubjects.filter(
+    (sub) => !existingSubjects.includes(sub)
+  );
 
-    const classData = await Class.create({
-        className: className?.toUpperCase(),
-        classTeacherID: findteacher?._id,
-    })
+  if (nonExistingSubjects.length > 0) {
+    throw new ApiError(
+      400,
+      `Subjects/subject not found: ${nonExistingSubjects.join(", ")}`
+    );
+  }
 
-    if(!classData){
-        return next(new ApiError('Class not created', 400));
-    }
-    return res.status(200).json(new ApiResponse(200,classData, "Class created successfully"));
+  if (!subjects) {
+    throw new ApiError(400, "subjects are required !");
+  }
+  if (classExist) {
+    throw new ApiError(400, "ClassName already exist");
+  }
+  if (teacherExist) {
+    throw new ApiError(400, "Class teacher already assigned to another class");
+  }
 
-})
+  const classData = await Class.create({
+    className: className?.toUpperCase(),
+    classTeacherID: findteacher?._id,
+    subjects: findSubjects?.map((sub) => sub?._id),
+  });
 
+  if (!classData) {
+    return new ApiError("Class not created", 400);
+  }
 
+  // Update each subject with the new class ID
+  for (const sub of findSubjects) {
+    sub?.classes?.push(classData?._id);
+    await sub.save({ validateBeforeSave: false });
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, classData, "Class created successfully"));
+});
 
 // single class
-const singleClass = asyncHandler(async(req, res)=>{
+const singleClass = asyncHandler(async (req, res) => {
+  const classer = await Class.findById(req.params?.id).populate(
+    "students classTeacherID"
+  );
 
-    const classer = await Class.findById(req.params?.id).populate("students classTeacherID")
+  if (!classer) {
+    throw new ApiError(404, "class not found !");
+  }
 
-    if(!classer){
-        throw new ApiError(404, "class not found !")
+  return res
+    .status(200)
+    .json(new ApiResponse(200, classer, `class ${classer?.className}`));
+});
+
+// update class with className, teacher, subjects
+const updateClass = asyncHandler(async (req, res) => {
+  const { className, email, fullName, subjects } = req.body;
+
+  const spl = subjects?.split(",");
+
+  if (spl?.length < 1) {
+    if (!subjects?.match(",")) {
+      throw new ApiError(
+        400,
+        "subjects must ends with trailing commas ex: subject1, subject2 !"
+      );
+    }
+  }
+
+  if ([className, email, fullName].some((fields) => fields?.trim() === "")) {
+    throw new ApiError(400, "all feilds are required !");
+  }
+  const findteacher = await Teacher.findOne({ $or: [{ email }, { fullName }] });
+  if (!findteacher) {
+    throw new ApiError(400, "teacher with email/fullName not found");
+  }
+
+  const classExist = await Class.findOne({
+    className: className?.toUpperCase(),
+  });
+  const teacherExist = await Class.findById(findteacher?._id);
+
+  const firstlattertoUpperCaseSubjects = spl?.map((sub) =>
+    changeToUpperCase(sub)
+  );
+  const findSubjects = await Subject.find({
+    subjectName: { $in: firstlattertoUpperCaseSubjects },
+  });
+  // map over find subjects
+  const existingSubjects = findSubjects?.map((sub) => sub?.subjectName);
+  // check if user provides subjects/subject are present in existingSubjects
+  const nonExistingSubjects = firstlattertoUpperCaseSubjects.filter(
+    (sub) => !existingSubjects.includes(sub)
+  );
+
+  if (nonExistingSubjects.length > 0) {
+    throw new ApiError(
+      400,
+      `Subjects/subject not found: ${nonExistingSubjects.join(", ")}`
+    );
+  }
+
+  if (!subjects) {
+    throw new ApiError(400, "subjects are required !");
+  }
+
+  if (teacherExist) {
+    throw new ApiError(400, "Class teacher already assigned to another class");
+  }
+
+  if (!classExist || classExist) {
+    const classData = await Class.findByIdAndUpdate(
+      req.params?.id,
+      {
+        className: className?.toUpperCase(),
+        classTeacherID: findteacher?._id,
+        subjects: findSubjects?.map((sub) => sub?._id),
+      },
+      { new: true },
+      { validateBeforeSave: false }
+    );
+
+    if (!classData) {
+      return new ApiError("Class not updated", 400);
     }
 
-    return res.status(200).json(
-        new ApiResponse(200, classer, `class ${classer?.className}`)
-    )
+    // Remove class ID from all subjects
+    const allSubjects = await Subject.find({});
+    for (const sub of allSubjects) {
+      sub.classes = sub?.classes?.filter(
+        (sbj) => sbj.toString() !== classData?._id.toString()
+      );
+      await sub.save({ validateBeforeSave: false });
+    }
 
-})
+    // Update each subject with the new class ID
+    for (const sub of findSubjects) {
+      sub?.classes?.push(classData?._id);
+      await sub.save({ validateBeforeSave: false });
+    }
 
-
+    return res
+      .status(200)
+      .json(new ApiResponse(200, classData, "Class updated successfully"));
+  }
+});
 
 // delete class
-const deleteClass = asyncHandler(async(req, res)=>{
+const deleteClass = asyncHandler(async (req, res) => {
+  const classer = await Class.findByIdAndDelete(req.params?.id);
 
-    const classer = await Class.findByIdAndDelete(req.params?.id)
+  if (!classer) {
+    throw new ApiError(404, "class not found !");
+  }
 
-    if(!classer){
-        throw new ApiError(404, "class not found !")
-    }
+  const removeClassIdFromSubjects = await Subject.find({
+    classes: req.params?.id,
+  });
+  const mapoverFind = removeClassIdFromSubjects?.map((sub) => {
+    return (sub.classes = sub?.classes?.filter(
+      (id) => id.toString() !== req.params?.id.toString()
+    ));
+  });
 
-    return res.status(200).json(
-        new ApiResponse(200, {}, "deleted successfully")
-    )
+  // take for off loop to save for all classes
+  for (let sub of removeClassIdFromSubjects) {
+    await sub.save({ validateBeforeSave: false });
+  }
 
-})
+  return res.status(200).json(new ApiResponse(200, {}, "deleted successfully"));
+});
 
-
-
-export {addClass, allClasses, deleteClass, singleClass}
+export { addClass, allClasses, updateClass, deleteClass, singleClass };
