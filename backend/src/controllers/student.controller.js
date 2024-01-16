@@ -273,7 +273,7 @@ const addAcademicRecordStudent = asyncHandler(async (req, res, next) => {
     throw new ApiError(404, "Student not found !");
   }
 
-  const pushAcademicRecord = student.academicHistory.push({
+  const pushAcademicRecord = student?.academicHistory.push({
     year,
     pClass,
     exam: exam.toUpperCase(),
@@ -293,7 +293,7 @@ const addAcademicRecordStudent = asyncHandler(async (req, res, next) => {
       new ApiResponse(
         200,
         pushAcademicRecord,
-        `Academic record of ${student?.firstName} added successfully`
+        `Academic record of ${student?.fullName} added successfully`
       )
     );
 });
@@ -345,7 +345,7 @@ const updatedStudentAcedamicRecord = asyncHandler(async (req, res) => {
   if (save) {
     return res
       .status(201)
-      .json(new ApiResponse(201, updatedRecord, "record updated successfuly"));
+      .json(new ApiResponse(201, updatedRecord, `${findStudent?.fullName}record updated successfuly`));
   }
 });
 

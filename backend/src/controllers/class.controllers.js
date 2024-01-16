@@ -17,7 +17,7 @@ const allClasses = asyncHandler(async (req, res) => {
   return res.status(200).json(new ApiResponse(200, findclass, "class"));
 });
 
-// add-classes
+// add-classes --admin
 const addClass = asyncHandler(async (req, res) => {
   const { className, email, fullName, subjects } = req.body;
 
@@ -43,7 +43,11 @@ const addClass = asyncHandler(async (req, res) => {
   const classExist = await Class.findOne({
     className: className?.toUpperCase(),
   });
-  const teacherExist = await Class.findById(findteacher?._id);
+  const teacherExist = await Class.findOne({classTeacherID: findteacher?._id});
+
+  if (teacherExist) {
+    throw new ApiError(400, "Class teacher already assigned to another class");
+  }
 
   const firstlattertoUpperCaseSubjects = spl?.map((sub) =>
     changeToUpperCase(sub)
@@ -71,9 +75,6 @@ const addClass = asyncHandler(async (req, res) => {
   if (classExist) {
     throw new ApiError(400, "ClassName already exist");
   }
-  if (teacherExist) {
-    throw new ApiError(400, "Class teacher already assigned to another class");
-  }
 
   const classData = await Class.create({
     className: className?.toUpperCase(),
@@ -96,7 +97,7 @@ const addClass = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, classData, "Class created successfully"));
 });
 
-// single class
+// single classes --admin
 const singleClass = asyncHandler(async (req, res) => {
   const classer = await Class.findById(req.params?.id).populate(
     "students classTeacherID"
@@ -111,7 +112,7 @@ const singleClass = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, classer, `class ${classer?.className}`));
 });
 
-// update class with className, teacher, subjects
+// update class with className, teacher, subjects --admin
 const updateClass = asyncHandler(async (req, res) => {
   const { className, email, fullName, subjects } = req.body;
 
@@ -137,7 +138,11 @@ const updateClass = asyncHandler(async (req, res) => {
   const classExist = await Class.findOne({
     className: className?.toUpperCase(),
   });
-  const teacherExist = await Class.findById(findteacher?._id);
+  const teacherExist = await Class.findOne({classTeacherID: findteacher?._id});
+
+  if (teacherExist) {
+    throw new ApiError(400, "Class teacher already assigned to another class");
+  }
 
   const firstlattertoUpperCaseSubjects = spl?.map((sub) =>
     changeToUpperCase(sub)
@@ -163,9 +168,6 @@ const updateClass = asyncHandler(async (req, res) => {
     throw new ApiError(400, "subjects are required !");
   }
 
-  if (teacherExist) {
-    throw new ApiError(400, "Class teacher already assigned to another class");
-  }
 
   if (!classExist || classExist) {
     const classData = await Class.findByIdAndUpdate(
@@ -204,7 +206,7 @@ const updateClass = asyncHandler(async (req, res) => {
   }
 });
 
-// delete class
+// delete class --admin
 const deleteClass = asyncHandler(async (req, res) => {
   const classer = await Class.findByIdAndDelete(req.params?.id);
 

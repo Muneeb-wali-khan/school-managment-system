@@ -25,16 +25,7 @@ const subjectSchema = new Schema({
       year: {
         type: Number,
         required: true,
-        default: "no year",
-      },
-      code: {
-        type: String,
-        required: true,
-        trim: true,
-        unique: true,
-        sparse: true,
-        minlength: 4,
-        default: "no code"
+        default: 0,
       },
       description: {
         type: String,
@@ -51,14 +42,10 @@ const subjectSchema = new Schema({
           message: "Invalid URL format",
         },
       },
-      keyTopics: [
-        {
-          topicName: {
-            type: String,
-            default: "no topics",
-          }
-        },
-      ],
+      keyTopics: {
+        type: String,
+        default: "no topics",
+      },
     },
   ],
 });

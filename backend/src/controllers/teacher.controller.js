@@ -254,7 +254,21 @@ const updateTeacher = asyncHandler(async (req, res, next) => {
 });
 
 
+// if deleted the teacher aslo remove deleted teacher from subject teachers array and class ClassTeacherId
 
+const deleteTeacher = asyncHandler(async (req, res, next) => {
+  const teacher = await Teacher.findById(req.params.id);
+
+  if (!teacher) {
+    throw new ApiError(400, "Teacher not found !");
+  }
+
+  await Teacher.findByIdAndDelete(req.params.id);
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, teacher, "Teacher deleted successfully"));
+})
 
 // add classes to ClassesTuaght array of single teacher
-export { addTeacher, updateTeacher, getAllTeachers };
+export { addTeacher, updateTeacher, getAllTeachers ,deleteTeacher};
