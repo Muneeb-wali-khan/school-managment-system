@@ -1,14 +1,25 @@
-import React from 'react'
+import React, { useState } from 'react'
 import NavHome from "../../Home/NavHome/NavHome"
 import { Link, useNavigate } from 'react-router-dom'
 
 const Register = () => {
   const navigate = useNavigate()
   const logerNamed = sessionStorage.getItem("logerName")
+  const [user] = useState({
+    username: "",
+    firstname: "",
+    fullname: "",
+    email: "",
+    role: "",
+    uniqueCode: "",
+    password: "",
+  })
 
   const handleSubmit = (e)=>{
     e.preventDefault()
-    // console.log();
+    const data = new FormData()
+    data.append('username', user.username)
+   
   }
 
   const handlePrev=()=>{
@@ -19,12 +30,12 @@ const Register = () => {
     <>
     <NavHome/>
     <div>
-        <button onClick={handlePrev} className='py-[7px] px-[15px] ml-[34px] mt-[20px] rounded-lg bg-green-700 text-white'>
+        <button onClick={handlePrev} className='py-[7px] px-[15px] regbtn ml-[34px] mt-[20px] rounded-lg bg-green-700 text-white'>
           {/* <i  className='fa fa-arrow-left'></i> */}
           <i className="fa fa-arrow-left "> </i> Back 
         </button>
     </div>
-        <div className="flex justify-center  h-full p-3 m-4">
+        <div className="flex justify-center  h-full p-3 m-4 regform">
         <form
         onSubmit={handleSubmit}
           action=""

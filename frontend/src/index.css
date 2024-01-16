@@ -305,7 +305,21 @@
         border: 1px solid white;
         border-radius: 20px;
     }
+    .regbtn{
+        margin-left: 15px;
+    }
+    .regform{
+        padding: 0.75rem 7px;
+        margin: 1rem 0px;
+    }
 
+    .loginform{
+        padding: 0.75rem 7px;
+        margin: 1rem 0px;
+    }
+    .loginbtn{
+        margin-left: 25px;
+    }
 }
 
 

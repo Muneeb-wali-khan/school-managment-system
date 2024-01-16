@@ -59,12 +59,12 @@ const Login = () => {
     <>
       <NavHome />
     <div>
-        <button onClick={handlePrev} className='py-[7px] px-[15px] ml-[34px] mt-[20px] rounded-lg bg-green-700 text-white'>
+        <button onClick={handlePrev} className='py-[7px] loginbtn px-[15px] ml-[34px] mt-[20px] rounded-lg bg-green-700 text-white'>
           {/* <i  className='fa fa-arrow-left'></i> */}
         <i className="fa fa-arrow-left "> </i> Back 
         </button>
     </div>
-      <div className="flex justify-center  h-full p-3 m-4">
+      <div className="flex justify-center loginform  h-full p-3 m-4">
         <form
         onSubmit={handleSubmitLogin}
           action=""
