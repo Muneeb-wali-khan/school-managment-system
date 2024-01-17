@@ -1,4 +1,5 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
+import { isValidUsername } from "../utils/userNameValidation.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import {User} from "../models/user.model.js"
@@ -48,7 +49,7 @@ const registerUser = asyncHandler(async (req, res) => {
     const { username, email, password, fullName, firstName, role, uniqueCode} = req.body;
 
     if([username,email ,password, fullName,firstName ,role,uniqueCode].some((field)=> field?.trim() === "")){
-        throw new ApiError(400, "All fields are required")       // dont forget to call this ApiError with New Keyword 
+       throw new ApiError(400, "All fields are required")      // dont forget to call this ApiError with New Keyword 
     }
 
     const existedUser = await User.findOne({$or: [{email}, {username}]});
@@ -66,7 +67,12 @@ const registerUser = asyncHandler(async (req, res) => {
       throw new ApiError(400, `Invalid unique code for ${role} !`);
     }
 
+    // if(!isValidUsername(username)){
+    //   throw new ApiError(400, "Invalid username ! [ must contains one uppercase] and [4 digits numbers ]")
+    // }
+
     const avatarLocalPath = req.file?.path;
+    console.log(avatarLocalPath);
     if(!avatarLocalPath){
       throw new ApiError(400, "Image is required !");
     }

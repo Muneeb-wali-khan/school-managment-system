@@ -9,7 +9,7 @@ import {Toaster} from "react-hot-toast"
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <Provider store={store}>
-      <Toaster toastOptions={{position: "top-center"}}/>
+      <Toaster toastOptions={{position: "bottom-center"}}/>
       <App />
     </Provider>
   </React.StrictMode>
