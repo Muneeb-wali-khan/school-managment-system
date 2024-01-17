@@ -99,7 +99,7 @@ const allCurriculumSubject = asyncHandler(async (req, res) => {
 
 
 
-// add curriculum for a subject
+// add curriculum of a subject
 const addCurriculumSubject = asyncHandler(async (req, res) => {
   const { year, description, documentationLink, keyTopics } = req.body;
 

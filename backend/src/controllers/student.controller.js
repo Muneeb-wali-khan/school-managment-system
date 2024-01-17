@@ -82,53 +82,66 @@ const addStudent = asyncHandler(async (req, res, next) => {
     throw new ApiError(400, "Phone number already exists !");
   } else if (dOBExists) {
     throw new ApiError(400, "Date of birth already exists !");
-  } else if (rollNoExists) {
-    throw new ApiError(400, "rollNo already exists !");
-  }
+  } 
+  // else if (rollNoExists) {
+  //   throw new ApiError(400, "rollNo already exists !");
+  // }
 
   const validClass = await Class.findOne({ className });
+  const classStudents = validClass?.students
+  const studentsfindId = await Student.find({ _id: classStudents })
+  // const mapStudentsIds = studentsfindId?.map((ids)=> ids?._id);
+
   if (!validClass) {
-    throw new ApiError(400, "ClassName not found");
+    throw new ApiError(400, `${className} not found ! please check Classes`);
   }
+  const isrollNoAlreadyAsignedInThatClass = studentsfindId?.filter((number)=> number?.rollNo === rollNo)
+  console.log(isrollNoAlreadyAsignedInThatClass);
+//   if(isrollNoAlreadyAsignedInThatClass){
+//   throw new ApiError(400, "rollNo already assigned to another student in that class  !");
+// }
+//   else{
+//   console.log("roll no is avaliable");
+//   }
 
-  let avatarLocalPath = req.file ? req.file?.path : null;
+  // let avatarLocalPath = req.file ? req.file?.path : null;
 
-  if (!avatarLocalPath) {
-    throw new ApiError(400, "Student image is required !");
-  }
+  // if (!avatarLocalPath) {
+  //   throw new ApiError(400, "Student image is required !");
+  // }
 
-  const avatar = await cloudinaryUploadImg(avatarLocalPath);
+  // const avatar = await cloudinaryUploadImg(avatarLocalPath);
 
-  if (!avatar.url) {
-    throw new ApiError(400, "Student image is required !");
-  }
+  // if (!avatar.url) {
+  //   throw new ApiError(400, "Student image is required !");
+  // }
 
-  const student = await Student.create({
-    firstName,
-    fullName,
-    rollNo,
-    age,
-    admissionClass,
-    fatherName,
-    className: validClass?._id,
-    email,
-    phone,
-    address,
-    gender: gender[0].toUpperCase() + gender.substr(1, gender.length),
-    DOB,
-    avatar: avatar.url,
-    joiningDate,
-    bloodGroup: bloodGroup.toUpperCase(),
-  });
+  // const student = await Student.create({
+  //   firstName,
+  //   fullName,
+  //   rollNo,
+  //   age,
+  //   admissionClass,
+  //   fatherName,
+  //   className: validClass?._id,
+  //   email,
+  //   phone,
+  //   address,
+  //   gender: gender[0].toUpperCase() + gender.substr(1, gender.length),
+  //   DOB,
+  //   avatar: avatar.url,
+  //   joiningDate,
+  //   bloodGroup: bloodGroup.toUpperCase(),
+  // });
 
-  validClass.students.push(student._id);
-  console.log("done");
-  await validClass.save({ validateBeforeSave: false });
-  console.log("done saved");
+  // validClass.students.push(student._id);
+  // console.log("done");
+  // await validClass.save({ validateBeforeSave: false });
+  // console.log("done saved");
 
-  return res
-    .status(201)
-    .json(new ApiResponse(201, student, "Student added successfully"));
+  // return res
+  //   .status(201)
+  //   .json(new ApiResponse(201, student, "Student added successfully"));
 });
 
 
@@ -255,6 +268,23 @@ const updateStudent = asyncHandler(async (req, res, next) => {
 });
 
 
+// delete student
+const deleteStudent = asyncHandler(async (req, res) => {
+  // const student = await Student.findByIdAndDelete(req.params.id)
+  const removeStFromClass = await Class.findOne({ students: {$in: req.params?.id} });
+  if(!removeStFromClass){
+    throw new ApiError(404, "Student not found!");
+  }
+  console.log(removeStFromClass);
+  // if (!student) {
+  //   throw new ApiError(404, "Student not found!");
+  // }
+
+  // return res.status(200).json(new ApiResponse(200, null, "Student deleted successfully"))
+});
+
+
+// add academic record
 const addAcademicRecordStudent = asyncHandler(async (req, res, next) => {
   const {
     year,
@@ -271,6 +301,12 @@ const addAcademicRecordStudent = asyncHandler(async (req, res, next) => {
 
   if (!student) {
     throw new ApiError(404, "Student not found !");
+  }
+  const existingRecord = student?.academicHistory.find(
+    (record) => record?.year === year
+  )
+  if (existingRecord) {
+    throw new ApiError(404, `Academic record of year ${year} already exists !`);
   }
 
   const pushAcademicRecord = student?.academicHistory.push({
@@ -299,6 +335,20 @@ const addAcademicRecordStudent = asyncHandler(async (req, res, next) => {
 });
 
 
+// all academic record of student
+const allAcademicRecordStudent = asyncHandler(async (req, res) => {
+  const student = await Student.findById(req.params.id);
+  if (!student) {
+    throw new ApiError(404, "Student not found !");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, student?.academicHistory, "Academic record fetched"));
+
+})
+
+// update academic record
 const updatedStudentAcedamicRecord = asyncHandler(async (req, res) => {
   const {
     recordId,
@@ -350,19 +400,37 @@ const updatedStudentAcedamicRecord = asyncHandler(async (req, res) => {
 });
 
 
-const deleteStudent = asyncHandler(async (req, res) => {
-  // const student = await Student.findByIdAndDelete(req.params.id)
-  const removeStFromClass = await Class.findOne({ students: {$in: req.params?.id} });
-  if(!removeStFromClass){
+// delete academic record
+const deleteAcademicRecord = asyncHandler(async (req, res) => {
+  const findStudent = await Student.findById(req.params.id);
+  if (!findStudent) {
     throw new ApiError(404, "Student not found!");
   }
-  console.log(removeStFromClass);
-  // if (!student) {
-  //   throw new ApiError(404, "Student not found!");
-  // }
 
-  // return res.status(200).json(new ApiResponse(200, null, "Student deleted successfully"))
-});
+  const record = findStudent?.academicHistory.find(
+    (r) => r._id.toString() === req.body?.recordId
+  );
+
+  if (!record) {
+    throw new ApiError(404, "Academic record not found!");
+  }
+
+  const updatedRecord = findStudent?.academicHistory.filter(
+    (r) => r._id.toString() !== req.body.recordId
+  );
+
+  const save = await findStudent.save();
+
+  if (save) {
+    return res
+      .status(201)
+      .json(new ApiResponse(201, updatedRecord, `${findStudent?.fullName}record deleted successfuly`));
+  }
+
+})
+
+
+
 
 export {
   addStudent,
@@ -370,6 +438,9 @@ export {
   getStudentById,
   updateStudent,
   deleteStudent,
+
+  allAcademicRecordStudent,
   addAcademicRecordStudent,
   updatedStudentAcedamicRecord,
+  deleteAcademicRecord
 };

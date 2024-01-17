@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { upload } from "../middlewares/multer.js";
 import { BothTeacherAdmin, isAdmin, jwtVerify } from "../middlewares/auth.middleware.js";
-import { addAcademicRecordStudent, addStudent, deleteStudent, getAllStudent, getStudentById, updateStudent, updatedStudentAcedamicRecord } from "../controllers/student.controller.js";
+import { addAcademicRecordStudent, addStudent, deleteAcademicRecord, deleteStudent, getAllStudent, getStudentById, updateStudent, updatedStudentAcedamicRecord } from "../controllers/student.controller.js";
 const router = Router();
 
 
@@ -11,8 +11,10 @@ router.route("/update-student/:id").put(jwtVerify,BothTeacherAdmin, updateStuden
 router.route("/remove-student/:id").delete(jwtVerify,BothTeacherAdmin, deleteStudent)
 router.route("/student/:id").get(jwtVerify, getStudentById)
 
+router.route("/all-student-academic-record/:id").get(jwtVerify,BothTeacherAdmin, addAcademicRecordStudent)
 router.route("/add-student-academic-record/:id").post(jwtVerify,BothTeacherAdmin, addAcademicRecordStudent)
 router.route("/update-student-academic-record/:id").post(jwtVerify,BothTeacherAdmin, updatedStudentAcedamicRecord)
+router.route("/remove-student-academic-record/:id").delete(jwtVerify,BothTeacherAdmin, deleteAcademicRecord)
 
 
 // --admin 
