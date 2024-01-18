@@ -1,10 +1,11 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
-import { isValidUsername } from "../utils/userNameValidation.js";
+import {User} from "../models/user.model.js"
+import jwt from "jsonwebtoken"
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import {User} from "../models/user.model.js"
+import { isValidUsername } from "../utils/userNameValidation.js";
+import { isGmailAddress } from "../utils/validGmail.js";
 import {RemovecloudinaryExistingImg, cloudinaryUploadImg} from "../utils/cloudinary.js"
-import jwt from "jsonwebtoken"
 import { extractId } from "../utils/extractCloudinaryId.js";
 
 
@@ -67,9 +68,12 @@ const registerUser = asyncHandler(async (req, res) => {
       throw new ApiError(400, `Invalid unique code for ${role} !`);
     }
 
-    // if(!isValidUsername(username)){
-    //   throw new ApiError(400, "Invalid username ! [ must contains one uppercase] and [4 digits numbers ]")
-    // }
+    if(!isValidUsername(username)){
+      throw new ApiError(400, "Invalid username ! [ must contains one uppercase] and [4 digits numbers ]")
+    }
+    if(!isGmailAddress(email)){
+      throw new ApiError(400, "Invalid email !")
+    }
 
     const avatarLocalPath = req.file?.path;
     console.log(avatarLocalPath);

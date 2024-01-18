@@ -16,8 +16,7 @@ export const register = createAsyncThunk(
         return response.data
 
     } catch (error) {
-      console.log(error);
-       return rejectWithValue(error)
+       return rejectWithValue(error?.response?.data)
     }
   }
 );
