@@ -17,7 +17,7 @@ const getAllTeachers = asyncHandler(async (req, res, next) => {
 
 // teacher by id
 const getTeacherById = asyncHandler(async (req, res, next) => {
-  const teacher = await Teacher.findById(req.params.id);
+  const teacher = await Teacher.findById(req.params?.id);
 
   if (!teacher) {
     throw new ApiError(404, "Teacher not found !");
@@ -271,4 +271,4 @@ const deleteTeacher = asyncHandler(async (req, res, next) => {
 })
 
 // add classes to ClassesTuaght array of single teacher
-export { addTeacher, updateTeacher, getAllTeachers ,deleteTeacher};
+export { addTeacher, updateTeacher, getAllTeachers ,deleteTeacher, getTeacherById};

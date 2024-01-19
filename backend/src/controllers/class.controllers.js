@@ -1,4 +1,5 @@
 import { Class } from "../models/class.model.js";
+import { Student } from "../models/student.model.js";
 import { Teacher } from "../models/teacher.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
@@ -43,7 +44,9 @@ const addClass = asyncHandler(async (req, res) => {
   const classExist = await Class.findOne({
     className: className?.toUpperCase(),
   });
-  const teacherExist = await Class.findOne({classTeacherID: findteacher?._id});
+  const teacherExist = await Class.findOne({
+    classTeacherID: findteacher?._id,
+  });
 
   if (teacherExist) {
     throw new ApiError(400, "Class teacher already assigned to another class");
@@ -55,6 +58,7 @@ const addClass = asyncHandler(async (req, res) => {
   const findSubjects = await Subject.find({
     subjectName: { $in: firstlattertoUpperCaseSubjects },
   });
+
   // map over find subjects
   const existingSubjects = findSubjects?.map((sub) => sub?.subjectName);
   // check if user provides subjects/subject are present in existingSubjects
@@ -114,7 +118,7 @@ const singleClass = asyncHandler(async (req, res) => {
 
 // update class with className, teacher, subjects --admin
 const updateClass = asyncHandler(async (req, res) => {
-  const { className, email, fullName, subjects } = req.body;
+  const { className, email, fullName, subjects, teachersOfClass } = req.body;
 
   const spl = subjects?.split(",");
 
@@ -138,10 +142,18 @@ const updateClass = asyncHandler(async (req, res) => {
   const classExist = await Class.findOne({
     className: className?.toUpperCase(),
   });
-  const teacherExist = await Class.findOne({classTeacherID: findteacher?._id});
 
-  if (teacherExist) {
-    throw new ApiError(400, "Class teacher already assigned to another class");
+  if (!classExist?.classTeacherID) {
+    const teacherExist = await Class.findOne({
+      classTeacherID: findteacher?._id,
+    });
+
+    if (teacherExist) {
+      throw new ApiError(
+        400,
+        "Class teacher already assigned to another class"
+      );
+    }
   }
 
   const firstlattertoUpperCaseSubjects = spl?.map((sub) =>
@@ -168,7 +180,6 @@ const updateClass = asyncHandler(async (req, res) => {
     throw new ApiError(400, "subjects are required !");
   }
 
-
   if (!classExist || classExist) {
     const classData = await Class.findByIdAndUpdate(
       req.params?.id,
@@ -176,6 +187,7 @@ const updateClass = asyncHandler(async (req, res) => {
         className: className?.toUpperCase(),
         classTeacherID: findteacher?._id,
         subjects: findSubjects?.map((sub) => sub?._id),
+        teachersOfClass: teachersOfClass,
       },
       { new: true },
       { validateBeforeSave: false }
@@ -217,6 +229,18 @@ const deleteClass = asyncHandler(async (req, res) => {
   const removeClassIdFromSubjects = await Subject.find({
     classes: req.params?.id,
   });
+
+  const removeStudentsClassNameId = await Student.find({
+    className: req.params?.id,
+  });
+
+  if(removeStudentsClassNameId?.length !== 0){
+    for (const st of removeStudentsClassNameId) {
+      st.className = null;
+      await st.save({ validateBeforeSave: false });
+    }
+  }
+
   const mapoverFind = removeClassIdFromSubjects?.map((sub) => {
     return (sub.classes = sub?.classes?.filter(
       (id) => id.toString() !== req.params?.id.toString()

@@ -19,7 +19,6 @@ const studentSchema = new Schema(
     rollNo: {
       type: Number,
       required: true,
-      unique: true
     },
     age:{
       type: Number,

@@ -3,17 +3,18 @@ import NavHome from "../../Home/NavHome/NavHome";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { register, clearErrorsAuth } from "../../../store/features/regLogin";
-import {toast} from "react-hot-toast"
+import { toast } from "react-hot-toast";
 
 const Register = () => {
-  const dispatch = useDispatch()
-  const {loadingAuth, msgAuth, errorAuth} = useSelector((state)=> state?.user?.userAuth)
+  const dispatch = useDispatch();
+  const { loadingAuth, msgAuth, errorAuth } = useSelector(
+    (state) => state?.user?.userAuth
+  );
 
   const navigate = useNavigate();
   const logerNamed = sessionStorage.getItem("logerName");
   const [avatar, setAvatar] = useState("");
   const [avatarView, setAvatarView] = useState(null);
-
 
   const [user, setUser] = useState({
     username: "",
@@ -41,7 +42,7 @@ const Register = () => {
     data.append("uniqueCode", user.uniqueCode);
     data.append("password", user.password);
     data.append("avatar", user?.avatar);
-    dispatch(register(data))
+    dispatch(register(data));
   };
 
   const handleImage = (e) => {
@@ -50,24 +51,22 @@ const Register = () => {
     const seeImage = URL.createObjectURL(file);
     setAvatarView(seeImage);
 
-    setUser({ ...user, avatar: file })
+    setUser({ ...user, avatar: file });
   };
 
-  useEffect(()=>{
-    if(msgAuth){
-      toast.success(msgAuth)
+  useEffect(() => {
+    if (msgAuth) {
+      toast.success(msgAuth);
     }
-    if(errorAuth){
-      toast.error(errorAuth)
+    if (errorAuth) {
+      toast.error(errorAuth);
     }
-    dispatch(clearErrorsAuth())
-  },[msgAuth, errorAuth])
+    dispatch(clearErrorsAuth());
+  }, [msgAuth, errorAuth]);
 
   const handlePrev = () => {
     navigate("/registers");
   };
-
-
   return (
     <>
       <NavHome />
@@ -219,7 +218,7 @@ const Register = () => {
 
           <div>
             <button className="font-bold px-2 py-2 mt-3 rounded-lg w-full bg-gray-300 hover:bg-gray-400 hover:text-white transition-all text-gray-600">
-             {loadingAuth && loadingAuth ? "Submiting...": "Submit"}
+              {loadingAuth && loadingAuth ? "Submiting..." : "Submit"}
             </button>
           </div>
         </form>

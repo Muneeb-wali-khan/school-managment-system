@@ -72,7 +72,7 @@ const addStudent = asyncHandler(async (req, res, next) => {
   });
   const phoneExists = await Student.findOne({ phone });
   const dOBExists = await Student.findOne({ DOB });
-  const rollNoExists = await Student.findOne({ rollNo });
+  // const rollNoExists = await Student.findOne({ rollNo });
 
   if (StudentExists) {
     throw new ApiError(400, "Student with email or fullName already exists !");
@@ -82,68 +82,71 @@ const addStudent = asyncHandler(async (req, res, next) => {
     throw new ApiError(400, "Phone number already exists !");
   } else if (dOBExists) {
     throw new ApiError(400, "Date of birth already exists !");
-  } 
-  // else if (rollNoExists) {
-  //   throw new ApiError(400, "rollNo already exists !");
-  // }
+  }
 
-  const validClass = await Class.findOne({ className });
-  const classStudents = validClass?.students
-  const studentsfindId = await Student.find({ _id: classStudents })
-  // const mapStudentsIds = studentsfindId?.map((ids)=> ids?._id);
+  const validClass = await Class.findOne({ className: className });
 
   if (!validClass) {
     throw new ApiError(400, `${className} not found ! please check Classes`);
   }
-  const isrollNoAlreadyAsignedInThatClass = studentsfindId?.filter((number)=> number?.rollNo === rollNo)
-  console.log(isrollNoAlreadyAsignedInThatClass);
-//   if(isrollNoAlreadyAsignedInThatClass){
-//   throw new ApiError(400, "rollNo already assigned to another student in that class  !");
-// }
-//   else{
-//   console.log("roll no is avaliable");
-//   }
 
-  // let avatarLocalPath = req.file ? req.file?.path : null;
+  // if class  have students
+  if (validClass?.students?.length !== 0) {
+    const classStudents = validClass?.students;
+    const studentsfindId = await Student.find({ _id: classStudents });
+    const mapoverStudents = studentsfindId?.map((student) => student?.rollNo);
 
-  // if (!avatarLocalPath) {
-  //   throw new ApiError(400, "Student image is required !");
-  // }
+    const isrollNoAlreadyAsignedInThatClass = mapoverStudents?.find(
+      (number) => number == rollNo
+    );
 
-  // const avatar = await cloudinaryUploadImg(avatarLocalPath);
+    if (isrollNoAlreadyAsignedInThatClass) {
+      throw new ApiError(
+        400,
+        `rollNo already assigned to another student in ${className}  !`
+      );
+    }
+  }
 
-  // if (!avatar.url) {
-  //   throw new ApiError(400, "Student image is required !");
-  // }
+  let avatarLocalPath = req.file ? req.file?.path : null;
 
-  // const student = await Student.create({
-  //   firstName,
-  //   fullName,
-  //   rollNo,
-  //   age,
-  //   admissionClass,
-  //   fatherName,
-  //   className: validClass?._id,
-  //   email,
-  //   phone,
-  //   address,
-  //   gender: gender[0].toUpperCase() + gender.substr(1, gender.length),
-  //   DOB,
-  //   avatar: avatar.url,
-  //   joiningDate,
-  //   bloodGroup: bloodGroup.toUpperCase(),
-  // });
+  if (!avatarLocalPath) {
+    throw new ApiError(400, "Student image is required !");
+  }
 
-  // validClass.students.push(student._id);
-  // console.log("done");
-  // await validClass.save({ validateBeforeSave: false });
-  // console.log("done saved");
+  const avatar = await cloudinaryUploadImg(avatarLocalPath);
 
-  // return res
-  //   .status(201)
-  //   .json(new ApiResponse(201, student, "Student added successfully"));
+  if (!avatar.url) {
+    throw new ApiError(400, "Student image is required !");
+  }
+
+  const student = await Student.create({
+    firstName,
+    fullName,
+    rollNo,
+    age,
+    admissionClass,
+    fatherName,
+    className: validClass?._id,
+    email,
+    phone,
+    address,
+    gender: gender[0].toUpperCase() + gender.substr(1, gender.length),
+    DOB,
+    avatar: avatar.url,
+    joiningDate,
+    bloodGroup: bloodGroup.toUpperCase(),
+  });
+
+  validClass.students.push(student._id);
+  console.log("done");
+  await validClass.save({ validateBeforeSave: false });
+  console.log("done saved");
+
+  return res
+    .status(201)
+    .json(new ApiResponse(201, student, "Student added successfully"));
 });
-
 
 // update student
 const updateStudent = asyncHandler(async (req, res, next) => {
@@ -176,9 +179,27 @@ const updateStudent = asyncHandler(async (req, res, next) => {
   // Find the class of the  student by className of student ClassName id
   const MatchOldClass = await Class.findById(student?.className);
 
-  const validClass = await Class.findOne({ className });
+  const validClass = await Class.findOne({ className: className });
   if (!validClass) {
-    throw new ApiError(404, "class not found !");
+    throw new ApiError(400, `${className} not found ! please check Classes`);
+  }
+
+  // if class  have students
+  if (validClass?.students?.length !== 0) {
+    const classStudents = validClass?.students;
+    const studentsfindId = await Student.find({ _id: classStudents });
+    const mapoverStudents = studentsfindId?.map((student) => student?.rollNo);
+
+    const isrollNoAlreadyAsignedInThatClass = mapoverStudents?.find(
+      (number) => number == rollNo
+    );
+
+    if (isrollNoAlreadyAsignedInThatClass) {
+      throw new ApiError(
+        400,
+        `rollNo already assigned to another student in ${className}  !`
+      );
+    }
   }
 
   if (
@@ -264,15 +285,15 @@ const updateStudent = asyncHandler(async (req, res, next) => {
       );
   }
 
-  // console.log(oldClass);
 });
-
 
 // delete student
 const deleteStudent = asyncHandler(async (req, res) => {
   // const student = await Student.findByIdAndDelete(req.params.id)
-  const removeStFromClass = await Class.findOne({ students: {$in: req.params?.id} });
-  if(!removeStFromClass){
+  const removeStFromClass = await Class.findOne({
+    students: { $in: req.params?.id },
+  });
+  if (!removeStFromClass) {
     throw new ApiError(404, "Student not found!");
   }
   console.log(removeStFromClass);
@@ -282,7 +303,6 @@ const deleteStudent = asyncHandler(async (req, res) => {
 
   // return res.status(200).json(new ApiResponse(200, null, "Student deleted successfully"))
 });
-
 
 // add academic record
 const addAcademicRecordStudent = asyncHandler(async (req, res, next) => {
@@ -304,7 +324,7 @@ const addAcademicRecordStudent = asyncHandler(async (req, res, next) => {
   }
   const existingRecord = student?.academicHistory.find(
     (record) => record?.year === year
-  )
+  );
   if (existingRecord) {
     throw new ApiError(404, `Academic record of year ${year} already exists !`);
   }
@@ -334,7 +354,6 @@ const addAcademicRecordStudent = asyncHandler(async (req, res, next) => {
     );
 });
 
-
 // all academic record of student
 const allAcademicRecordStudent = asyncHandler(async (req, res) => {
   const student = await Student.findById(req.params.id);
@@ -344,9 +363,10 @@ const allAcademicRecordStudent = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, student?.academicHistory, "Academic record fetched"));
-
-})
+    .json(
+      new ApiResponse(200, student?.academicHistory, "Academic record fetched")
+    );
+});
 
 // update academic record
 const updatedStudentAcedamicRecord = asyncHandler(async (req, res) => {
@@ -395,10 +415,15 @@ const updatedStudentAcedamicRecord = asyncHandler(async (req, res) => {
   if (save) {
     return res
       .status(201)
-      .json(new ApiResponse(201, updatedRecord, `${findStudent?.fullName}record updated successfuly`));
+      .json(
+        new ApiResponse(
+          201,
+          updatedRecord,
+          `${findStudent?.fullName}record updated successfuly`
+        )
+      );
   }
 });
-
 
 // delete academic record
 const deleteAcademicRecord = asyncHandler(async (req, res) => {
@@ -424,13 +449,15 @@ const deleteAcademicRecord = asyncHandler(async (req, res) => {
   if (save) {
     return res
       .status(201)
-      .json(new ApiResponse(201, updatedRecord, `${findStudent?.fullName}record deleted successfuly`));
+      .json(
+        new ApiResponse(
+          201,
+          updatedRecord,
+          `${findStudent?.fullName}record deleted successfuly`
+        )
+      );
   }
-
-})
-
-
-
+});
 
 export {
   addStudent,
@@ -438,9 +465,8 @@ export {
   getStudentById,
   updateStudent,
   deleteStudent,
-
   allAcademicRecordStudent,
   addAcademicRecordStudent,
   updatedStudentAcedamicRecord,
-  deleteAcademicRecord
+  deleteAcademicRecord,
 };

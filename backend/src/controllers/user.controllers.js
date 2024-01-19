@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken"
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { isValidUsername } from "../utils/userNameValidation.js";
-import { isGmailAddress } from "../utils/validGmail.js";
+import { isValidGmailAddress } from "../utils/validGmail.js";
 import {RemovecloudinaryExistingImg, cloudinaryUploadImg} from "../utils/cloudinary.js"
 import { extractId } from "../utils/extractCloudinaryId.js";
 
@@ -69,9 +69,17 @@ const registerUser = asyncHandler(async (req, res) => {
     }
 
     if(!isValidUsername(username)){
-      throw new ApiError(400, "Invalid username ! [ must contains one uppercase] and [4 digits numbers ]")
+      throw new ApiError(400, "Invalid username ! must contains one uppercase and 4 digits numbers ")
     }
-    if(!isGmailAddress(email)){
+    
+    if(firstName?.length > 8){
+      throw new ApiError(400, "firstName Must be at least 8 characters or short ! ")
+    }
+    else if(fullName?.length > 21){
+      throw new ApiError(400, "fullName Must be at least 21 characters or short ! ")
+    }
+
+    if(!isValidGmailAddress(email)){
       throw new ApiError(400, "Invalid email !")
     }
 
