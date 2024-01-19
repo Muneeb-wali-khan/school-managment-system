@@ -85,12 +85,12 @@ const teacherSchema = new Schema(
       required: true,
       trim: true,
     },
-    classesTaught: [
+    classesTaught:[
       {
         type: Schema.Types.ObjectId,
         ref: "Class",
       },
-    ],
+    ]
   },
   { timestamps: true }
 );

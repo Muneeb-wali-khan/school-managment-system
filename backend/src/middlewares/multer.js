@@ -1,6 +1,5 @@
 import multer from "multer";
 
-
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, './public/temp')
@@ -19,5 +18,6 @@ const fileFilter = (req, file, cb) => {
     }
     cb(null, true)
 }
+
 
 export const upload  = multer({ storage, limits: {fileSize: fileSize}, fileFilter})
