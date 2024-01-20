@@ -17,14 +17,21 @@ router.route("/remove-teacher/:id").delete(jwtVerify, deleteTeacher)
 
 // Error handling middleware for MulterError o file exceeded
 router.use((err, req, res, next) => {
-    if (err instanceof multer.MulterError) {
-      if (err.code === "LIMIT_FILE_SIZE") {
-        // Customize the error message for file size limit
-        throw new ApiError(500, "File/image size must be 200 KB or less");
-      }
+  if (err instanceof multer.MulterError) {
+    if (err.code === "LIMIT_FILE_SIZE") {
+      // Customize the error message for file size limit
+      throw new ApiError(500, "File/image size must be 200 KB or less");
     }
-    next(err);
-  });
+  }
+  if(err instanceof multer.MulterError){
+    if(err.code === "LIMIT_UNEXPECTED_FILE"){
+      throw new ApiError(500, "Only image is allowed !")
+    }
+  }
+  console.log(err);
+  next(err);
+});
+
 
 
 export default router;

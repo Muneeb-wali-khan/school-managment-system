@@ -129,27 +129,34 @@ const loginUser = asyncHandler(async (req, res) => {
 
     const {username, email, password} = req.body;
 
-    if(!username && !email){
+    if(!username || !email){
       throw new ApiError(400, "username or email  are required !")
     }
 
     if(!password) throw new ApiError(400, "password is required !")
 
-    const user = await User.findOne({$or: [{email}, {username}]})
+    // find user email or username if any one is avaliable accepted
+    // const user = await User.findOne({$or: [{email}, {username}]})
 
-    if(!user){
-      throw new ApiError(404, "User not found !")
+    const emailCheckUser = await User.findOne({email: email})
+    const usernameCheck = await User.findOne({username: username})
+
+    if(!emailCheckUser){
+      throw new ApiError(404, "email not found !")
     }
-    const validPassword = await user.comparePassword(password);
+    if(!usernameCheck){
+      throw new ApiError(404, "username not found !")
+    }
+    const validPassword = await emailCheckUser.comparePassword(password);
 
     if(!validPassword){
       throw new ApiError(400, "Invalid password !")
     }
     //grenerate tokens
-    const {accessToken, refreshToken} = await generateAccessTokenAndRefreshToken(user._id) // dont forget to add await
+    const {accessToken, refreshToken} = await generateAccessTokenAndRefreshToken(emailCheckUser._id) // dont forget to add await
 
     // retrieve and remove some fields
-    const logedinUser = await User.findById(user._id).select("-password -refreshToken -uniqueCode")
+    const logedinUser = await User.findById(emailCheckUser._id).select("-password -refreshToken -uniqueCode")
 
 
     //set tokens in cookie 
@@ -158,7 +165,7 @@ const loginUser = asyncHandler(async (req, res) => {
     .cookie("refreshToken", refreshToken, cookieOptions)
     .cookie("accessToken", accessToken, cookieOptions)
     .json(
-      new ApiResponse(200, {user: logedinUser, refreshToken},"user loged in successfully" )
+      new ApiResponse(200, {user: logedinUser,accessToken},"user loged in successfully" )
     )
 })
 

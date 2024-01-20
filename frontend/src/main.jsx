@@ -5,6 +5,7 @@ import "./index.css";
 import { Provider } from "react-redux";
 import store from "./store/Store.js";
 import { Toaster } from "react-hot-toast";
+import { AuthProvider } from "./context/AuthProvider.jsx";
 
 const customStyles = {
   success: {
@@ -21,27 +22,29 @@ const customStyles = {
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <Provider store={store}>
-      <Toaster
-        toastOptions={{
-          position: "top-center",
-          success: {
-            style: { ...customStyles.success },
-            iconTheme: {
-              primary: "#fff",
-              secondary: "green",
+    <AuthProvider>
+      <Provider store={store}>
+        <Toaster
+          toastOptions={{
+            position: "top-center",
+            success: {
+              style: { ...customStyles.success },
+              iconTheme: {
+                primary: "#fff",
+                secondary: "green",
+              },
             },
-          },
-          error: {
-            style: { ...customStyles.error },
-            iconTheme: {
-              primary: "#fff",
-              secondary: "red",
+            error: {
+              style: { ...customStyles.error },
+              iconTheme: {
+                primary: "#fff",
+                secondary: "red",
+              },
             },
-          },
-        }}
-      />
-      <App />
-    </Provider>
+          }}
+        />
+        <App />
+      </Provider>
+    </AuthProvider>
   </React.StrictMode>
 );
