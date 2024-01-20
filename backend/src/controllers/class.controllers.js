@@ -139,11 +139,18 @@ const updateClass = asyncHandler(async (req, res) => {
     throw new ApiError(400, "teacher with email/fullName not found");
   }
 
-  const classExist = await Class.findOne({
-    className: className?.toUpperCase(),
+  const classExist = await Class.findById({
+    _id: req.params?.id,
   });
+  const allClass = await Class.find({});
+  if(!classExist){
+    throw new ApiError(400, `${className} not found !`);
+  }
+  if(allClass.includes(className)){
+    throw new ApiError(400, "className already exist !");
+  }
 
-  if (!classExist?.classTeacherID) {
+  if (classExist?.classTeacherID === null) {
     const teacherExist = await Class.findOne({
       classTeacherID: findteacher?._id,
     });
@@ -180,7 +187,7 @@ const updateClass = asyncHandler(async (req, res) => {
     throw new ApiError(400, "subjects are required !");
   }
 
-  if (!classExist || classExist) {
+  if (classExist) {
     const classData = await Class.findByIdAndUpdate(
       req.params?.id,
       {
@@ -194,7 +201,7 @@ const updateClass = asyncHandler(async (req, res) => {
     );
 
     if (!classData) {
-      return new ApiError("Class not updated", 400);
+      throw new ApiError(400,"Class not updated");
     }
 
     // Remove class ID from all subjects
