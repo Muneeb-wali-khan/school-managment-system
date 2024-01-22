@@ -2,7 +2,7 @@ import { Router } from "express";
 import { ApiError } from "../utils/ApiError.js";
 import multer from "multer";
 import { upload } from "../middlewares/multer.js";
-import { jwtVerify } from "../middlewares/auth.middleware.js";
+import { isAdmin, jwtVerify } from "../middlewares/auth.middleware.js";
 import { addTeacher, deleteTeacher, getAllTeachers, getTeacherById, updateTeacher } from "../controllers/teacher.controller.js";
 const router = Router();
 

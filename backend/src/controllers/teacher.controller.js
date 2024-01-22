@@ -18,7 +18,11 @@ const getAllTeachers = asyncHandler(async (req, res, next) => {
 
 // teacher by id
 const getTeacherById = asyncHandler(async (req, res, next) => {
-  const teacher = await Teacher.findById(req.params?.id);
+  const teacher = await Teacher.findById(req.params?.id)
+  .populate({
+    path: "classesTaught",
+    select: "className"
+  });
 
   if (!teacher) {
     throw new ApiError(404, "Teacher not found !");
