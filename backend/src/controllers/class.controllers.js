@@ -227,39 +227,49 @@ const updateClass = asyncHandler(async (req, res) => {
 
 // delete class --admin
 const deleteClass = asyncHandler(async (req, res) => {
-  const classer = await Class.findByIdAndDelete(req.params?.id);
+  // const classer = await Class.findByIdAndDelete(req.params?.id);
 
-  if (!classer) {
-    throw new ApiError(404, "class not found !");
-  }
+  // if (!classer) {
+  //   throw new ApiError(404, "class not found !");
+  // }
+  // // remove that class id from classes of subjects
+  // const removeClassIdFromSubjects = await Subject.find({
+  //   classes: req.params?.id,
+  // });
 
-  const removeClassIdFromSubjects = await Subject.find({
-    classes: req.params?.id,
-  });
+  // for(const cls of removeClassIdFromSubjects){
+  //     cls?.classes?.pull(req.params?.id)
+  //     await cls.save({ validateBeforeSave: false });
+  // }
+  
 
-  const removeStudentsClassNameId = await Student.find({
-    className: req.params?.id,
-  });
 
-  if(removeStudentsClassNameId?.length !== 0){
-    for (const st of removeStudentsClassNameId) {
-      st.className = null;
-      await st.save({ validateBeforeSave: false });
-    }
-  }
+  // remove deleted className from students className connects with it  
+  const cls = await Class.findById(req.params?.id)
+  const studentsId = await Student.find({_id: {$in: cls?.students}});
+  console.log(studentsId);
+  // const newst = ""
+  // if(studentsId?.length !== 0){
+  //   for (const st of studentsId) {
+  //     st.className = newst;
+  //     await st.save({ validateBeforeSave: false });
+  //     console.log("save st");
+  //   }
+  // }
 
-  const mapoverFind = removeClassIdFromSubjects?.map((sub) => {
-    return (sub.classes = sub?.classes?.filter(
-      (id) => id.toString() !== req.params?.id.toString()
-    ));
-  });
 
-  // take for off loop to save for all classes
-  for (let sub of removeClassIdFromSubjects) {
-    await sub.save({ validateBeforeSave: false });
-  }
+  // remove  deleted class classTeachers connects with it
+  // const teachersOfClass  = await Teacher.find()
 
-  return res.status(200).json(new ApiResponse(200, {}, "deleted successfully"));
+  // if(teachersOfClass?.length !== 0){
+  //   for(const cls of teachersOfClass){
+  //     cls?.classesTaught?.pull(req.params?.id)
+  //     await cls.save({ validateBeforeSave: false });
+  //     console.log("save teacher");
+  //   }
+  // }
+
+  // return res.status(200).json(new ApiResponse(200, {}, "deleted successfully"));
 });
 
 export { addClass, allClasses, updateClass, deleteClass, singleClass };

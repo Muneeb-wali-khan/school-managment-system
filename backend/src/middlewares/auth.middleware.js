@@ -48,6 +48,15 @@ export const BothTeacherAdmin = asyncHandler(async (req, res, next) => {
 })
 
 
+export const isTeacher = asyncHandler(async (req, res, next) => {
+    if(req.user?.role !== "teacher"){
+        throw new ApiError(403, "forbidden Access Denied !")
+    }
+    next()
+
+})
+
+
 
 export const isStudent = asyncHandler(async (req, res, next) => {
     if(req.user?.role !== "student"){

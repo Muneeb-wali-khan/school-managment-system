@@ -2,8 +2,8 @@ import { Router } from "express";
 import { ApiError } from "../utils/ApiError.js";
 import multer from "multer";
 import { upload } from "../middlewares/multer.js";
-import { isAdmin, jwtVerify } from "../middlewares/auth.middleware.js";
-import { addTeacher, deleteTeacher, getAllTeachers, getTeacherById, updateTeacher } from "../controllers/teacher.controller.js";
+import { isAdmin, isTeacher, jwtVerify } from "../middlewares/auth.middleware.js";
+import { addStudentsToClass, addTeacher, classAssignedToLogedInTeacher, deleteTeacher, getAllTeachers, getLogedInTeacherDetails, getTeacherById, updateTeacher } from "../controllers/teacher.controller.js";
 const router = Router();
 
 
@@ -13,6 +13,14 @@ router.route("/single-teacher/:id").get(jwtVerify, getTeacherById)
 router.route("/add-teacher").post(jwtVerify, upload.single("avatar"), addTeacher)
 router.route("/update-teacher/:id").put(jwtVerify, updateTeacher)
 router.route("/remove-teacher/:id").delete(jwtVerify, deleteTeacher)
+
+
+// -- teacher
+router.route("/teacher-profile").get(jwtVerify,isTeacher, getLogedInTeacherDetails)
+router.route("/teacher-class").get(jwtVerify,isTeacher, classAssignedToLogedInTeacher)
+router.route("/class-teacher-add-student").post(jwtVerify,isTeacher, addStudentsToClass)
+
+
 
 
 // Error handling middleware for MulterError o file exceeded

@@ -7,6 +7,7 @@ import { cloudinaryUploadImg } from "../utils/cloudinary.js";
 import { parseDate } from "../utils/parseDate.js";
 import { Subject } from "../models/subject.model.js";
 import { changeToUpperCase } from "../utils/toUpperCase.js";
+import { Student } from "../models/student.model.js";
 
 const getAllTeachers = asyncHandler(async (req, res, next) => {
   const teachers = await Teacher.find();
@@ -418,10 +419,172 @@ const deleteTeacher = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, "Teacher deleted successfully"));
 });
 
+
+
+
+// ================================Teacher Routes=====================================================================
+
+
+
+//  get loged in teacher details / by its fullName and email
+const getLogedInTeacherDetails = asyncHandler(async(req,res)=>{
+  const fullName = req?.user?.fullName
+  const email = req?.user?.email
+
+  const tr = await Teacher.findOne({
+    $and: [{ fullName }, { email }],
+  })
+  .populate({
+    path: "classesTaught",
+    select: "className",
+  })
+
+  if(!tr){
+    throw new ApiError(400,"Teacher not found !")
+  }
+
+
+  return res.status(200).json(new ApiResponse(200, tr, "loged in Teacher details"))
+})
+
+
+
+
+// find class assigned to teacher
+const classAssignedToLogedInTeacher = asyncHandler(async(req,res)=>{
+  const fullName = req?.user?.fullName
+  const email = req?.user?.email
+
+  const tr = await Teacher.findOne({
+    $and: [{ fullName }, {email}],
+  })
+
+  
+  if(!tr){
+    throw new ApiError(400,"Teacher not found !")
+  }
+  
+  const teacherOfClass = await Class.find({classTeacherID: tr?._id})
+  .populate({
+    path: "classTeacherID",
+    select: "fullName",
+  })
+  .populate({
+    path: "students",
+    select: "fullName",
+  })
+  .populate({
+    path: "teachersOfClass",
+    select: "fullName"
+  })
+  .populate({
+    path: "subjects",
+    select: "subjectName",
+  })
+
+  if(!teacherOfClass){
+    throw new ApiError(400,"Your'r not yet Class Teacher of any class !")
+  }
+
+  return res.status(200).json(new ApiResponse(200, teacherOfClass, "loged in Teacher details"))
+ }) 
+
+
+ // add students to class by class teacher only
+ const addStudentsToClass = asyncHandler(async(req,res)=>{
+
+  const fullNameOfLogedInTeacher = req?.user?.fullName
+  const emailOfLogedInTeacher = req?.user?.email
+
+  const tr = await Teacher.findOne({
+    $and: [{ fullName: fullNameOfLogedInTeacher }, { email: emailOfLogedInTeacher }],
+  })
+  
+  if(!tr){
+    throw new ApiError(400,"Access Denied No Teacher Record Found  !")
+  }
+
+  const {
+    firstName,
+    fullName,
+    admissionClass,
+    rollNo,
+    age,
+    className,
+    fatherName,
+    gender,
+    DOB,
+    joiningDate,
+    bloodGroup,
+    email,
+    address,
+    phone,
+  } = req.body;
+
+  if (
+    [
+      firstName,
+      fullName,
+      fatherName,
+      admissionClass,
+      rollNo,
+      age,
+      className,
+      email,
+      phone,
+      address,
+      gender,
+      DOB,
+      joiningDate,
+      bloodGroup,
+    ].some((feild) => feild === "")
+  ) {
+    throw new ApiError(400, "All fields are required !");
+  }
+  
+  const StudentExists = await Student.find({
+    $and: [{ email }, { fullName }],
+  });
+  
+  const teacherOfClass = await Class.find({classTeacherID: tr?._id})
+  const phoneExists = await Student.findOne({ phone });
+  const dOBExists = await Student.findOne({ DOB });
+
+  if(!teacherOfClass){
+    throw new ApiError(400,"Your'r not yet Class Teacher of any class !")
+  }
+  if(StudentExists){
+    throw new ApiError(400,"Student with email and fullName already exists in db !")
+  }
+  else if (phone?.length > 11) {
+    throw new ApiError(400, "Invalid phone number !");
+  } else if (phoneExists) {
+    throw new ApiError(400, "Phone number already exists !");
+  } else if (dOBExists) {
+    throw new ApiError(400, "Date of birth already exists !");
+  }
+
+
+
+  return res.status(200).json(new ApiResponse(200, teacherOfClass, "yeah loged in Teacher details"))
+
+})
+
+
+
+
+
 export {
+  //admin routes
   addTeacher,
   updateTeacher,
   getAllTeachers,
   deleteTeacher,
   getTeacherById,
+
+  // teacher routes
+  getLogedInTeacherDetails,
+  classAssignedToLogedInTeacher,
+  addStudentsToClass
+
 };

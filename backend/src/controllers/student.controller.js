@@ -67,8 +67,8 @@ const addStudent = asyncHandler(async (req, res, next) => {
     throw new ApiError(400, "All fields are required !");
   }
 
-  const StudentExists = await Student.findOne({
-    $or: [{ email }, { fullName }],
+  const StudentExists = await Student.find({
+    $and: [{ email }, { fullName }],
   });
   const phoneExists = await Student.findOne({ phone });
   const dOBExists = await Student.findOne({ DOB });
@@ -76,7 +76,7 @@ const addStudent = asyncHandler(async (req, res, next) => {
 
   if (StudentExists) {
     throw new ApiError(400, "Student with email or fullName already exists !");
-  } else if (phone?.length !== 11) {
+  } else if (phone?.length > 11) {
     throw new ApiError(400, "Invalid phone number !");
   } else if (phoneExists) {
     throw new ApiError(400, "Phone number already exists !");
@@ -289,19 +289,22 @@ const updateStudent = asyncHandler(async (req, res, next) => {
 
 // delete student
 const deleteStudent = asyncHandler(async (req, res) => {
-  // const student = await Student.findByIdAndDelete(req.params.id)
+  const student = await Student.findByIdAndDelete(req.params.id)
+
   const removeStFromClass = await Class.findOne({
     students: { $in: req.params?.id },
   });
   if (!removeStFromClass) {
     throw new ApiError(404, "Student not found!");
   }
-  console.log(removeStFromClass);
-  // if (!student) {
-  //   throw new ApiError(404, "Student not found!");
-  // }
+  if (!student) {
+    throw new ApiError(404, "Student not found!");
+  }
 
-  // return res.status(200).json(new ApiResponse(200, null, "Student deleted successfully"))
+  removeStFromClass?.students?.pull(req.params?.id)
+  await removeStFromClass.save({ validateBeforeSave: false });
+
+  return res.status(200).json(new ApiResponse(200, null, "Student deleted successfully"))
 });
 
 // add academic record

@@ -33,7 +33,6 @@ const cookieOptions = {
 }
 
 
-
 // register
 const registerUser = asyncHandler(async (req, res) => {
   // get data from frontend
@@ -234,7 +233,6 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 
 
 // get current user details
-
 const getCurrentUser = asyncHandler(async (req, res) => {
   // const user = await User.findById(req.user?._id).select("-password -refreshToken -uniqueCode")
 
@@ -307,7 +305,6 @@ const updateProfile = asyncHandler(async(req,res)=>{
 
 
 // update user avatar
-
 const updateAvatar = asyncHandler(async(req,res)=>{
   const avatarLocalPath = req.file ? req.file?.path : null;
 
@@ -341,10 +338,7 @@ const updateAvatar = asyncHandler(async(req,res)=>{
 
 
 
-
-
 // --admin get all users  --admin
-
 const getAllUsers = asyncHandler(async(req,res)=>{
   const users = await User.find({}).select("-password -refreshToken -uniqueCode")
 
