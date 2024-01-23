@@ -10,10 +10,10 @@ const Login = () => {
   const logerNamed = sessionStorage.getItem("logerName");
 
   const dispatch = useDispatch();
-  const { loadingAuth, msgAuth, errorAuth } = useSelector(
+  const { loadingAuth, msgAuth, errorAuth,userD } = useSelector(
     (state) => state?.user?.userAuth
   );
-
+console.log(userD);
   const { setAuth } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -38,6 +38,11 @@ const Login = () => {
   useEffect(() => {
     if (msgAuth) {
       toast.success(msgAuth);
+      const accessToken = userD?.accessToken;
+      const user = userD?.user;
+      const role = userD?.user?.role;
+      setAuth({user, role, accessToken });
+      navigate(from, { replace: true });
     }
     if (errorAuth) {
       toast.error(errorAuth);

@@ -1,4 +1,5 @@
 import mongoose, { Schema } from "mongoose";
+import { parseDate } from "../utils/parseDate.js";
 
 const teacherSchema = new Schema(
   {
@@ -94,5 +95,15 @@ const teacherSchema = new Schema(
   },
   { timestamps: true }
 );
+
+
+teacherSchema.pre("save", async function (next) {
+  if (!this.isModified("DOB", "joiningDate")) return next();
+
+  this.DOB = parseDate(this.DOB);
+  this.joiningDate = parseDate(this.joiningDate);
+
+  next();
+});
 
 export const Teacher = mongoose.model("Teacher", teacherSchema);

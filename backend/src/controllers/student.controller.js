@@ -67,12 +67,11 @@ const addStudent = asyncHandler(async (req, res, next) => {
     throw new ApiError(400, "All fields are required !");
   }
 
-  const StudentExists = await Student.find({
+  const StudentExists = await Student.findOne({
     $and: [{ email }, { fullName }],
   });
-  const phoneExists = await Student.findOne({ phone });
-  const dOBExists = await Student.findOne({ DOB });
-  // const rollNoExists = await Student.findOne({ rollNo });
+  const phoneExists = await Student.findOne({ phone: phone });
+  const dOBExists = await Student.findOne({ DOB: DOB });
 
   if (StudentExists) {
     throw new ApiError(400, "Student with email or fullName already exists !");
