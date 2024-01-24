@@ -5,7 +5,6 @@ import "./index.css";
 import { Provider } from "react-redux";
 import store from "./store/Store.js";
 import { Toaster } from "react-hot-toast";
-import { AuthProvider } from "./context/AuthProvider.jsx";
 
 const customStyles = {
   success: {
@@ -22,7 +21,6 @@ const customStyles = {
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <AuthProvider>
       <Provider store={store}>
         <Toaster
           toastOptions={{
@@ -45,6 +43,5 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         />
         <App />
       </Provider>
-    </AuthProvider>
   </React.StrictMode>
 );

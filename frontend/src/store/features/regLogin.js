@@ -27,7 +27,7 @@ export const login = createAsyncThunk("auth/login",async(data,{rejectWithValue})
     try {
       const config = { headers: { "Content-Type": "application/json" }};
       const response = await axios.post("/api/v1/users/login", data, config);
-       console.log(response?.data?.data?.user);
+      //  console.log(response?.data?.data?.user);
        
         return response.data
     } catch (error) {
@@ -35,13 +35,14 @@ export const login = createAsyncThunk("auth/login",async(data,{rejectWithValue})
     }
 })
 
+
+
 const userAuthorizationSlice = createSlice({
   name: "auth",
   initialState: {
     loadingAuth: false,
     errorAuth: null,
     msgAuth: null,
-    userD: {},
   },
 
   reducers: {
@@ -76,7 +77,6 @@ const userAuthorizationSlice = createSlice({
     builder.addCase(login.fulfilled, (state, action) => {
       state.loadingAuth = false;
       state.msgAuth = action.payload?.message;
-      state.userD = action.payload?.data;
     });
     builder.addCase(login.rejected, (state, action) => {
       state.loadingAuth = false;

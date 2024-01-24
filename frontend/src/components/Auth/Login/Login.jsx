@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import NavHome from "../../Home/NavHome/NavHome";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { toast } from "react-hot-toast";
-import useAuth from "../../../hooks/useAuth";
 import { useDispatch, useSelector } from "react-redux";
 import { clearErrorsAuth, login } from "../../../store/features/regLogin";
 
@@ -13,12 +12,27 @@ const Login = () => {
   const { loadingAuth, msgAuth, errorAuth,userD } = useSelector(
     (state) => state?.user?.userAuth
   );
-console.log(userD);
-  const { setAuth } = useAuth();
+
   const navigate = useNavigate();
   const location = useLocation();
+  
+  // switch (userD?.user?.role) {
+  //   case "student":
+  //     navigate("/student-portal/student-dash");
+  //     break;
+      
+  //   case "teacher":
+  //     navigate("/teacher-portal/teacher-dash");
+  //     break;
 
-  const from = location.state?.from?.pathname || "/";
+  //   case "admin":
+  //     navigate("/admin-portal/admin-dash");
+  //     break;
+  
+  //   default:
+  //     navigate("/unauthorized");
+  // }
+
 
   const [user, setUser] = useState({
     username: "",
@@ -38,11 +52,6 @@ console.log(userD);
   useEffect(() => {
     if (msgAuth) {
       toast.success(msgAuth);
-      const accessToken = userD?.accessToken;
-      const user = userD?.user;
-      const role = userD?.user?.role;
-      setAuth({user, role, accessToken });
-      navigate(from, { replace: true });
     }
     if (errorAuth) {
       toast.error(errorAuth);
