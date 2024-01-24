@@ -47,17 +47,14 @@ const studentSchema = new Schema(
     },
     monthlyFee: {
       type: Number,
-      required: true,
       default: 0,
     },
     securityFee: {
       type: Number,
-      required: true,
       default: 0,
     },
     labFee: {
       type: Number,
-      required: true,
       default: 0,
     },
     joiningDate: {

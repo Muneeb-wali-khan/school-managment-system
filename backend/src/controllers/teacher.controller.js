@@ -3,9 +3,13 @@ import { Class } from "../models/class.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import { cloudinaryUploadImg } from "../utils/cloudinary.js";
+import {
+  RemovecloudinaryExistingImg,
+  cloudinaryUploadImg,
+} from "../utils/cloudinary.js";
 import { Subject } from "../models/subject.model.js";
 import { changeToUpperCase } from "../utils/toUpperCase.js";
+import { extractId } from "../utils/extractCloudinaryId.js";
 import { Student } from "../models/student.model.js";
 
 const getAllTeachers = asyncHandler(async (req, res, next) => {
@@ -18,10 +22,9 @@ const getAllTeachers = asyncHandler(async (req, res, next) => {
 
 // teacher by id
 const getTeacherById = asyncHandler(async (req, res, next) => {
-  const teacher = await Teacher.findById(req.params?.id)
-  .populate({
+  const teacher = await Teacher.findById(req.params?.id).populate({
     path: "classesTaught",
-    select: "className"
+    select: "className",
   });
 
   if (!teacher) {
@@ -135,7 +138,6 @@ const addTeacher = asyncHandler(async (req, res, next) => {
   if (!avatar.url) {
     throw new ApiError(400, "Teacher image is required !");
   }
-
 
   const teacher = await Teacher.create({
     firstName,
@@ -272,7 +274,6 @@ const updateTeacher = asyncHandler(async (req, res, next) => {
   }
 
   // ===============================================================end old classesTaught=====================================================
-
 
   if (subject && changeToUpperCase(subject) === existingTeacher?.subject) {
     // if subject name not changed
@@ -412,110 +413,124 @@ const deleteTeacher = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, "Teacher deleted successfully"));
 });
 
-
-
-
 // ================================ Teacher Routes =====================================================================
 
 
-
 // get loged in teacher details / by its fullName and email
-const getLogedInTeacherDetails = asyncHandler(async(req,res)=>{
-  const fullName = req?.user?.fullName
-  const email = req?.user?.email
+const getLogedInTeacherDetails = asyncHandler(async (req, res) => {
+  const fullName = req?.user?.fullName;
+  const email = req?.user?.email;
 
-  const tr = await Teacher.findOne({email: email, fullName: fullName})
-  .populate({
+  const tr = await Teacher.findOne({
+    email: email,
+    fullName: fullName,
+  }).populate({
     path: "classesTaught",
     select: "className",
-  })
+  });
 
-  if(!tr){
-    throw new ApiError(400,"Teacher not found !")
+  if (!tr) {
+    throw new ApiError(400, "Teacher not found !");
   }
-  const teacherOfClass = await Class.find({classTeacherID: tr?._id}).select("-students -teachersOfClass -subjects")
-  .populate({
-    path: "classTeacherID",
-    select: "fullName",
-  })
+  const teacherOfClass = await Class.find({ classTeacherID: tr?._id })
+    .select("-students -teachersOfClass -subjects")
+    .populate({
+      path: "classTeacherID",
+      select: "fullName",
+    });
 
-  if(!teacherOfClass){
-    throw new ApiError(400,"Your'r not yet Class Teacher of any class !")
+  if (!teacherOfClass) {
+    throw new ApiError(400, "Your'r not yet Class Teacher of any class !");
   }
 
-  return res.status(200).json(new ApiResponse(200, {teacher: tr, teacherOfClass: teacherOfClass[0]?.className}, "loged in Teacher details"))
-})
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        { teacher: tr, teacherOfClass: teacherOfClass[0]?.className },
+        "loged in Teacher details"
+      )
+    );
+});
 
+// all students of specific classTeacher
+const allStudentsOfSpecificClass = asyncHandler(async (req, res) => {
+  const fullName = req?.user?.fullName;
+  const email = req?.user?.email;
 
- // all students of specific classTeacher
- const allStudentsOfSpecificClass = asyncHandler(async(req,res)=>{
-  const fullName = req?.user?.fullName
-  const email = req?.user?.email
+  const tr = await Teacher.findOne({ email: email, fullName: fullName });
 
-  const tr = await Teacher.findOne({email: email, fullName: fullName})
-
-  
-  if(!tr){
-    throw new ApiError(400,"Teacher not found !")
+  if (!tr) {
+    throw new ApiError(400, "Teacher not found !");
   }
-  
-  const teacherOfClass = await Class.findOne({classTeacherID: tr?._id})
-  .populate({
+
+  const teacherOfClass = await Class.findOne({
+    classTeacherID: tr?._id,
+  }).populate({
     path: "students",
     select: "fullName",
-  })
+  });
 
-  if(!teacherOfClass){
-    throw new ApiError(400,"Your'r not yet Class Teacher of any class !")
+  if (!teacherOfClass) {
+    throw new ApiError(400, "Your'r not yet Class Teacher of any class !");
   }
 
-  const allStudents = teacherOfClass?.students
+  const allStudents = teacherOfClass?.students;
 
-  return res.status(200).json(new ApiResponse(200, allStudents, "loged in Teacher details"))
- })
+  return res
+    .status(200)
+    .json(new ApiResponse(200, allStudents, "loged in Teacher details"));
+});
 
 
- // get single student detail
- const getStudentDetail = asyncHandler(async(req,res)=>{
-  const fullName = req?.user?.fullName
-  const email = req?.user?.email
+// get single student detail
+const getStudentDetail = asyncHandler(async (req, res) => {
+  const fullName = req?.user?.fullName;
+  const email = req?.user?.email;
 
-  const tr = await Teacher.findOne({email: email, fullName: fullName})
+  const tr = await Teacher.findOne({ email: email, fullName: fullName });
 
-  
-  if(!tr){
-    throw new ApiError(400,"Teacher not found !")
-  }
-  
-  const teacherOfClass = await Class.findOne({classTeacherID: tr?._id})
-  .populate("students")
-
-  if(!teacherOfClass){
-    throw new ApiError(400,"Your'r not yet Class Teacher of any class !")
+  if (!tr) {
+    throw new ApiError(400, "Teacher not found !");
   }
 
-  const allStudents = teacherOfClass?.students
+  const teacherOfClass = await Class.findOne({
+    classTeacherID: tr?._id,
+  }).populate("students");
 
-  const student = allStudents?.find((student) => student?._id?.toString() === req.params?.id)
-
-  if(!student){
-    throw new ApiError(400,`Student not found !`)
+  if (!teacherOfClass) {
+    throw new ApiError(400, "Your'r not yet Class Teacher of any class !");
   }
 
-  return res.status(200).json(new ApiResponse(200, student, "loged in Teacher details"))
-})
+  const allStudents = teacherOfClass?.students;
+
+  const student = allStudents?.find(
+    (student) => student?._id?.toString() === req.params?.id
+  );
+
+  if (!student) {
+    throw new ApiError(400, `Student not found in class !`);
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, student, "loged in Teacher details"));
+});
 
 
- // add students to class by class teacher only
- const addStudentsToClass = asyncHandler(async(req,res)=>{
+// add students to class by class teacher only
+const addStudentsToClass = asyncHandler(async (req, res) => {
+  const fullNameOfLogedInTeacher = req?.user?.fullName;
+  const emailOfLogedInTeacher = req?.user?.email;
 
-  const fullNameOfLogedInTeacher = req?.user?.fullName
-  const emailOfLogedInTeacher = req?.user?.email
+  const tr = await Teacher.findOne({
+    fullName: fullNameOfLogedInTeacher,
+    email: emailOfLogedInTeacher,
+  });
 
-  const tr = await Teacher.findOne({fullName: fullNameOfLogedInTeacher , email: emailOfLogedInTeacher })
-  
-  if(!tr){
-    throw new ApiError(400,"Access Denied No Teacher Record Found  !")
+  if (!tr) {
+    throw new ApiError(400, "Access Denied No Teacher Record Found  !");
   }
 
   const {
@@ -524,8 +539,10 @@ const getLogedInTeacherDetails = asyncHandler(async(req,res)=>{
     admissionClass,
     rollNo,
     age,
-    className,
     fatherName,
+    monthlyFee,
+    securityFee,
+    labFee,
     gender,
     DOB,
     joiningDate,
@@ -554,22 +571,27 @@ const getLogedInTeacherDetails = asyncHandler(async(req,res)=>{
   ) {
     throw new ApiError(400, "All fields are required !");
   }
-  
-  const StudentExists = await Student.findOne({ email: email, fullName: fullName });
 
-  const teacherOfClass = await Class.findOne({classTeacherID: tr?._id})
-  const studentsInClass = teacherOfClass
+  const StudentExists = await Student.findOne({
+    email: email,
+    fullName: fullName,
+  });
 
-  const phoneExists = await Student.findOne({phone: phone });
+  const teacherOfClass = await Class.findOne({ classTeacherID: tr?._id });
+  const studentsInClass = teacherOfClass;
+
+  const phoneExists = await Student.findOne({ phone: phone });
   const dOBExists = await Student.findOne({ DOB: DOB });
 
-  if(!teacherOfClass){
-    throw new ApiError(400,"Your'r not yet Class Teacher of any class !")
+  if (!teacherOfClass) {
+    throw new ApiError(400, "Your'r not yet Class Teacher of any class !");
   }
-  if(StudentExists){
-    throw new ApiError(400,"Student with email and fullName already exists in db !")
-  }
-  else if (phone?.length > 11) {
+  if (StudentExists) {
+    throw new ApiError(
+      400,
+      "Student with email and fullName already exists in db !"
+    );
+  } else if (phone?.length > 11) {
     throw new ApiError(400, "Invalid phone number !");
   } else if (phoneExists) {
     throw new ApiError(400, "Phone number already exists !");
@@ -577,8 +599,7 @@ const getLogedInTeacherDetails = asyncHandler(async(req,res)=>{
     throw new ApiError(400, "Date of birth already exists !");
   }
 
-
-  // if class  have students
+  // if class  same roll no
   if (studentsInClass?.students?.length !== 0) {
     const classStudents = studentsInClass?.students;
     const studentsfindId = await Student.find({ _id: classStudents });
@@ -616,6 +637,9 @@ const getLogedInTeacherDetails = asyncHandler(async(req,res)=>{
     fatherName,
     className: studentsInClass?._id,
     email,
+    monthlyFee,
+    securityFee,
+    labFee,
     phone,
     address,
     gender: gender[0].toUpperCase() + gender.substr(1, gender.length),
@@ -630,66 +654,323 @@ const getLogedInTeacherDetails = asyncHandler(async(req,res)=>{
   await studentsInClass.save({ validateBeforeSave: false });
   console.log("done saved");
 
-  return res.status(200).json(new ApiResponse(200, student, `student added to ${studentsInClass?.className}`))
-
-})
-
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        student,
+        `student added to ${studentsInClass?.className}`
+      )
+    );
+});
 
 
 // update class students by class teacher only
-const updateStudentsOfClass = asyncHandler(async(req,res)=>{
-  const fullNameOfLogedInTeacher = req?.user?.fullName
-  const emailOfLogedInTeacher = req?.user?.email
+const updateStudentsOfClass = asyncHandler(async (req, res) => {
+  const fullNameOfLogedInTeacher = req?.user?.fullName;
+  const emailOfLogedInTeacher = req?.user?.email;
 
-  const tr = await Teacher.findOne({fullName: fullNameOfLogedInTeacher, email: emailOfLogedInTeacher })
-  
-  if(!tr){
-    throw new ApiError(400,"Access Denied No Teacher Record Found  !")
+  const tr = await Teacher.findOne({
+    fullName: fullNameOfLogedInTeacher,
+    email: emailOfLogedInTeacher,
+  });
+
+  if (!tr) {
+    throw new ApiError(400, "Access Denied No Teacher Record Found  !");
   }
 
-  const teacherOfClass = await Class.findOne({classTeacherID: tr?._id})
-  .populate("students")
+  const {
+    firstName,
+    fullName,
+    admissionClass,
+    rollNo,
+    age,
+    fatherName,
+    gender,
+    DOB,
+    joiningDate,
+    bloodGroup,
+    monthlyFee,
+    securityFee,
+    labFee,
+    email,
+    address,
+    phone,
+  } = req.body;
 
-  if(!teacherOfClass){
-    throw new ApiError(400,"Your'r not yet Class Teacher of any class !")
+  const teacherOfClass = await Class.findOne({ classTeacherID: tr?._id })
+    .select("-classTeacherID -teachersOfClass -subjects")
+    .populate({
+      path: "students",
+      select: "fullName",
+    });
+
+  if (!teacherOfClass) {
+    throw new ApiError(400, "Your'r not yet Class Teacher of any class !");
   }
 
-  
+  const allStudents = teacherOfClass?.students;
 
-})
+  const student = allStudents?.find(
+    (student) => student?._id?.toString() === req.params?.id
+  );
 
-
-
- // all teachers of specific class
- const allTeachersOfSpecificClass = asyncHandler(async(req,res)=>{
-  const fullName = req?.user?.fullName
-  const email = req?.user?.email
-
-  const tr = await Teacher.findOne({email: email, fullName: fullName})
-
-  
-  if(!tr){
-    throw new ApiError(400,"Teacher not found !")
+  if (!student) {
+    throw new ApiError(400, `Student not found in class !`);
   }
-  
-  const teacherOfClass = await Class.findOne({classTeacherID: tr?._id})
-  .populate({
+
+  // if class  have students
+  if (teacherOfClass?.students?.length !== 0) {
+    const classStudents = teacherOfClass?.students;
+    const studentsfindId = await Student.find({ _id: classStudents });
+    const mapoverStudents = studentsfindId?.map((student) => student?.rollNo);
+    const isrollNoAlreadyAsignedInThatClass = mapoverStudents?.find(
+      (number) => number == rollNo
+    );
+
+    if (isrollNoAlreadyAsignedInThatClass) {
+      throw new ApiError(
+        400,
+        `rollNo ${rollNo} already assigned to another student !`
+      );
+    }
+  }
+  const updatedStudent = await Student.findOneAndUpdate(
+    { _id: req.params.id },
+    {
+      $set: {
+        fullName: fullName,
+        firstName: firstName,
+        rollNo: rollNo,
+        age: age,
+        admissionClass: admissionClass,
+        fatherName: fatherName,
+        email: email,
+        monthlyFee: monthlyFee,
+        securityFee: securityFee,
+        labFee: labFee,
+        phone: phone,
+        address: address,
+        DOB: DOB,
+        gender: gender && gender[0].toUpperCase() + gender.substr(1),
+        bloodGroup: bloodGroup && bloodGroup.toUpperCase(),
+        joiningDate: joiningDate,
+        className: teacherOfClass?._id,
+      },
+    },
+    { new: true } // To return the updated document
+  );
+
+  if (!updatedStudent) {
+    throw new ApiError(400, `Student not updated !`);
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, updatedStudent, "loged in Teacher details"));
+});
+
+
+// delete student from class by class teacher only
+const deleteStudentFromClass = asyncHandler(async (req, res) => {
+  const fullNameOfLogedInTeacher = req?.user?.fullName;
+  const emailOfLogedInTeacher = req?.user?.email;
+
+  const tr = await Teacher.findOne({
+    fullName: fullNameOfLogedInTeacher,
+    email: emailOfLogedInTeacher,
+  });
+
+  if (!tr) {
+    throw new ApiError(400, "Access Denied No Teacher Record Found  !");
+  }
+
+  const teacherOfClass = await Class.findOne({ classTeacherID: tr?._id })
+    .select("-classTeacherID -teachersOfClass -subjects")
+    .populate({
+      path: "students",
+      select: "fullName",
+    });
+
+  if (!teacherOfClass) {
+    throw new ApiError(400, "Your'r not yet Class Teacher of any class !");
+  }
+
+  const allStudents = teacherOfClass?.students;
+
+  const student = allStudents?.find(
+    (student) => student?._id?.toString() === req.params?.id
+  );
+
+  if (!student) {
+    throw new ApiError(400, `Student not found in class !`);
+  }
+
+  const removeStudent = await Student.findOneAndDelete({ _id: student?._id });
+ // Remove the student ID from the array in the Class collection
+  const removeFromArrayofStudents = await Class.updateOne(
+    { _id: teacherOfClass._id }, // class id
+    { $pull: { students: student?._id } }
+  );
+
+  if (!removeStudent || !removeFromArrayofStudents) {
+    throw new ApiError(400, `Student not deleted !`);
+  }
+  const avataroldPublicId = extractId(removeStudent?.avatar);
+
+  if (avataroldPublicId) {
+    const remOldAvatar = await RemovecloudinaryExistingImg(avataroldPublicId);
+    console.log("done deleted");
+  }
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        {},
+        `Student deleted from ${teacherOfClass?.className}  !`
+      )
+    );
+});
+
+
+// update student avatar
+const updateStudentAvatar = asyncHandler(async (req, res) => {
+  const fullNameOfLogedInTeacher = req?.user?.fullName;
+  const emailOfLogedInTeacher = req?.user?.email;
+
+  const tr = await Teacher.findOne({
+    fullName: fullNameOfLogedInTeacher,
+    email: emailOfLogedInTeacher,
+  });
+
+  if (!tr) {
+    throw new ApiError(400, "Access Denied No Teacher Record Found  !");
+  }
+
+  const { avatar } = req.body;
+
+  const teacherOfClass = await Class.findOne({ classTeacherID: tr?._id })
+    .select("-classTeacherID -teachersOfClass -subjects")
+    .populate({
+      path: "students",
+      select: "fullName",
+    });
+
+  if (!teacherOfClass) {
+    throw new ApiError(400, "Your'r not yet Class Teacher of any class !");
+  }
+
+  const allStudents = teacherOfClass?.students;
+
+  const std = allStudents?.find(
+    (student) => student?._id?.toString() === req.params?.id
+  );
+
+  if (!std) {
+    throw new ApiError(400, `Student not found in class !`);
+  }
+  const getAvatarUrl = await Student.findOne({ _id: std?._id });
+
+  const avataroldPublicId = extractId(getAvatarUrl?.avatar);
+
+  if (avataroldPublicId) {
+    const remOldAvatar = await RemovecloudinaryExistingImg(avataroldPublicId);
+    console.log("done deleted");
+  }
+
+  let avatarLocalPath = req.file ? req.file?.path : null;
+
+  if (!avatarLocalPath) {
+    throw new ApiError(400, "Student image is required !");
+  }
+
+  const avatarNew = await cloudinaryUploadImg(avatarLocalPath);
+
+  if (!avatarNew?.url) {
+    throw new ApiError(400, "Student image is required !");
+  }
+
+  const student = await Student.findOneAndUpdate(
+    { _id: req.params?.id },
+    {
+      $set: {
+        avatar: avatarNew?.url,
+      },
+    },
+    { new: true }
+  );
+
+  if (!student) {
+    throw new ApiError(400, `Student avatar not updated !`);
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, student, "student avatar updated successfully"));
+});
+
+
+// all teachers of specific class
+const allTeachersOfSpecificClass = asyncHandler(async (req, res) => {
+  const fullName = req?.user?.fullName;
+  const email = req?.user?.email;
+
+  const tr = await Teacher.findOne({ email: email, fullName: fullName });
+
+  if (!tr) {
+    throw new ApiError(400, "Teacher not found !");
+  }
+
+  const teacherOfClass = await Class.findOne({
+    classTeacherID: tr?._id,
+  }).populate({
     path: "teachersOfClass",
-    select: "fullName",
-  })
+    select: "fullName subject",
+  });
 
-  if(!teacherOfClass){
-    throw new ApiError(400,"Your'r not yet Class Teacher of any class !")
+  if (!teacherOfClass) {
+    throw new ApiError(400, "Your'r not yet Class Teacher of any class !");
   }
 
-  const allStudents = teacherOfClass?.teachersOfClass
+  const allTeachers = teacherOfClass?.teachersOfClass;
 
-  return res.status(200).json(new ApiResponse(200, allStudents, "loged in Teacher details"))
- })
+  return res
+    .status(200)
+    .json(new ApiResponse(200, allTeachers, "loged in Teacher details"));
+});
 
 
+// get all subjects of class
+const allSubjectsOfClass = asyncHandler(async (req, res) => {
+  const fullName = req?.user?.fullName;
+  const email = req?.user?.email;
 
+  const tr = await Teacher.findOne({ email: email, fullName: fullName });
 
+  if (!tr) {
+    throw new ApiError(400, "Teacher not found !");
+  }
+
+  const teacherOfClass = await Class.findOne({
+    classTeacherID: tr?._id,
+  }).populate({
+    path: "subjects",
+    select: "subjectName",
+  });
+
+  if (!teacherOfClass) {
+    throw new ApiError(400, "Your'r not yet Class Teacher of any class !");
+  }
+
+  const allSubjects = teacherOfClass?.subjects;
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, allSubjects, "loged in Teacher details"));
+});
 
 export {
   //admin routes
@@ -703,8 +984,12 @@ export {
   getLogedInTeacherDetails,
   allStudentsOfSpecificClass,
   getStudentDetail,
-  allTeachersOfSpecificClass,
   addStudentsToClass,
-  updateStudentsOfClass
+  updateStudentsOfClass,
+  updateStudentAvatar,
+  deleteStudentFromClass,
 
+  allTeachersOfSpecificClass,
+
+  allSubjectsOfClass,
 };

@@ -3,16 +3,16 @@ import { ApiError } from "../utils/ApiError.js";
 import multer from "multer";
 import { upload } from "../middlewares/multer.js";
 import { isAdmin, isTeacher, jwtVerify } from "../middlewares/auth.middleware.js";
-import { addStudentsToClass, addTeacher, allStudentsOfSpecificClass, allTeachersOfSpecificClass, deleteTeacher, getAllTeachers, getLogedInTeacherDetails, getStudentDetail, getTeacherById, updateStudentsOfClass, updateTeacher } from "../controllers/teacher.controller.js";
+import { addStudentsToClass, addTeacher, allStudentsOfSpecificClass, allSubjectsOfClass, allTeachersOfSpecificClass, deleteStudentFromClass, deleteTeacher, getAllTeachers, getLogedInTeacherDetails, getStudentDetail, getTeacherById, updateStudentAvatar, updateStudentsOfClass, updateTeacher } from "../controllers/teacher.controller.js";
 const router = Router();
 
 
 // --admin 
-router.route("/all-teachers").get(jwtVerify, getAllTeachers)
-router.route("/single-teacher/:id").get(jwtVerify, getTeacherById)
-router.route("/add-teacher").post(jwtVerify, upload.single("avatar"), addTeacher)
-router.route("/update-teacher/:id").put(jwtVerify, updateTeacher)
-router.route("/remove-teacher/:id").delete(jwtVerify, deleteTeacher)
+router.route("/all-teachers").get(jwtVerify,isAdmin, getAllTeachers)
+router.route("/single-teacher/:id").get(jwtVerify,isAdmin, getTeacherById)
+router.route("/add-teacher").post(jwtVerify,isAdmin, upload.single("avatar"), addTeacher)
+router.route("/update-teacher/:id").put(jwtVerify,isAdmin, updateTeacher)
+router.route("/remove-teacher/:id").delete(jwtVerify,isAdmin, deleteTeacher)
 
 
 // -- teacher
@@ -20,9 +20,14 @@ router.route("/teacher-profile").get(jwtVerify,isTeacher, getLogedInTeacherDetai
 router.route("/all-students-class").get(jwtVerify,isTeacher, allStudentsOfSpecificClass)
 router.route("/single-student-detail/:id").get(jwtVerify,isTeacher, getStudentDetail)
 router.route("/class-teacher-add-student").post(jwtVerify,isTeacher,upload.single("avatar"), addStudentsToClass)
-router.route("/class-teacher-update-student").put(jwtVerify,isTeacher,upload.single("avatar"), updateStudentsOfClass)
+router.route("/update-student-class/:id").put(jwtVerify,isTeacher, updateStudentsOfClass)
+router.route("/update-student-avatar/:id").put(jwtVerify,isTeacher,upload.single("avatar"), updateStudentAvatar)
+router.route("/remove-student-class/:id").delete(jwtVerify,isTeacher, deleteStudentFromClass)
 
 router.route("/all-teachers-class").get(jwtVerify,isTeacher, allTeachersOfSpecificClass)
+
+router.route("/all-subjects-class").get(jwtVerify,isTeacher, allSubjectsOfClass)
+
 
 
 
