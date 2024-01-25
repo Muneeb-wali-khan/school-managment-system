@@ -5,6 +5,8 @@ import {
 } from "@reduxjs/toolkit";
 import axios from "axios";
 
+
+
 export const register = createAsyncThunk(
   "auth/register",
   async (data, { rejectWithValue }) => {
@@ -27,8 +29,22 @@ export const login = createAsyncThunk("auth/login",async(data,{rejectWithValue})
     try {
       const config = { headers: { "Content-Type": "application/json" }};
       const response = await axios.post("/api/v1/users/login", data, config);
-      //  console.log(response?.data?.data?.user);
-       
+      localStorage.setItem("user", JSON.stringify(response?.data?.data?.user?.role))
+
+        return response.data
+    } catch (error) {
+        return rejectWithValue(error?.response?.data)
+    }
+})
+
+
+export const logout = createAsyncThunk("auth/logout",async(data,{rejectWithValue})=>{
+    try {
+      const config = { headers: { "Content-Type": "application/json" }};
+      const response = await axios.post("/api/v1/users/logout", config);
+      if(response.data?.message){
+        localStorage.removeItem("user")
+      }
         return response.data
     } catch (error) {
         return rejectWithValue(error?.response?.data)
@@ -37,12 +53,15 @@ export const login = createAsyncThunk("auth/login",async(data,{rejectWithValue})
 
 
 
+const userFromLocalStorage = JSON.parse(localStorage.getItem("user")) || {};
+
 const userAuthorizationSlice = createSlice({
   name: "auth",
   initialState: {
     loadingAuth: false,
     errorAuth: null,
     msgAuth: null,
+    userD: userFromLocalStorage
   },
 
   reducers: {
@@ -77,10 +96,27 @@ const userAuthorizationSlice = createSlice({
     builder.addCase(login.fulfilled, (state, action) => {
       state.loadingAuth = false;
       state.msgAuth = action.payload?.message;
+      state.userD = action.payload?.data?.user;
     });
     builder.addCase(login.rejected, (state, action) => {
       state.loadingAuth = false;
       state.errorAuth = action.payload?.message;
+    })
+
+    // logout user
+    builder.addCase(logout.pending, (state, action) => {
+      state.loadingAuth = true;
+      state.errorAuth = null;
+    })
+    builder.addCase(logout.fulfilled, (state, action) => {
+      state.loadingAuth = false;
+      state.msgAuth = action.payload?.message;
+      state.userD = null;
+    })
+    builder.addCase(logout.rejected, (state, action) => {
+      state.loadingAuth = false;
+      state.errorAuth = action.payload?.message;
+      state.msgAuth = null;
     })
   },
   

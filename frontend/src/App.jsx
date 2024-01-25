@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes} from "react-router-dom";
 import { lazy, Suspense } from "react";
 import "./index.css";
 import Loader from "./components/loader/Loader";
@@ -7,16 +7,18 @@ import UnAuthorized from "./components/unAuthorized/UnAuthorized";
 const Login = lazy(() => import("./components/Auth/Login/Login"));
 const Register = lazy(() => import("./components/Auth/Register/Register"));
 const Home = lazy(() => import("./components/Home/Home"));
+const ProtectedRoute = lazy(() => import("./components/Auth/ProtectedRoute"));
 const Student = lazy(() => import("./components/StudentPortal/Student"));
 const Teacher = lazy(() => import("./components/TeacherPortal/Teacher"));
 const NotFound = lazy(() => import("./components/Not-Found/NotFound"));
-const ChoicesLogin = lazy(() =>
-  import("./components/Home/ChoicesLogin/ChoicesLogin")
-);
-const ChoicesRegister = lazy(() =>
-  import("./components/Home/ChoicesRegister/ChoicesRegister")
-);
+const ChoicesLogin = lazy(() =>import("./components/Home/ChoicesLogin/ChoicesLogin"));
+const ChoicesRegister = lazy(() =>import("./components/Home/ChoicesRegister/ChoicesRegister"));
 const Admin = lazy(() => import("./components/Admin/Admin"));
+
+
+
+
+
 
 function App() {
   return (
@@ -32,11 +34,11 @@ function App() {
             <Route path="/registers" element={<ChoicesRegister />} />
             <Route path="/unauthorized" element={<UnAuthorized />} />
 
-            <Route path="/student-portal/*" element={<Student />} />
+            <Route path="/student-portal/*" element={<ProtectedRoute element={Student} requiredRole="student"/>} />
 
-            <Route path="/teacher-portal/*" element={<Teacher />} />
+            <Route path="/teacher-portal/*"  element={<ProtectedRoute element={Teacher} requiredRole="teacher"/>} />
 
-            <Route path="/admin-portal/*" element={<Admin />} />
+            <Route path="/admin-portal/*"  element={<ProtectedRoute element={Admin} requiredRole="admin"/>} />
 
           </Routes>
         </Suspense>

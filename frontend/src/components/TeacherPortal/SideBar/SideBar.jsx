@@ -1,10 +1,34 @@
-import React from "react";
+import React, { useEffect } from "react";
 import MobileSideBar from "./MobileSideBar/MobileSideBar"
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import toast from "react-hot-toast";
+import { clearErrorsAuth, logout } from "../../../store/features/regLogin";
 
 const SideBar = () => {
-  return (
+  const dispatch = useDispatch()
+  const navigate = useNavigate();
+  const { loadingAuth, msgAuth, errorAuth } = useSelector(
+    (state) => state?.user?.userAuth
+  );
+  const handleLogout = ()=>{
+    const confirmLogout = window.confirm("Are you sure you want to logout?")
+    if(!confirmLogout) return
+    dispatch(logout())
+  }
+  useEffect(() => {
+    if (msgAuth) {
+      toast.success(msgAuth);
+      navigate("/");
+    }
+    if (errorAuth) {
+      toast.error(errorAuth);
+    }
 
+    dispatch(clearErrorsAuth());
+  }, [msgAuth, errorAuth]);
+
+  return (
     <>
       {/* <!-- Left Sidebar --> */}
       <div className="w-[16%] h-[128vh] p-[10px] sidebar rounded-[32px] m-[20px] bg-[rebeccapurple] text-white">
@@ -114,7 +138,7 @@ const SideBar = () => {
           </div>
 
           {/* <!-- logout div --> */}
-          <div className="flex gap-4 items-center">
+          <div onClick={handleLogout} className="flex gap-4 items-center">
             <a>
               <i
                 className="fa fa-right-from-bracket mr-[3px]"
@@ -122,7 +146,7 @@ const SideBar = () => {
               ></i>
             </a>
             <a className="cursor-pointer font-semibold text-gray-200 hover:text-white transition-all">
-              Logout
+              {loadingAuth ? "Logging out..." : "Logout"}
             </a>
           </div>
         </div>
