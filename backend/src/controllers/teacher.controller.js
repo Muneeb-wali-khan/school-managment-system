@@ -11,6 +11,7 @@ import { Subject } from "../models/subject.model.js";
 import { changeToUpperCase } from "../utils/toUpperCase.js";
 import { extractId } from "../utils/extractCloudinaryId.js";
 import { Student } from "../models/student.model.js";
+import { Attendance } from "../models/attendance.mode.js";
 
 const getAllTeachers = asyncHandler(async (req, res, next) => {
   const teachers = await Teacher.find();
@@ -430,7 +431,7 @@ const getLogedInTeacherDetails = asyncHandler(async (req, res) => {
   });
 
   if (!tr) {
-    throw new ApiError(400, "Teacher not found !");
+    throw new ApiError(400, "You'r not yet added as a teacher  contact admin !");
   }
   const teacherOfClass = await Class.find({ classTeacherID: tr?._id })
     .select("-students -teachersOfClass -subjects")
@@ -974,10 +975,70 @@ const allSubjectsOfClass = asyncHandler(async (req, res) => {
 
   const mapoverCurriculum = findMyClassCurriculum?.map((cur) =>  cur?.curriculum?.filter((cls)=> cls?.curriculumClass === teacherOfClass?.className ))
 
+  const data = {
+    subjects: allSubjects,
+    curriculum: mapoverCurriculum,
+  }
+
   return res
     .status(200)
-    .json(new ApiResponse(200, {allSubjects,mapoverCurriculum}, "loged in Teacher details"));
+    .json(new ApiResponse(200, data, "loged in Teacher details"));
 });
+
+
+// to be continued.....
+// take attendance of class by class Teacher
+const takeAttendance = asyncHandler(async (req, res) => {
+  const {absenceReason,status,attendanceType} = req.body;
+
+  const fullName = req?.user?.fullName;
+  const email = req?.user?.email;
+  const tr = await Teacher.findOne({ email: email, fullName: fullName });
+
+  if (!tr) {
+    throw new ApiError(400, "Teacher not found !");
+  }
+  
+  const teacherOfClass = await Class.findOne({
+    classTeacherID: tr?._id,
+  })
+  .select("-classTeacherID -teachersOfClass -subjects")
+  .populate({
+    path: "students",
+    select: "fullName",
+  })
+
+
+  if (!teacherOfClass) {
+    throw new ApiError(400, "Your'r not yet Class Teacher of any class !");
+  }
+
+
+       const allStudents = teacherOfClass?.students;
+       const attendanceAlreadyTaken = await Attendance.find({date})
+       console.log(attendanceAlreadyTaken);
+       const isValidStudent = allStudents?.find((st)=> st?._id?.toString() === req.params?.id )
+
+       if(!isValidStudent){
+        throw new ApiError(400, `Student not found in class !`);
+       }
+      //   // Create attendance record for student in the class
+      // const attendanceRecord = Attendance.create({
+      //   studentID: req.params?.id,
+      //   classID: teacherOfClass?._id, // Assuming you have a classID in the Class model
+      //   date: new Date(),
+      //   absenceReason,
+      //   status: status && changeToUpperCase(status),
+      //   attendanceType: attendanceType && changeToUpperCase(attendanceType),
+      //   markedBy: tr?._id,
+      // });
+
+
+    res.status(200).json(new ApiResponse(200, {}, "Attendance taken successfully"));
+})
+
+
+
 
 export {
   //admin routes
@@ -995,6 +1056,7 @@ export {
   updateStudentsOfClass,
   updateStudentAvatar,
   deleteStudentFromClass,
+  takeAttendance,
 
   allTeachersOfSpecificClass,
 

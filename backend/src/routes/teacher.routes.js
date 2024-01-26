@@ -3,7 +3,7 @@ import { ApiError } from "../utils/ApiError.js";
 import multer from "multer";
 import { upload } from "../middlewares/multer.js";
 import { isAdmin, isTeacher, jwtVerify } from "../middlewares/auth.middleware.js";
-import { addStudentsToClass, addTeacher, allStudentsOfSpecificClass, allSubjectsOfClass, allTeachersOfSpecificClass, deleteStudentFromClass, deleteTeacher, getAllTeachers, getLogedInTeacherDetails, getStudentDetail, getTeacherById, updateStudentAvatar, updateStudentsOfClass, updateTeacher } from "../controllers/teacher.controller.js";
+import { addStudentsToClass, addTeacher, allStudentsOfSpecificClass, allSubjectsOfClass, allTeachersOfSpecificClass, deleteStudentFromClass, deleteTeacher, getAllTeachers, getLogedInTeacherDetails, getStudentDetail, getTeacherById, takeAttendance, updateStudentAvatar, updateStudentsOfClass, updateTeacher } from "../controllers/teacher.controller.js";
 const router = Router();
 
 
@@ -23,6 +23,7 @@ router.route("/class-teacher-add-student").post(jwtVerify,isTeacher,upload.singl
 router.route("/update-student-class/:id").put(jwtVerify,isTeacher, updateStudentsOfClass)
 router.route("/update-student-avatar/:id").put(jwtVerify,isTeacher,upload.single("avatar"), updateStudentAvatar)
 router.route("/remove-student-class/:id").delete(jwtVerify,isTeacher, deleteStudentFromClass)
+router.route("/take-attedance-class/:id").post(jwtVerify,isTeacher, takeAttendance)
 
 router.route("/all-teachers-class").get(jwtVerify,isTeacher, allTeachersOfSpecificClass)
 

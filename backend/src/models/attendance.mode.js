@@ -33,7 +33,7 @@ const attendanceSchema = new Schema(
     // Type of attendance (Present, Late Arrival, Early Departure, etc.)
     attendanceType: {
       type: String,
-      enum: ["on Time", "Late Arrival", "on Leaving"],
+      enum: ["On time", "Late arrival", "On leaving"],
     },
   
     // User ID of the teacher or admin who marked the attendance
