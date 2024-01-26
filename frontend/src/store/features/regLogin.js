@@ -29,7 +29,6 @@ export const login = createAsyncThunk("auth/login",async(data,{rejectWithValue})
     try {
       const config = { headers: { "Content-Type": "application/json" }};
       const response = await axios.post("/api/v1/users/login", data, config);
-      localStorage.setItem("user", JSON.stringify(response?.data?.data?.user?.role))
 
         return response.data
     } catch (error) {
@@ -42,9 +41,6 @@ export const logout = createAsyncThunk("auth/logout",async(data,{rejectWithValue
     try {
       const config = { headers: { "Content-Type": "application/json" }};
       const response = await axios.post("/api/v1/users/logout", config);
-      if(response.data?.message){
-        localStorage.removeItem("user")
-      }
         return response.data
     } catch (error) {
         return rejectWithValue(error?.response?.data)
@@ -53,7 +49,6 @@ export const logout = createAsyncThunk("auth/logout",async(data,{rejectWithValue
 
 
 
-const userFromLocalStorage = JSON.parse(localStorage.getItem("user")) || {};
 
 const userAuthorizationSlice = createSlice({
   name: "auth",
@@ -61,7 +56,7 @@ const userAuthorizationSlice = createSlice({
     loadingAuth: false,
     errorAuth: null,
     msgAuth: null,
-    userD: userFromLocalStorage
+    userD: null
   },
 
   reducers: {

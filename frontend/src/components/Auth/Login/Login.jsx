@@ -9,7 +9,7 @@ const Login = () => {
   const logerNamed = sessionStorage.getItem("logerName");
 
   const dispatch = useDispatch();
-  const { loadingAuth, msgAuth, errorAuth,userD } = useSelector(
+  const { loadingAuth, msgAuth, errorAuth, userD } = useSelector(
     (state) => state?.user?.userAuth
   );
   const navigate = useNavigate();
@@ -37,28 +37,25 @@ const Login = () => {
       toast.error(errorAuth);
     }
 
-    // if (userD) {
-    //   switch (userD?.role) {
-    //     case "student":
-    //       navigate("/student-portal/student-dash");
-    //       break;
+    switch (userD && userD?.role) {
+      case "student":
+        navigate("/student-portal/student-dash");
+        break;
 
-    //     case "teacher":
-    //       navigate("/teacher-portal/teacher-dash");
-    //       break;
+      case "teacher":
+        navigate("/teacher-portal/teacher-dash");
+        break;
 
-    //     case "admin":
-    //       navigate("/admin-portal/admin-dash");
-    //       break;
+      case "admin":
+        navigate("/admin-portal/admin-dash");
+        break;
 
-    //     default:
-    //       navigate("/login");
-    //   }
-    // }
+      default:
+        navigate("/login");
+    }
 
     dispatch(clearErrorsAuth());
   }, [msgAuth, errorAuth]);
-
 
   const handlePrev = () => {
     navigate("/logins");
@@ -124,7 +121,7 @@ const Login = () => {
           </div>
           <div>
             <button className="font-bold px-2 py-2 mt-3 rounded-lg w-full bg-gray-300 hover:bg-gray-400 hover:text-white transition-all text-gray-600">
-            {loadingAuth && loadingAuth ? "Submiting..." : "Submit"}
+              {loadingAuth && loadingAuth ? "Submiting..." : "Submit"}
             </button>
           </div>
         </form>

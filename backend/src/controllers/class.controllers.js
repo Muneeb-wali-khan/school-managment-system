@@ -9,7 +9,11 @@ import { changeToUpperCase } from "../utils/toUpperCase.js";
 
 //  all-classes
 const allClasses = asyncHandler(async (req, res) => {
-  const findclass = await Class.find({}).populate("students");
+  const findclass = await Class.find({}).select("-students -teachersOfClass -subjects")
+  .populate({
+    path: "classTeacherID",
+    select: "fullName email",
+  });
 
   if (!findclass) {
     throw new ApiError(400, "No Classes found !");
@@ -103,9 +107,23 @@ const addClass = asyncHandler(async (req, res) => {
 
 // single classes --admin
 const singleClass = asyncHandler(async (req, res) => {
-  const classer = await Class.findById(req.params?.id).populate(
-    "students classTeacherID"
-  );
+  const classer = await Class.findById(req.params?.id)
+  .populate({
+    path: "classTeacherID",
+    select: "fullName email",
+  })
+  .populate({
+    path: "students",
+    select: "fullName email",
+  })
+  .populate({
+    path: "teachersOfClass",
+    select: "fullName email",
+  })
+  .populate({
+    path: "subjects",
+    select: "subjectName",
+  })
 
   if (!classer) {
     throw new ApiError(404, "class not found !");
@@ -134,7 +152,7 @@ const updateClass = asyncHandler(async (req, res) => {
   if ([className, email, fullName].some((fields) => fields?.trim() === "")) {
     throw new ApiError(400, "all feilds are required !");
   }
-  const findteacher = await Teacher.findOne({ $or: [{ email }, { fullName }] });
+  const findteacher = await Teacher.findOne({email: email, fullName: fullName});
   if (!findteacher) {
     throw new ApiError(400, "teacher with email/fullName not found");
   }

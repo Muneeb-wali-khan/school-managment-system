@@ -1,13 +1,12 @@
 import React, { useEffect } from "react";
 import MobileSideBar from "./MobileSideBar/MobileSideBar"
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import toast from "react-hot-toast";
 import { clearErrorsAuth, logout } from "../../../store/features/regLogin";
 
 const SideBar = () => {
   const dispatch = useDispatch()
-  const navigate = useNavigate();
   const { loadingAuth, msgAuth, errorAuth } = useSelector(
     (state) => state?.user?.userAuth
   );
@@ -19,7 +18,6 @@ const SideBar = () => {
   useEffect(() => {
     if (msgAuth) {
       toast.success(msgAuth);
-      navigate("/");
     }
     if (errorAuth) {
       toast.error(errorAuth);

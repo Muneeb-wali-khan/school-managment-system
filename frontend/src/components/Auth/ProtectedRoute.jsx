@@ -1,18 +1,21 @@
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Navigate } from "react-router-dom";
+import { clearErrorsAuth } from "../../store/features/regLogin";
 
 // / Protected Route Component
 const ProtectedRoute = ({ element: Element, requiredRole, ...rest }) => {
+  const dispatch = useDispatch();
     const {userD } = useSelector(
         (state) => state?.user?.userAuth
       );
   
-    if (!userD) {
+    if (userD === null) {
       // Redirect to login if user is not authenticated
-      return <Navigate to="/login" />;
+      dispatch(clearErrorsAuth())
+      return <Navigate to="/" />;
     }
   
-    if (userD === requiredRole) {
+    if (userD?.role === requiredRole) {
       // Render the component if the user has the required role
       return <Element {...rest} />;
     } else {

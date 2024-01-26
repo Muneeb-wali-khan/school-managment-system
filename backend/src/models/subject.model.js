@@ -22,6 +22,11 @@ const subjectSchema = new Schema({
 
   curriculum: [
     {
+      curriculumClass: {
+        type: String,
+        required: true,
+        default: "no class",
+      },
       year: {
         type: Number,
         required: true,

@@ -101,19 +101,20 @@ const allCurriculumSubject = asyncHandler(async (req, res) => {
 
 // add curriculum of a subject
 const addCurriculumSubject = asyncHandler(async (req, res) => {
-  const { year, description, documentationLink, keyTopics } = req.body;
+  const {curriculumClass, year, description, documentationLink, keyTopics } = req.body;
 
   const subject = await Subject.findById(req.params?.id);
   if (!subject) {
     throw new ApiError(404, "subject not found !");
   }
   for (const curiculum of subject?.curriculum) {
-    if (year && year === curiculum?.year) {
-      throw new ApiError(404, `curriculum of year ${year} already exists !`);
+    if(curriculumClass && curriculumClass?.toUpperCase() === curiculum?.curriculumClass){
+      throw new ApiError(404, `curriculum of ${curriculumClass} already exists !`);
     }
   }
 
   const pushCurriculum = subject?.curriculum?.push({
+    curriculumClass: curriculumClass?.toUpperCase(),
     year,
     description,
     documentationLink,
@@ -124,7 +125,7 @@ const addCurriculumSubject = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(
-      new ApiResponse(200, subject, `${year} Curriculum added successfully`)
+      new ApiResponse(200, subject, `${curriculumClass} Curriculum added successfully`)
     );
 });
 
@@ -132,7 +133,7 @@ const addCurriculumSubject = asyncHandler(async (req, res) => {
 
 //update curriculum of a subject
 const updateCurriculumSubject = asyncHandler(async (req, res) => {
-  const { curriculumId, year, description, documentationLink, keyTopics } =
+  const { curriculumId,curriculumClass, year, description, documentationLink, keyTopics } =
     req.body;
 
   const findSubject = await Subject.findById(req.params?.id);
@@ -144,19 +145,13 @@ const updateCurriculumSubject = asyncHandler(async (req, res) => {
     (r) => r._id.toString() === curriculumId
   );
 
-  const existingRecord = findSubject?.curriculum.find(
-    (curriculum) =>
-      curriculum.year === year && curriculum._id.toString() !== curriculumId
-  );
-
-  if (existingRecord) {
-    throw new ApiError(404, `Curriculum of year ${year} already exists!`);
-  }
-
   if (!record) {
     throw new ApiError(404, "Curriculum record not found!");
   }
-  const updatedRecord = (record.year = year || record.year);
+
+  const updatedRecord = (
+  record.curriculumClass = curriculumClass?.toUpperCase() || record.curriculumClass,
+  record.year = year || record.year);
   record.description = description || record.description;
   record.documentationLink = documentationLink || record.documentationLink;
   record.keyTopics = keyTopics || record.keyTopics;
@@ -175,7 +170,7 @@ const updateCurriculumSubject = asyncHandler(async (req, res) => {
         new ApiResponse(
           201,
           updatedRecord,
-          `${year} Curriculum updated successfuly`
+          `${curriculumClass} Curriculum updated successfuly`
         )
       );
   }
@@ -212,7 +207,7 @@ const deleteCurriculumSubject = asyncHandler(async (req, res) => {
   if (save) {
     return res
       .status(201)
-      .json(new ApiResponse(201, deleteRecord, `${record?.year} Curriculum record deleted successfuly`));
+      .json(new ApiResponse(201, deleteRecord, `${record?.curriculumClass} Curriculum record deleted successfuly`));
   }
 });
 

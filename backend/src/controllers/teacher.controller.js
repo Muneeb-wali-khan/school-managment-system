@@ -469,7 +469,7 @@ const allStudentsOfSpecificClass = asyncHandler(async (req, res) => {
     classTeacherID: tr?._id,
   }).populate({
     path: "students",
-    select: "fullName",
+    select: "fullName email rollNo",
   });
 
   if (!teacherOfClass) {
@@ -959,7 +959,7 @@ const allSubjectsOfClass = asyncHandler(async (req, res) => {
   }).populate({
     path: "subjects",
     select: "subjectName",
-  });
+  })
 
   if (!teacherOfClass) {
     throw new ApiError(400, "Your'r not yet Class Teacher of any class !");
@@ -967,9 +967,16 @@ const allSubjectsOfClass = asyncHandler(async (req, res) => {
 
   const allSubjects = teacherOfClass?.subjects;
 
+  // Filter curriculum for the teacher's class
+  const findMyClassCurriculum = await Subject.find({
+    _id: allSubjects,
+  })
+
+  const mapoverCurriculum = findMyClassCurriculum?.map((cur) =>  cur?.curriculum?.filter((cls)=> cls?.curriculumClass === teacherOfClass?.className ))
+
   return res
     .status(200)
-    .json(new ApiResponse(200, allSubjects, "loged in Teacher details"));
+    .json(new ApiResponse(200, {allSubjects,mapoverCurriculum}, "loged in Teacher details"));
 });
 
 export {
