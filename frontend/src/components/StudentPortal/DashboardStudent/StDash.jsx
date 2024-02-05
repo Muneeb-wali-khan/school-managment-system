@@ -15,7 +15,7 @@ const StDash = () => {
       {/* <!-- ====================================================banner ends ==================================== --> */}
 
       {/* <!-- Main Div --> */}
-      <div class="mt-4 p-4 pl-0 pr-0">
+      <div class="mt-4 p-4 pl-0 pr-0 ">
         <div class="flex gap-8 maindiv">
           {/* <!-- Left Div --> */}
           <div class="w-2/3 flex flex-col gap-5 mb-0 leftdiv1">

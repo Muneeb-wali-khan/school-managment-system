@@ -433,7 +433,7 @@ const getLogedInTeacherDetails = asyncHandler(async (req, res) => {
   if (!tr) {
     throw new ApiError(400, "You'r not yet added as a teacher  contact admin !");
   }
-  const teacherOfClass = await Class.find({ classTeacherID: tr?._id })
+  const teacherOfClass = await Class.findOne({ classTeacherID: tr?._id })
     .select("-students -teachersOfClass -subjects")
     .populate({
       path: "classTeacherID",
@@ -444,12 +444,13 @@ const getLogedInTeacherDetails = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Your'r not yet Class Teacher of any class !");
   }
 
+  const classNAME = teacherOfClass? teacherOfClass.className : ""
   return res
     .status(200)
     .json(
       new ApiResponse(
         200,
-        { teacher: tr, teacherOfClass: teacherOfClass[0]?.className },
+        [tr,classNAME],
         "loged in Teacher details"
       )
     );
@@ -470,14 +471,14 @@ const allStudentsOfSpecificClass = asyncHandler(async (req, res) => {
     classTeacherID: tr?._id,
   }).populate({
     path: "students",
-    select: "fullName email rollNo",
+    select: "fullName email rollNo gender",
   });
 
   if (!teacherOfClass) {
     throw new ApiError(400, "Your'r not yet Class Teacher of any class !");
   }
 
-  const allStudents = teacherOfClass?.students;
+  const allStudents = [teacherOfClass?.students , teacherOfClass?.className];
 
   return res
     .status(200)
@@ -516,7 +517,7 @@ const getStudentDetail = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, student, "loged in Teacher details"));
+    .json(new ApiResponse(200, student, "student details"));
 });
 
 
@@ -612,7 +613,7 @@ const addStudentsToClass = asyncHandler(async (req, res) => {
     if (isrollNoAlreadyAsignedInThatClass) {
       throw new ApiError(
         400,
-        `rollNo already assigned to another student in ${teacherOfClass?.className}  !`
+        `Roll No already assigned to another student in ${teacherOfClass?.className}  !`
       );
     }
   }

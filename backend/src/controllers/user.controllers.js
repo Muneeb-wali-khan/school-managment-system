@@ -1,5 +1,6 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import {User} from "../models/user.model.js"
+import {Teacher} from "../models/teacher.model.js"
 import jwt from "jsonwebtoken"
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
@@ -137,15 +138,12 @@ const loginUser = asyncHandler(async (req, res) => {
     // find user email or username if any one is avaliable accepted
     // const user = await User.findOne({$or: [{email}, {username}]})
 
-    const emailCheckUser = await User.findOne({email: email})
-    const usernameCheck = await User.findOne({username: username})
+    const emailCheckUser = await User.findOne({email: email, username: username})
 
     if(!emailCheckUser){
-      throw new ApiError(404, "email not found !")
+      throw new ApiError(404, "invalid email or username !")
     }
-    if(!usernameCheck){
-      throw new ApiError(404, "username not found !")
-    }
+
     const validPassword = await emailCheckUser.comparePassword(password);
 
     if(!validPassword){
@@ -218,7 +216,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     }
 
     // now generate a tokens new accessToken and RefreshToken
-    const {accessToken, newRefreshToken} = await generateAccessTokenAndRefreshToken(findedUser._id)
+    const {accessToken, newRefreshToken} = await generateAccessTokenAndRefreshToken(findedUser?._id)
 
     return res.status(200)
     .cookie("refreshToken", newRefreshToken, cookieOptions)
@@ -236,13 +234,13 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 const getCurrentUser = asyncHandler(async (req, res) => {
   // const user = await User.findById(req.user?._id).select("-password -refreshToken -uniqueCode")
 
-  if(!req.user){
+  if(!req?.user){
     throw new ApiError(404, "User not found !")
   }
 
 
   return res.status(200).json(
-    new ApiResponse(200, req.user, "user details fetched successfully !")
+    new ApiResponse(200, req?.user, "user details fetched successfully !")
   )
 })
 
@@ -273,9 +271,6 @@ const changePassword = asyncHandler(async(req,res)=>{
 })
 
 
-
-
-
 // update user profile
 const updateProfile = asyncHandler(async(req,res)=>{
   const {fullName, email} = req.body;
@@ -290,8 +285,16 @@ const updateProfile = asyncHandler(async(req,res)=>{
     }
   }, {new: true}).select("-password -uniqueCode")
 
+  const findTeacherWithFullNameAndEmail = await Teacher.findOne({fullName: req?.user?.fullName, email: req?.user?.email})
 
-  if(!user){
+  const updateTeacher = await Teacher.findByIdAndUpdate(findTeacherWithFullNameAndEmail?._id, {
+    $set:{
+      fullName: fullName,
+      email: email
+    }
+  })
+
+  if(!user || !updateTeacher){
     throw new ApiError(404, "failed to update user profile !")
   }
 

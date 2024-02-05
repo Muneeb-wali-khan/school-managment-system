@@ -10,7 +10,7 @@ const NotFound  = lazy(()=> import("../Not-Found/NotFound")) ;
 
 const Student = () => {
   return (
-    <div className="flex">
+    <div className="flex ">
       <SideBar/>
       <Suspense fallback={<LoaderSt/>}>
       <Routes>

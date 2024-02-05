@@ -1,8 +1,10 @@
 import { BrowserRouter, Route, Routes} from "react-router-dom";
-import { lazy, Suspense } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { lazy, Suspense, useEffect } from "react";
 import "./index.css";
 import Loader from "./components/loader/Loader";
 import UnAuthorized from "./components/unAuthorized/UnAuthorized";
+import { clearErrorsAuth, logout } from "./store/features/regLogin";
 
 const Login = lazy(() => import("./components/Auth/Login/Login"));
 const Register = lazy(() => import("./components/Auth/Register/Register"));
@@ -17,10 +19,19 @@ const Admin = lazy(() => import("./components/Admin/Admin"));
 
 
 
-
-
-
 function App() {
+  const dispatch = useDispatch()
+  const {errorUser } = useSelector(
+    (state) => state?.profile?.userProfile
+  );
+    
+  useEffect(()=>{
+    if(errorUser === 401){
+      return dispatch(logout())
+    }
+  },[errorUser,dispatch])
+
+
   return (
     <div>
       <BrowserRouter>
@@ -39,7 +50,7 @@ function App() {
             <Route path="/teacher-portal/*"  element={<ProtectedRoute element={Teacher} requiredRole="teacher"/>} />
 
             <Route path="/admin-portal/*"  element={<ProtectedRoute element={Admin} requiredRole="admin"/>} />
-
+            
           </Routes>
         </Suspense>
       </BrowserRouter>

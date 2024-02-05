@@ -1,21 +1,32 @@
 import { configureStore } from "@reduxjs/toolkit";
 import authReducers from "./features/regLogin";
+import userProfileSlice from "./features/user.reducer";
 import {persistStore, persistReducer} from "redux-persist"
 import storage from "redux-persist/lib/storage"
+import teacherReducers from "./features/teacher.reducers";
+
 
 
 const persistConfig = {
-    key: "root",
-    version: 1,
-    storage,
-    whitelist: ["userAuth"]
-}
+  key: "root",
+  version: 1,
+  storage,
+  whitelist: ["userAuth"],
+};
+
 
 const persistedReducer = persistReducer(persistConfig, authReducers)
 
 export const store = configureStore({
     reducer: {
-        user: persistedReducer
+        user: persistedReducer,
+        profile: userProfileSlice,
+        teacher: teacherReducers,
+    },
+    middleware: (getDefaultMiddleware) =>{
+        return getDefaultMiddleware({
+            serializableCheck: false
+        })
     }
 })
 

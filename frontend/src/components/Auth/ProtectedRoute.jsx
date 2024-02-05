@@ -8,6 +8,7 @@ const ProtectedRoute = ({ element: Element, requiredRole, ...rest }) => {
     const {userD } = useSelector(
         (state) => state?.user?.userAuth
       );
+      
   
     if (userD === null) {
       // Redirect to login if user is not authenticated

@@ -4,7 +4,11 @@ import {
   combineReducers,
 } from "@reduxjs/toolkit";
 import axios from "axios";
-
+import {
+  logoutUrl,
+  registerUrl,
+  loginUrl,
+} from "../urls"
 
 
 export const register = createAsyncThunk(
@@ -12,7 +16,7 @@ export const register = createAsyncThunk(
   async (data, { rejectWithValue }) => {
     try {
       const config = { headers: { "Content-Type": "multipart/form-data" } };
-      const response = await axios.post("/api/v1/users/register", data, config);
+      const response = await axios.post(`${registerUrl}`, data, config);
 
       console.log(response.data);
         return response.data
@@ -28,7 +32,7 @@ export const register = createAsyncThunk(
 export const login = createAsyncThunk("auth/login",async(data,{rejectWithValue})=>{
     try {
       const config = { headers: { "Content-Type": "application/json" }};
-      const response = await axios.post("/api/v1/users/login", data, config);
+      const response = await axios.post(`${loginUrl}`, data, config);
 
         return response.data
     } catch (error) {
@@ -40,7 +44,7 @@ export const login = createAsyncThunk("auth/login",async(data,{rejectWithValue})
 export const logout = createAsyncThunk("auth/logout",async(data,{rejectWithValue})=>{
     try {
       const config = { headers: { "Content-Type": "application/json" }};
-      const response = await axios.post("/api/v1/users/logout", config);
+      const response = await axios.post(`${logoutUrl}`, config);
         return response.data
     } catch (error) {
         return rejectWithValue(error?.response?.data)
@@ -91,7 +95,8 @@ const userAuthorizationSlice = createSlice({
     builder.addCase(login.fulfilled, (state, action) => {
       state.loadingAuth = false;
       state.msgAuth = action.payload?.message;
-      state.userD = action.payload?.data?.user;
+      const { role, _id } = action.payload?.data?.user;
+      state.userD = {role, _id};
     });
     builder.addCase(login.rejected, (state, action) => {
       state.loadingAuth = false;
@@ -111,6 +116,7 @@ const userAuthorizationSlice = createSlice({
     builder.addCase(logout.rejected, (state, action) => {
       state.loadingAuth = false;
       state.errorAuth = action.payload?.message;
+      state.userD = null;
       state.msgAuth = null;
     })
   },
@@ -118,6 +124,11 @@ const userAuthorizationSlice = createSlice({
 });
 
 export const { clearErrorsAuth } = userAuthorizationSlice.actions;
+
+
+
+
+
 
 const authReducers = combineReducers({
   userAuth: userAuthorizationSlice.reducer,

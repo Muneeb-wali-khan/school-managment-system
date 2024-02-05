@@ -1,7 +1,30 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
+import { clearErrorsAuth, logout } from "../../../../store/features/regLogin";
+import { useDispatch, useSelector } from "react-redux";
+import toast from "react-hot-toast";
 
 const MobileSideBar = () => {
+  const dispatch = useDispatch()
+  const { loadingAuth, msgAuth, errorAuth } = useSelector(
+    (state) => state?.user?.userAuth
+  );
+  const handleLogout = ()=>{
+    const confirmLogout = window.confirm("Are you sure you want to logout?")
+    if(!confirmLogout) return
+    dispatch(logout())
+  }
+  useEffect(() => {
+    if (msgAuth) {
+      toast.success(msgAuth);
+    }
+    if (errorAuth) {
+      toast.error(errorAuth);
+    }
+
+    dispatch(clearErrorsAuth());
+  }, [msgAuth, errorAuth]);
+
   return (
     <>
       {/* <!-- small menu --> */}
@@ -45,10 +68,10 @@ const MobileSideBar = () => {
                       </i>
                     </a>
                     <Link
-                      to="/teacher-portal/teacher-payments"
+                      to="/teacher-portal/teacher-students"
                       className="cursor-pointer font-semibold text-gray-200 hover:text-white transition-all"
                     >
-                      Payment Info
+                      Class Students
                     </Link>
                   </div>
 
@@ -133,18 +156,19 @@ const MobileSideBar = () => {
                   </div>
                 </div>
 
-                {/* <!-- logout div --> */}
-                <div className="flex gap-4 items-center">
-                  <a>
-                    <i
-                      className="fa fa-right-from-bracket mr-[3px]"
-                       style={{color: "#ffffff"}}
-                    ></i>
-                  </a>
-                  <a className="cursor-pointer font-semibold text-gray-200 hover:text-white transition-all">
-                    Logout
-                  </a>
-                </div>
+              {/* <!-- logout div --> */}
+              <div onClick={handleLogout} className="flex gap-4 items-center">
+                <a>
+                  <i
+                    className="fa fa-right-from-bracket mr-[3px]"
+                    style={{color: "#ffffff"}}
+                  ></i>
+                </a>
+                <a className="cursor-pointer font-semibold text-gray-200 hover:text-white transition-all">
+                  {loadingAuth ? "Logging out..." : "Logout"}
+                </a>
+              </div>
+
               </div>
             </ul>
           </div>

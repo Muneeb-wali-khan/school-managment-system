@@ -6,7 +6,7 @@ const LoaderTr = () => {
   const location = useLocation()
   return (
     <div className={`flex items-center justify-center ${!location.pathname.endsWith("portal") ?  'w-[100%]' : 'w-[79%]'} h-[100vh] bg-slate-50`}>
-           <div class="loader"></div>
+           <div className="loader"></div>
     </div>
   )
 }
