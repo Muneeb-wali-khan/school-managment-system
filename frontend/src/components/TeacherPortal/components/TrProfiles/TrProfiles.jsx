@@ -6,6 +6,7 @@ import UpdateProfile from "./ProfileUpdate/UpdateProfile";
 import Loader from "../../../loader/Loader";
 import {
   clearErrorsUserProfile,
+  profileUser,
   updateAvatarUser,
 } from "../../../../store/features/user.reducer";
 import toast from "react-hot-toast";
@@ -15,7 +16,7 @@ const TrProfiles = () => {
   const [avatar, setAvatar] = useState("");
   const [avatarView, setAvatarView] = useState(null);
   const [isModalOpenProfile, setIsModalOpenProfile] = useState(false);
-
+  const [isModalOpenAvatar, setIsModalOpenAvatar] = useState(false);
   const dispatch = useDispatch();
   const { userProfile, loadingUser, errorUser4, msgUser4 } = useSelector(
     (state) => state?.profile?.userProfile
@@ -57,9 +58,8 @@ const TrProfiles = () => {
   useEffect(() => {
     if (msgUser4) {
       toast.success(msgUser4);
-      setTimeout(() => {
-        window.location.reload();
-      }, 1000);
+      dispatch(profileUser());
+      setAvatarView(null);
     }
     if (errorUser4) {
       toast.error(errorUser4);
@@ -67,8 +67,35 @@ const TrProfiles = () => {
     dispatch(clearErrorsUserProfile());
   }, [msgUser4, errorUser4]);
 
+  const handleModalShow = () => {
+    setIsModalOpenAvatar(true);
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpenAvatar(false);
+  };
+
   return (
     <>
+      {/* Modal */}
+      {isModalOpenAvatar && (
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex z-50 items-center justify-center transition-all">
+          <div className="bg-white p-4 rounded-md">
+            <img
+              className="object-contain h-[30rem] w-[30rem]"
+              src={userProfile?.avatar || ""}
+              alt="Full View"
+            />
+            <button
+              onClick={handleModalClose}
+              className="absolute top-5 right-5 text-white py-2 px-3 bg-[#00000052] rounded-full"
+            >
+              <i className="fa fa-times font-extrabold"></i>
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="p-[1.25rem] w-4/5 navdashMain">
         <TrNav />
         {loadingTeacher || loadingUser ? (
@@ -208,6 +235,7 @@ const TrProfiles = () => {
                   Profile Information :{" "}
                 </h2>
 
+                {/* user avatar */}
                 <div className="flex flex-col items-center justify-center mb-4 relative">
                   <div className="relative group">
                     {/* Hidden input for choosing a new image */}
@@ -219,6 +247,7 @@ const TrProfiles = () => {
                       onChange={handleImageChange}
                     />
                     <img
+                      onClick={handleModalShow}
                       src={avatarView ? avatarView : userProfile?.avatar}
                       className="w-[110px] h-[110px] rounded-full mb-2"
                       alt={userProfile?.avatar}
@@ -231,7 +260,7 @@ const TrProfiles = () => {
                       </label>
                     </div>
                   </div>
-                  {avatarView ? (
+                  {avatarView && avatarView !== null ? (
                     <div className="flex justify-center items-center mt-1 text-sm">
                       <button
                         onClick={handleAvatarSubmit}

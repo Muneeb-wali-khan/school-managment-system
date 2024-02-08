@@ -11,6 +11,10 @@ import {
   classAddStudentUrl,
   classStudentUpdateAvatarUrl,
   classUpdateStudentUrl,
+  classDeleteStudentUrl,
+  classTeachersOfClassUrl,
+  classSubjectsUrl,
+  classSubjectsCurriculumUrl,
 } from "../urls";
 
 // teacher details
@@ -91,15 +95,64 @@ export const addStudentToClass = createAsyncThunk("teacher/addStudent", async (d
 
 
 // add student to class
-export const UpdateStudentOfClass = createAsyncThunk("teacher/UpdateStudent", async (data, {rejectWithValue})=>{
+export const UpdateStudentOfClass = createAsyncThunk("teacher/UpdateStudent", async ({id: id, data: data}, {rejectWithValue})=>{
   try {
     const config = { headers: { "Content-Type": "application/json" } };
-    const response = await axios.put(`${classUpdateStudentUrl}`,data, config);
+    const response = await axios.put(`${classUpdateStudentUrl}${id}`,data, config);
     return response.data;
   } catch (error) {
     return rejectWithValue(error?.response?.data);
   }
 })
+
+
+// add student to class
+export const DeleteStudentOfClass = createAsyncThunk("teacher/DeleteStudent", async (id, {rejectWithValue})=>{
+  try {
+    const config = { headers: { "Content-Type": "application/json" } };
+    const response = await axios.delete(`${classDeleteStudentUrl}${id}`, config);
+    return response.data;
+  } catch (error) {
+    return rejectWithValue(error?.response?.data);
+  }
+})
+
+
+// all tecahers  of class
+export const allTeachersOfClass = createAsyncThunk("teacher/allTeachersOfClass", async (data, {rejectWithValue})=>{
+  try {
+    const config = { headers: { "Content-Type": "application/json" } };
+    const response = await axios.get(`${classTeachersOfClassUrl}`, config);
+    return response.data;
+  } catch (error) {
+    return rejectWithValue(error?.response?.data);
+  }
+})
+
+
+// all subjects  of class
+export const allSubjectsOfClass = createAsyncThunk("teacher/allSubjectsOfClass", async (data, {rejectWithValue})=>{
+  try {
+    const config = { headers: { "Content-Type": "application/json" } };
+    const response = await axios.get(`${classSubjectsUrl}`, config);
+    return response.data;
+  } catch (error) {
+    return rejectWithValue(error?.response?.data);
+  }
+})
+
+
+// ccurriculum of subject
+export const curriculumOfSubjectsClass = createAsyncThunk("teacher/curriculumOfSubjectClass", async (id, {rejectWithValue})=>{
+  try {
+    const config = { headers: { "Content-Type": "application/json" } };
+    const response = await axios.get(`${classSubjectsCurriculumUrl}`, config);
+    return response.data;
+  } catch (error) {
+    return rejectWithValue(error?.response?.data);
+  }
+})
+
 
 
 const teacherSlice = createSlice({
@@ -108,6 +161,9 @@ const teacherSlice = createSlice({
     loadingTeacher: false,
     errorTeacher: null,
     profileTeacher: null,
+    allTeachersCl: null,
+    allSubjectsCl: null,
+    subjectCurriculum: null,
     allStudentsClass: null,
     classStudentDetails: null,
     msgAvatar: null,
@@ -116,6 +172,8 @@ const teacherSlice = createSlice({
     errAddSt: null,
     msgUptSt: null,
     errUptSt: null,
+    msgDelSt: null,
+    errDelSt: null,
   },
 
   reducers: {
@@ -127,6 +185,8 @@ const teacherSlice = createSlice({
       state.errAvatar = null,
       state.msgUptSt = null,
       state.errUptSt = null
+      state.msgDelSt = null,
+      state.errDelSt = null
 
     },
   },
@@ -215,6 +275,63 @@ const teacherSlice = createSlice({
     builder.addCase(UpdateStudentOfClass.rejected, (state, action) => {
       state.loadingTeacher = false;
       state.errUptSt = action.payload?.message;
+    })
+
+    // Delete student
+    builder.addCase(DeleteStudentOfClass.pending, (state, action) => {
+      state.loadingTeacher = true;
+      state.errDelSt = null;
+    });
+    builder.addCase(DeleteStudentOfClass.fulfilled, (state, action) => {
+      state.loadingTeacher = false;
+      state.msgDelSt = action.payload?.message;
+    });
+    builder.addCase(DeleteStudentOfClass.rejected, (state, action) => {
+      state.loadingTeacher = false;
+      state.errDelSt = action.payload?.message;
+    })
+
+    // all teachers of class
+    builder.addCase(allTeachersOfClass.pending, (state, action) => {
+      state.loadingTeacher = true;
+      state.errorTeacher = null;
+    });
+    builder.addCase(allTeachersOfClass.fulfilled, (state, action) => {
+      state.loadingTeacher = false;
+      state.allTeachersCl = action.payload?.data;
+    });
+    builder.addCase(allTeachersOfClass.rejected, (state, action) => {
+      state.loadingTeacher = false;
+      state.errorTeacher = action.payload?.message;
+    })
+
+    // all Subjects of class
+    builder.addCase(allSubjectsOfClass.pending, (state, action) => {
+      state.loadingTeacher = true;
+      state.errorTeacher = null;
+    });
+    builder.addCase(allSubjectsOfClass.fulfilled, (state, action) => {
+      state.loadingTeacher = false;
+      state.allSubjectsCl = action.payload?.data;
+    });
+    builder.addCase(allSubjectsOfClass.rejected, (state, action) => {
+      state.loadingTeacher = false;
+      state.errorTeacher = action.payload?.message;
+    })
+
+
+    // curriculum of  Subject
+    builder.addCase(curriculumOfSubjectsClass.pending, (state, action) => {
+      state.loadingTeacher = true;
+      state.errorTeacher = null;
+    });
+    builder.addCase(curriculumOfSubjectsClass.fulfilled, (state, action) => {
+      state.loadingTeacher = false;
+      state.subjectCurriculum = action.payload?.data;
+    });
+    builder.addCase(curriculumOfSubjectsClass.rejected, (state, action) => {
+      state.loadingTeacher = false;
+      state.errorTeacher = action.payload?.message;
     })
 
 

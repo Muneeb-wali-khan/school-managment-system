@@ -12,7 +12,12 @@ const allStudentsClassUrl = "/api/v1/teacher/all-students-class"
 const classStudentDetailsUrl = "/api/v1/teacher/single-student-detail/"
 const classAddStudentUrl = "/api/v1/teacher/class-teacher-add-student"
 const classUpdateStudentUrl = "/api/v1/teacher/update-student-class/"
+const classDeleteStudentUrl = "/api/v1/teacher/remove-student-class/"
 const classStudentUpdateAvatarUrl = "/api/v1/teacher/update-student-avatar/"
+const classTeachersOfClassUrl = "/api/v1/teacher/all-teachers-class"
+const classSubjectsUrl = "/api/v1/teacher/all-subjects-class"
+const classSubjectsCurriculumUrl = "/api/v1/teacher/curriculum-subject"
+
 
 
 export  {
@@ -30,5 +35,9 @@ export  {
     classStudentDetailsUrl,
     classAddStudentUrl,
     classUpdateStudentUrl,
+    classDeleteStudentUrl,
     classStudentUpdateAvatarUrl,
+    classTeachersOfClassUrl,
+    classSubjectsUrl,
+    classSubjectsCurriculumUrl
 }

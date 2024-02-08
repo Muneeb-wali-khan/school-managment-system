@@ -4,11 +4,14 @@ import { lazy, Suspense } from "react";
 import LoaderTr from "./LoaderTr/LoaderTr"
 import { profileUser } from "../../store/features/user.reducer";
 import { useDispatch } from "react-redux";
-import { allStudentsClass, profileTeacher } from "../../store/features/teacher.reducers";
+import { allStudentsClass, allSubjectsOfClass, allTeachersOfClass, curriculumOfSubjectsClass, profileTeacher } from "../../store/features/teacher.reducers";
+import CurriculumSub from "./components/AllSubjects/CurriculumSubject/CurriculumSub";
 
-const TrRegisteration = lazy(()=> import("../../components/TeacherPortal/components/TrRegisteration/TrRegisteration")) 
+const AllTeachers = lazy(()=> import("../../components/TeacherPortal/components/AllTeachers/AllTeachers")) 
+const AllSubjects = lazy(()=> import("../../components/TeacherPortal/components/AllSubjects/AllSubjects")) 
 const TrStudents = lazy(()=> import("../../components/TeacherPortal/components/TrStudents/TrStudents")) 
 const StDetails = lazy(()=> import("../../components/TeacherPortal/components/TrStudents/StDetails/StDetails")) 
+const UpdateStudent = lazy(()=> import("../../components/TeacherPortal/components/TrStudents/UpdateStudent/UpdateStudent")) 
 const AddStudent = lazy(()=> import("../../components/TeacherPortal/components/TrStudents/AddStudent/AddStudent")) 
 const TrProfiles = lazy(()=> import("../../components/TeacherPortal/components/TrProfiles/TrProfiles")) 
 const SideBar = lazy(()=> import("./SideBar/SideBar")) 
@@ -23,6 +26,8 @@ const Teacher = () => {
     dispatch(profileUser());
     dispatch(profileTeacher());
     dispatch(allStudentsClass());
+    dispatch(allTeachersOfClass());
+    dispatch(allSubjectsOfClass());
   }, [dispatch]);
 
   return (
@@ -32,11 +37,14 @@ const Teacher = () => {
         <Routes>
           <Route path="/*" element={< NotFound/>} />
           <Route path="/teacher-dash" element={< TrDash/>} />
-          <Route path="/teacher-registeration" element={< TrRegisteration/>} />
+          <Route path="/all-class-teachers" element={< AllTeachers/>} />
+          <Route path="/all-class-subjects" element={< AllSubjects/>} />
           <Route path="/teacher-students" element={< TrStudents/>} />
           <Route path="/teacher-profile" element={< TrProfiles/>} />
           <Route path="/student-details/:id" element={< StDetails/>} />
           <Route path="/add-student-class" element={< AddStudent/>} />
+          <Route path="/update-student-class/:id" element={< UpdateStudent/>} />
+          <Route path="/curriculum-subject" element={< CurriculumSub/>} />
         </Routes>
       </Suspense>
     </div>

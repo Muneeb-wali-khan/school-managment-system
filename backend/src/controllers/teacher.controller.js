@@ -722,26 +722,10 @@ const updateStudentsOfClass = asyncHandler(async (req, res) => {
     throw new ApiError(400, `Student not found in class !`);
   }
 
-  // if class  have students
-  if (teacherOfClass?.students?.length !== 0) {
-    const classStudents = teacherOfClass?.students;
-    const studentsfindId = await Student.find({ _id: classStudents });
-    const mapoverStudents = studentsfindId?.map((student) => student?.rollNo);
-    const isrollNoAlreadyAsignedInThatClass = mapoverStudents?.find(
-      (number) => number == rollNo
-    );
 
-    if (isrollNoAlreadyAsignedInThatClass) {
-      throw new ApiError(
-        400,
-        `rollNo ${rollNo} already assigned to another student !`
-      );
-    }
-  }
-  const updatedStudent = await Student.findOneAndUpdate(
-    { _id: req.params.id },
-    {
-      $set: {
+  const updatedStudent = await Student.findByIdAndUpdate(
+    req.params?.id,
+      {
         fullName: fullName,
         firstName: firstName,
         rollNo: rollNo,
@@ -760,8 +744,7 @@ const updateStudentsOfClass = asyncHandler(async (req, res) => {
         joiningDate: joiningDate,
         className: teacherOfClass?._id,
       },
-    },
-    { new: true } // To return the updated document
+    { new: true},{validateBeforeSave: false} // To return the updated document
   );
 
   if (!updatedStudent) {
@@ -770,7 +753,10 @@ const updateStudentsOfClass = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, updatedStudent, "loged in Teacher details"));
+    .json(new ApiResponse(200, updatedStudent, "Student Updated Successfully !"));
+
+
+
 });
 
 
@@ -941,7 +927,7 @@ const allTeachersOfSpecificClass = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, allTeachers, "loged in Teacher details"));
+    .json(new ApiResponse(200, allTeachers, `Teacher fetched of ${teacherOfClass?.className}`));
 });
 
 
@@ -978,13 +964,59 @@ const allSubjectsOfClass = asyncHandler(async (req, res) => {
 
   const data = {
     subjects: allSubjects,
-    curriculum: mapoverCurriculum,
+    cur: mapoverCurriculum
   }
 
   return res
     .status(200)
     .json(new ApiResponse(200, data, "loged in Teacher details"));
 });
+
+
+
+// get curruculum of  subject of class
+const curriculumOfSubjectOfClass = asyncHandler(async (req, res) => {
+  const fullName = req?.user?.fullName;
+  const email = req?.user?.email;
+
+  const tr = await Teacher.findOne({ email: email, fullName: fullName });
+
+  if (!tr) {
+    throw new ApiError(400, "Teacher not found !");
+  }
+
+  const teacherOfClass = await Class.findOne({
+    classTeacherID: tr?._id,
+  }).populate({
+    path: "subjects",
+    select: "subjectName",
+  })
+
+  if (!teacherOfClass) {
+    throw new ApiError(400, "Your'r not yet Class Teacher of any class !");
+  }
+
+  const allSubjects = teacherOfClass?.subjects;
+
+  // Filter curriculum for the teacher's class
+  const findMyClassCurriculum = await Subject.find({
+    _id: allSubjects,
+  })
+
+  const mapoverCurriculum = findMyClassCurriculum?.map((cur) =>  cur?.curriculum?.filter((cls)=> cls?.curriculumClass === teacherOfClass?.className ))
+
+  const filterbyId = mapoverCurriculum?.map(val => val?.filter(ids=> ids))
+
+  if(!filterbyId){
+    throw new ApiError(404, "curriculum not found !")
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, filterbyId, "curiculum"));
+});
+
+
 
 
 // to be continued.....
@@ -1062,4 +1094,5 @@ export {
   allTeachersOfSpecificClass,
 
   allSubjectsOfClass,
+  curriculumOfSubjectOfClass
 };

@@ -1,5 +1,5 @@
 import React from 'react'
-import AnNav from '../Navbar/AnNav'
+import AnNav from '../../Navbar/AnNav'
 
 const AnPayments = () => {
   return (

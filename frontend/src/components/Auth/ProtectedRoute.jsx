@@ -1,10 +1,10 @@
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate } from "react-router-dom";
-import { clearErrorsAuth } from "../../store/features/regLogin";
+// import { clearErrorsAuth } from "../../store/features/regLogin";
 
 // / Protected Route Component
 const ProtectedRoute = ({ element: Element, requiredRole, ...rest }) => {
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
     const {userD } = useSelector(
         (state) => state?.user?.userAuth
       );
@@ -12,7 +12,6 @@ const ProtectedRoute = ({ element: Element, requiredRole, ...rest }) => {
   
     if (userD === null) {
       // Redirect to login if user is not authenticated
-      dispatch(clearErrorsAuth())
       return <Navigate to="/" />;
     }
   

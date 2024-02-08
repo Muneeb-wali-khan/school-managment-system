@@ -1,13 +1,21 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import NavHome from "../NavHome/NavHome"
 import { Link } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
+import { clearErrorsAuth } from '../../../store/features/regLogin'
 
 const ChoicesRegister = () => {
+  const dispatch = useDispatch()
 
   const addClickName = (e)=>{
     const logerName = e.currentTarget?.firstChild?.lastChild?.textContent
     sessionStorage.setItem(`logerName`, logerName)
   }
+
+  useEffect(()=>{
+    dispatch(clearErrorsAuth())
+  },[dispatch])
+
 
   return (
     <div>

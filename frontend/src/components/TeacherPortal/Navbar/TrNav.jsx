@@ -1,8 +1,15 @@
-import React, { useRef, useState } from "react";
-import { useSelector } from "react-redux";
+import React, { useEffect, useRef, useState } from "react";
+import toast from "react-hot-toast";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { clearErrorsAuth, logout } from "../../../store/features/regLogin";
+import Loader from "../../loader/Loader";
 
 const TrNav = () => {
+  const dispatch = useDispatch()
+  const { loadingAuth, msgAuth, errorAuth } = useSelector(
+    (state) => state?.user?.userAuth
+  );
   const { userProfile } = useSelector((state) => state?.profile?.userProfile);
   const { profileTeacher, loadingTeacher } = useSelector(
     (state) => state?.teacher?.teacherD
@@ -14,9 +21,30 @@ const TrNav = () => {
     setMenuOpen(!isMenuOpen);
   };
 
+  const handleLogout = ()=>{
+    const confirmLogout = window.confirm("Are you sure you want to logout?")
+    if(!confirmLogout) return
+    dispatch(logout())
+  }
+
+  useEffect(() => {
+    if (msgAuth) {
+      toast.success(msgAuth);
+    }
+    if (errorAuth) {
+      toast.error(errorAuth);
+    }
+
+    dispatch(clearErrorsAuth());
+  }, [msgAuth, errorAuth,dispatch]);
 
   return (
     <>
+    {
+      loadingAuth && (
+        <Loader/>
+      )
+    }
       {/* <!-- Navbar --> */}
       <div className="flex justify-between items-center mb-4 pr-2">
         <div className="flex items-center">
@@ -70,7 +98,7 @@ const TrNav = () => {
                   >
                     Settings
                   </a>
-                  <a
+                  <a onClick={handleLogout}
                     href="#"
                     className="block px-4 py-2 text-red-600 hover:bg-gray-100"
                   >

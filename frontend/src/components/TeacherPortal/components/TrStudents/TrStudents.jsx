@@ -1,15 +1,61 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import TrNav from "../../Navbar/TrNav";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Loader from "../../../loader/Loader";
 import MUIDataTable from "mui-datatables";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import DeleteModal from "./DeleteModal/DeleteModal";
+import {
+  DeleteStudentOfClass,
+  clearErrorsTeacher,
+  allStudentsClass as fetchAllStudents,
+} from "../../../../store/features/teacher.reducers";
+import toast from "react-hot-toast";
 
 const TrStudents = () => {
-  const { allStudentsClass, loadingTeacher, errorTeacher } = useSelector(
-    (state) => state?.teacher?.teacherD
-  );
+  const {
+    allStudentsClass,
+    loadingTeacher,
+    errorTeacher,
+    msgDelSt,
+    errDelSt,
+    profileTeacher,
+  } = useSelector((state) => state?.teacher?.teacherD);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [isOpen, setIsOpen] = useState(false);
+  const [isStId, setIsStId] = useState(null);
+
+  const onDelete = (id) => {
+    setIsStId(id);
+    setIsOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (isStId) {
+      dispatch(DeleteStudentOfClass(isStId));
+      setIsStId(null);
+      setIsOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    if (msgDelSt) {
+      toast.success(msgDelSt);
+      dispatch(fetchAllStudents());
+    }
+    if (errDelSt) {
+      toast.error(errDelSt);
+    }
+    dispatch(clearErrorsTeacher());
+    dispatch(fetchAllStudents());
+  }, [msgDelSt, errDelSt, dispatch]);
+
+  const onRequestClose = () => {
+    setIsOpen(false);
+    setIsStId(null);
+  };
+
   const columns = [
     {
       name: "_id",
@@ -76,7 +122,7 @@ const TrStudents = () => {
                 </button>
               </Link>
 
-              <Link to={`/teacher-portal/update-student/${userId}`}>
+              <Link to={`/teacher-portal/update-student-class/${userId}`}>
                 <button
                   className="rounded-md px-3 py-2 me-4 mb-2"
                   title="Edit student"
@@ -86,7 +132,7 @@ const TrStudents = () => {
                 </button>
               </Link>
 
-              <a onClick={() => handleDelete(userId)}>
+              <a onClick={() => onDelete(userId)}>
                 <button
                   className=" rounded-md px-3 py-2 me-2 mb-2"
                   title="Delete student"
@@ -134,35 +180,45 @@ const TrStudents = () => {
 
   if ((errorTeacher && errorTeacher === null) || !errorTeacher) {
     return (
-      <div className="p-[1.25rem] w-4/5 navdashMain">
-        <TrNav />
-        <div className="mt-8">
-          <div
-            className="mb-4  text-[15px]"
-            onClick={() => navigate("/teacher-portal/add-student-class")}
-          >
-            <button className="bg-gradient-to-r from-[#8D5ADD] to-[#794ACA] border-2 hover:border-2 text-white py-2 px-4 rounded-full transition duration-300 ease-in-out focus:outline-none focus:ring focus:border-blue-300">
-              Add Student to Class
-            </button>
+      <>
+        <DeleteModal
+          isOpen={isOpen}
+          onRequestClose={onRequestClose}
+          onDelete={onDelete}
+          handleConfirmDelete={handleConfirmDelete}
+        />
+        <div className="p-[1.25rem] w-4/5 navdashMain">
+          <TrNav />
+          <div className="mt-8">
+            {allStudentsClass ? (
+              <>
+                <div
+                  className="mb-4  text-[15px]"
+                  onClick={() => navigate("/teacher-portal/add-student-class")}
+                >
+                  <button className="bg-gradient-to-r from-[#8D5ADD] to-[#794ACA] border-2 hover:border-2 text-white py-2 px-4 rounded-full transition duration-300 ease-in-out focus:outline-none focus:ring focus:border-blue-300">
+                    Add Student to Class
+                  </button>
+                </div>
+                <MUIDataTable
+                  title={`${
+                    allStudentsClass &&
+                    allStudentsClass[1]?.[0] +
+                      allStudentsClass[1]
+                        ?.substr(1, allStudentsClass[1]?.length)
+                        .toLowerCase()
+                  } | Students`}
+                  data={allStudentsClass && allStudentsClass[0]}
+                  columns={columns}
+                  options={options}
+                />
+              </>
+            ) : (
+              <Loader />
+            )}
           </div>
-          {allStudentsClass ? (
-            <MUIDataTable
-              title={`${
-                allStudentsClass &&
-                allStudentsClass[1]?.[0] +
-                  allStudentsClass[1]
-                    ?.substr(1, allStudentsClass[1]?.length)
-                    .toLowerCase()
-              } | Students`}
-              data={allStudentsClass && allStudentsClass[0]}
-              columns={columns}
-              options={options}
-            />
-          ) : (
-            <Loader />
-          )}
         </div>
-      </div>
+      </>
     );
   } else {
     return (
@@ -172,7 +228,19 @@ const TrStudents = () => {
         ) : (
           <div className="p-[1.25rem] w-4/5 navdashMain">
             <TrNav />
-            <div className="flex flex-col items-center justify-center h-[50vh] mt-28 w-full border border-gray-300 rounded-lg shadow-lg">
+            <div className="mt-8 max-w-7xl mx-auto">
+            <h2 className="text-2xl font-bold mb-2 text-[#663399da]">
+              {profileTeacher &&
+                profileTeacher[1] &&
+                profileTeacher[1]?.[0] +
+                  profileTeacher[1]
+                    ?.substring(1, profileTeacher[1].length)
+                    .toLowerCase()}{" "}
+              Students :
+            </h2>
+            </div>
+
+            <div className="flex flex-col items-center justify-center h-[50vh] mt-10 w-full border border-gray-300 rounded-lg shadow-lg">
               <h1 className="text-4xl font-extrabold text-red-500 mb-2">
                 {errorTeacher}
               </h1>

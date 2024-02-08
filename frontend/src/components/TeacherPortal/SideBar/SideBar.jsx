@@ -24,7 +24,7 @@ const SideBar = () => {
     }
 
     dispatch(clearErrorsAuth());
-  }, [msgAuth, errorAuth]);
+  }, [msgAuth, errorAuth,dispatch]);
 
   return (
     <>
@@ -65,15 +65,15 @@ const SideBar = () => {
 
             <div className="flex gap-3 items-center">
               <a>
-                <i className="fa fa-user-plus mr-[2px]" style={{color: "#ffffff"}}>
+                <i className="fa fa-chalkboard-teacher mr-[2px]" style={{color: "#ffffff"}}>
                   {" "}
                 </i>
               </a>
               <Link
-                to="/teacher-portal/teacher-registeration"
+                to="/teacher-portal/all-class-teachers"
                 className="cursor-pointer font-semibold text-gray-200 hover:text-white transition-all"
               >
-                Registeration
+                Class Teachers
               </Link>
             </div>
 
@@ -83,12 +83,12 @@ const SideBar = () => {
                   {" "}
                 </i>
               </a>
-              <a
-                href="/dashboard"
+              <Link
+                to="/teacher-portal/all-class-subjects"
                 className="cursor-pointer font-semibold text-gray-200 hover:text-white transition-all"
               >
-                Courses
-              </a>
+               Class Subjects
+              </Link>
             </div>
 
             <div className="flex gap-5 items-center">

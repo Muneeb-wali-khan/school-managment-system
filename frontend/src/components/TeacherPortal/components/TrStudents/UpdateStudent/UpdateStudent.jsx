@@ -2,21 +2,20 @@ import React, { useEffect, useState } from "react";
 import TrNav from "../../../Navbar/TrNav";
 import { useDispatch, useSelector } from "react-redux";
 import Loader from "../../../../loader/Loader";
-import { addStudentToClass, clearErrorsTeacher,allStudentsClass } from "../../../../../store/features/teacher.reducers";
+import { UpdateStudentOfClass, allStudentsClass, classStudentDetail, clearErrorsTeacher } from "../../../../../store/features/teacher.reducers";
 import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
-const AddStudent = () => {
+const UpdateStudent = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate()
-  const { loadingTeacher, msgAddSt, errAddSt, errorTeacher } = useSelector(
+  const params = useParams()
+  const { loadingTeacher, msgUptSt, errUptSt, errorTeacher,classStudentDetails } = useSelector(
     (state) => state?.teacher?.teacherD
   );
-  const [avatar, setAvatar] = useState("");
-  const [avatarVeiw, setAvatarVeiw] = useState("");
   const [studentData, setStudentData] = useState({
     firstName: "",
-    fullName: "",
+    fullName:"",
     rollNo: 0,
     age: 0,
     admissionClass: "class",
@@ -29,10 +28,13 @@ const AddStudent = () => {
     address: "",
     gender: "",
     DOB: Date,
-    avatar: "",
     joiningDate: Date,
-    bloodGroup: "",
+    bloodGroup:  "",
   });
+
+  useEffect(()=>{
+    dispatch(classStudentDetail(params?.id))
+  },[params?.id, dispatch])
 
   const handleInputChange = (e)=>{
     setStudentData({...studentData, [e.target.name]: e.target.value})
@@ -55,34 +57,48 @@ const AddStudent = () => {
     formdata.append("address", studentData.address);
     formdata.append("gender", studentData.gender);
     formdata.append("DOB", studentData.DOB);
-    formdata.append("avatar", studentData.avatar);
     formdata.append("joiningDate", studentData.joiningDate);
     formdata.append("bloodGroup", studentData.bloodGroup);
-    
-    dispatch(addStudentToClass(formdata))
+    console.log(studentData);
+    dispatch(UpdateStudentOfClass({id: params?.id, data: formdata}))
   };
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    setAvatar(file);
-    const showimg = URL.createObjectURL(file);
-    setAvatarVeiw(showimg);
-    // set the avatar to file in studentData
-    setStudentData({ ...studentData, avatar: file });
-  };
 
   useEffect(()=>{
-      if(msgAddSt){
-        toast.success(msgAddSt)
+      if(msgUptSt){
+        toast.success(msgUptSt)
         navigate("/teacher-portal/teacher-students")
         dispatch(allStudentsClass())
       }
-      if(errAddSt){
-        toast.error(errAddSt)
+      if(errUptSt){
+        toast.error(errUptSt)
       }
       dispatch(clearErrorsTeacher())
-  },[msgAddSt, errAddSt, dispatch])
+  },[msgUptSt, errUptSt, dispatch])
 
+  useEffect(()=>{
+    if(classStudentDetails){
+        setStudentData({
+            firstName: classStudentDetails?.firstName,
+            fullName:classStudentDetails?.fullName,
+            rollNo: classStudentDetails?.rollNo,
+            age: classStudentDetails?.age || 0,
+            admissionClass: classStudentDetails?.admissionClass,
+            fatherName: classStudentDetails?.fatherName,
+            email: classStudentDetails?.email,
+            monthlyFee:classStudentDetails?.monthlyFee,
+            securityFee:classStudentDetails?.securityFee,
+            labFee: classStudentDetails?.labFee,
+            phone: classStudentDetails?.phone,
+            address: classStudentDetails?.address,
+            DOB: classStudentDetails?.DOB,
+            joiningDate: classStudentDetails?.joiningDate,
+            bloodGroup:classStudentDetails?.bloodGroup,
+            avatar:classStudentDetails?.avatar,
+            gender: classStudentDetails?.gender
+        })
+    }
+  },[classStudentDetails])
 
   if ((errorTeacher && errorTeacher !== null) || errorTeacher) {
     return (
@@ -122,7 +138,7 @@ const AddStudent = () => {
         ) : (
           <div className=" max-w-5xl  p-6  shadow-md border-2 border-[#7a49c986]  mt-5 shadow-[#8b59dcc4] rounded-md">
             <h1 className="text-2xl border border-[#7a49c986] py-2 px-3 font-bold mb-6 rounded-lg text-gray-500">
-              Student Registration Form
+             Update Student Form
             </h1>
             <form onSubmit={handleSubmit}>
               {/* fullname, firstname, fathername */}
@@ -277,7 +293,11 @@ const AddStudent = () => {
                   onChange={handleInputChange}
                     type="text"
                     id="dob"
-                    value={studentData?.DOB}
+                    value={new Date(studentData?.DOB).toLocaleDateString("en-US",{
+                        day: "numeric",
+                        month: "numeric",
+                        year: "numeric",
+                    }).replace(/[/]/g, '-') || ''}
                     name="DOB"
                     className="mt-1 border-[#7a49c986] p-2 w-full border rounded-md focus:outline-none focus:border-blue-500"
                   />
@@ -299,7 +319,7 @@ const AddStudent = () => {
                     name="gender"
                     className="text-sm font-medium text-gray-600 mt-1 border-[#7a49c986] p-2 w-full border rounded-md focus:outline-none focus:border-blue-500"
                   >
-                    <option value="">Select Gender</option>
+                    <option value={studentData?.gender}>{studentData?.gender}</option>
                     <option value="male">Male</option>
                     <option value="female">Female</option>
                     <option value="other">Other</option>
@@ -315,7 +335,11 @@ const AddStudent = () => {
                   <input
                   onChange={handleInputChange}
                     type="text"
-                    value={studentData?.joiningDate}
+                    value={new Date(studentData?.joiningDate).toLocaleDateString("en-US",{
+                        day: "numeric",
+                        month: "numeric",
+                        year: "numeric",
+                    }).replace(/[/]/g, '-') || ''}
                     id="joiningDate"
                     name="joiningDate"
                     className="mt-1 border-[#7a49c986] p-2 w-full border rounded-md focus:outline-none focus:border-blue-500"
@@ -335,7 +359,7 @@ const AddStudent = () => {
                     name="bloodGroup"
                     className="text-sm font-medium text-gray-600 mt-1 border-[#7a49c986] p-2 w-full border rounded-md focus:outline-none focus:border-blue-500"
                   >
-                    <option value="">Select Blood Group</option>
+                    <option value={studentData?.bloodGroup}>{studentData?.bloodGroup}</option>
                     <option value="a+">A+</option>
                     <option value="b+">B+</option>
                     <option value="a-">A-</option>
@@ -401,7 +425,7 @@ const AddStudent = () => {
                 </div>
               </div>
 
-              {/* avatar, address */}
+              {/* address */}
               <div className="grid mb-3 grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label
@@ -427,29 +451,13 @@ const AddStudent = () => {
                   >
                     Student Pic
                   </label>
-                  <div className="flex flex-col gap-2">
-                    <input
-                      type="file"
-                      onChange={handleImageChange}
-                      id="avatar"
-                      name="avatar"
-                      className="mt-1 border-[#7a49c986] p-2 w-full border rounded-md focus:outline-none focus:border-blue-500"
-                    />
-                    {avatarVeiw ? (
+                  <div className="mt-1 border-[#7a49c986] p-2 w-full border rounded-md focus:outline-none focus:border-blue-500">
                       <img
-                        src={avatar && avatarVeiw}
+                        src={studentData?.avatar}
                         alt="student pic"
                         className="h-[45px] w-[45px] rounded-full"
                       />
-                    ) : (
-                      <img
-                        src={avatar ? avatar : "/5. College Student.png"}
-                        alt="student pic"
-                        className="h-[45px] w-[45px] rounded-full"
-                        accept=".png, .jpg, .jpeg"
-                        multiple={false}
-                      />
-                    )}
+ 
                   </div>
                 </div>
               </div>
@@ -471,4 +479,12 @@ const AddStudent = () => {
   }
 };
 
-export default AddStudent;
+export default UpdateStudent;
+
+
+
+
+
+
+
+

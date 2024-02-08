@@ -27,8 +27,9 @@ function App() {
     
   useEffect(()=>{
     if(errorUser === 401){
-      return dispatch(logout())
+      dispatch(logout())
     }
+    dispatch(clearErrorsAuth())
   },[errorUser,dispatch])
 
 
