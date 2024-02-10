@@ -82,14 +82,14 @@ const AnNav = () => {
                           userProfile.fullName.substr(1))) ||
                       "Teacher Name"}
                   </p>
-                  <p className="text-gray-500 text-sm">
-                    {userProfile && userProfile?.email?.split(".com")}
+                  <p className="text-gray-500 text-xs">
+                    {userProfile && userProfile?.email}
                   </p>
                 </div>
                 <div className="border-t border-gray-300"></div>
                 <div className="py-1">
                   <Link
-                    to="/teacher-portal/teacher-profile"
+                    to="/admin-portal/admin-profile"
                     className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
                   >
                     Profile
@@ -102,8 +102,7 @@ const AnNav = () => {
                   </a>
                   <a
                     onClick={handleLogout}
-                    href="#"
-                    className="block px-4 py-2 text-red-600 hover:bg-gray-100"
+                    className="block px-4 py-2 cursor-pointer text-red-600 hover:bg-gray-100"
                   >
                     Sign Out
                   </a>

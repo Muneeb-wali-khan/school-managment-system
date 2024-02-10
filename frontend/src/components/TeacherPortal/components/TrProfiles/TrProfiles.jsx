@@ -12,6 +12,7 @@ import {
 import toast from "react-hot-toast";
 
 const TrProfiles = () => {
+  
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [avatar, setAvatar] = useState("");
   const [avatarView, setAvatarView] = useState(null);

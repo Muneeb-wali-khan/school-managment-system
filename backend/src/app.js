@@ -26,6 +26,7 @@ import teacherRouter from "./routes/teacher.routes.js"
 import studentRouter from "./routes/student.routes.js"
 import studentSubject from "./routes/subject.routes.js"
 import classRouter from "./routes/class.routes.js"
+import adminRouter from "./routes/admin.routes.js"
 
 
 
@@ -35,6 +36,7 @@ app.use("/api/v1/teacher", teacherRouter)
 app.use("/api/v1/student", studentRouter)
 app.use("/api/v1/subject", studentSubject)
 app.use("/api/v1/class", classRouter)
+app.use("/api/v1/admin", adminRouter)
 
 
 // middleware to show error response in json send to client

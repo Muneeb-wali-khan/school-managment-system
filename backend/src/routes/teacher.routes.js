@@ -2,17 +2,10 @@ import { Router } from "express";
 import { ApiError } from "../utils/ApiError.js";
 import multer from "multer";
 import { upload } from "../middlewares/multer.js";
-import { isAdmin, isTeacher, jwtVerify } from "../middlewares/auth.middleware.js";
-import { addStudentsToClass, addTeacher, allStudentsOfSpecificClass, allSubjectsOfClass, allTeachersOfSpecificClass, curriculumOfSubjectOfClass, deleteStudentFromClass, deleteTeacher, getAllTeachers, getLogedInTeacherDetails, getStudentDetail, getTeacherById, takeAttendance, updateStudentAvatar, updateStudentsOfClass, updateTeacher } from "../controllers/teacher.controller.js";
+import {  isTeacher, jwtVerify } from "../middlewares/auth.middleware.js";
+import { addStudentsToClass, allStudentsOfSpecificClass, allSubjectsOfClass, allTeachersOfSpecificClass, curriculumOfSubjectOfClass, deleteStudentFromClass, getLogedInTeacherDetails, getStudentDetail,  takeAttendance, updateStudentAvatar, updateStudentsOfClass } from "../controllers/teacher.controller.js";
 const router = Router();
 
-
-// --admin 
-router.route("/all-teachers").get(jwtVerify,isAdmin, getAllTeachers)
-router.route("/single-teacher/:id").get(jwtVerify,isAdmin, getTeacherById)
-router.route("/add-teacher").post(jwtVerify,isAdmin, upload.single("avatar"), addTeacher)
-router.route("/update-teacher/:id").put(jwtVerify,isAdmin, updateTeacher)
-router.route("/remove-teacher/:id").delete(jwtVerify,isAdmin, deleteTeacher)
 
 
 // -- teacher
