@@ -7,9 +7,9 @@ import {
   import toast from "react-hot-toast";
 import { useDispatch, useSelector } from 'react-redux';
 import AnNav from '../../Navbar/AnNav';
-import Loader from '../../LoaderAn/LoaderAn';
 import UpdatePassword from '../AnProfile/passwordUpdate/UpdatePassword'
 import UpdateProfile from '../AnProfile/ProfileUpdate/UpdateProfile'
+import LoaderAn from '../../LoaderAn/LoaderAn';
   
 
 const AnProfile = () => {
@@ -99,7 +99,7 @@ const AnProfile = () => {
     <div className="p-[1.25rem] w-4/5 navdashMain">
       <AnNav />
       {loadingUser ? (
-        <Loader />
+        <LoaderAn />
       ) : (
         <>
           <div className="flex w-full h-auto mt-8  gap-12 flex-wrap trprofile">

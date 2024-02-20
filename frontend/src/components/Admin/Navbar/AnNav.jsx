@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import { clearErrorsAuth, logout } from "../../../store/features/regLogin";
-import Loader from "../LoaderAn/LoaderAn";
 import { Link } from "react-router-dom";
+import LoaderAn from "../LoaderAn/LoaderAn";
 
 const AnNav = () => {
   const dispatch = useDispatch();
@@ -41,7 +41,7 @@ const AnNav = () => {
 
   return (
     <>
-      {loadingAuth && <Loader />}
+      {loadingAuth && (<LoaderAn />)}
       {/* <!-- Navbar --> */}
       <div className="flex justify-between items-center mb-4 pr-2">
         <div className="flex items-center">

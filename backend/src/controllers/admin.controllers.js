@@ -7,12 +7,88 @@ import { cloudinaryUploadImg } from "../utils/cloudinary.js";
 import { Teacher } from "../models/teacher.model.js";
 import { Subject } from "../models/subject.model.js";
 import { changeToUpperCase } from "../utils/toUpperCase.js";
+import { User } from "../models/user.model.js";
+import {
+  RemovecloudinaryExistingImg,
+} from "../utils/cloudinary.js";
+import { extractId} from "../utils/extractCloudinaryId.js";
+import { parseDate } from "../utils/parseDate.js";
+
+
+
+// =======================================USER CONTROLLERS --ADMIN== START =================================================
+
+//  get all users  
+const getAllUsers = asyncHandler(async (req, res) => {
+  const users = await User.find({}).select(
+    "-password -refreshToken -uniqueCode"
+  );
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, users, "users fetched successfully !"));
+});
+
+// update user role 
+const updateUserRole = asyncHandler(async (req, res) => {
+  const { role } = req.body;
+
+  if (!role) {
+    throw new ApiError(400, "role is required !");
+  }
+
+  const user = await User.findByIdAndUpdate(
+    req.params?.id,
+    {
+      $set: {
+        role,
+      },
+    },
+    { new: true }
+  ).select("-password -uniqueCode");
+
+  if (!user) {
+    throw new ApiError(404, "failed to update user role !");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, user, "user role updated successfully !"));
+});
+
+//  delete user 
+const deleteUser = asyncHandler(async (req, res) => {
+  const findUser = await User.findById(req.params?.id);
+
+  const publicId = extractId(findUser?.avatar);
+  await RemovecloudinaryExistingImg(publicId);
+
+  const user = await User.findByIdAndDelete(req.params?.id);
+
+  if (!user) {
+    throw new ApiError(404, "user not found !");
+  }
+  return res
+    .status(200)
+    .json(new ApiResponse(200, {}, "user deleted successfully !"));
+});
+
+
+// =======================================USER CONTROLLERS --ADMIN== END =================================================
+
+
+
+
+
 
 
 // =======================================STUDENT CONTROLLERS --ADMIN== START =================================================
 // all students --admin
-const getAllStudent = asyncHandler(async (req, res, next) => {
-    const students = await Student.find();
+const getAllStudent = asyncHandler(async (req, res) => {
+    const students = await Student.find().select("rollNo fullName gender email className").populate({
+      path:"className",
+      select: "className"
+    });
   
     return res
       .status(200)
@@ -20,8 +96,11 @@ const getAllStudent = asyncHandler(async (req, res, next) => {
   });
   
   // student by id
-  const getStudentById = asyncHandler(async (req, res, next) => {
-    const student = await Student.findById(req.params.id);
+  const getStudentById = asyncHandler(async (req, res) => {
+    const student = await Student.findById(req.params.id).populate({
+      path: "className",
+      select: "className"
+    });
   
     if (!student) {
       throw new ApiError(404, "Student not found !");
@@ -33,7 +112,7 @@ const getAllStudent = asyncHandler(async (req, res, next) => {
   });
   
   // add student --admin
-  const addStudent = asyncHandler(async (req, res, next) => {
+  const addStudent = asyncHandler(async (req, res) => {
     const {
       firstName,
       fullName,
@@ -49,6 +128,9 @@ const getAllStudent = asyncHandler(async (req, res, next) => {
       email,
       address,
       phone,
+      monthlyFee,
+      securityFee,
+      labFee
     } = req.body;
   
     if (
@@ -66,15 +148,13 @@ const getAllStudent = asyncHandler(async (req, res, next) => {
         gender,
         DOB,
         joiningDate,
-        bloodGroup,
+        bloodGroup
       ].some((feild) => feild === "")
     ) {
       throw new ApiError(400, "All fields are required !");
     }
   
-    const StudentExists = await Student.findOne({
-      $and: [{ email }, { fullName }],
-    });
+    const StudentExists = await Student.findOne({email: email, fullName: fullName});
     const phoneExists = await Student.findOne({ phone: phone });
     const dOBExists = await Student.findOne({ DOB: DOB });
   
@@ -88,7 +168,7 @@ const getAllStudent = asyncHandler(async (req, res, next) => {
       throw new ApiError(400, "Date of birth already exists !");
     }
   
-    const validClass = await Class.findOne({ className: className });
+    const validClass = await Class.findOne({ className: className?.toUpperCase() });
   
     if (!validClass) {
       throw new ApiError(400, `${className} not found ! please check Classes`);
@@ -140,6 +220,9 @@ const getAllStudent = asyncHandler(async (req, res, next) => {
       avatar: avatar.url,
       joiningDate,
       bloodGroup: bloodGroup.toUpperCase(),
+      monthlyFee,
+      securityFee,
+      labFee
     });
   
     validClass.students.push(student._id);
@@ -153,7 +236,7 @@ const getAllStudent = asyncHandler(async (req, res, next) => {
   });
   
   // update student
-  const updateStudent = asyncHandler(async (req, res, next) => {
+  const updateStudent = asyncHandler(async (req, res) => {
     const {
       firstName,
       fullName,
@@ -169,6 +252,9 @@ const getAllStudent = asyncHandler(async (req, res, next) => {
       email,
       address,
       phone,
+      monthlyFee,
+      securityFee,
+      labFee
     } = req.body;
   
     const student = await Student.findById(req.params.id);
@@ -183,33 +269,18 @@ const getAllStudent = asyncHandler(async (req, res, next) => {
     // Find the class of the  student by className of student ClassName id
     const MatchOldClass = await Class.findById(student?.className);
   
-    const validClass = await Class.findOne({ className: className });
+    const validClass = await Class.findOne({ className: className?.toUpperCase() });
     if (!validClass) {
       throw new ApiError(400, `${className} not found ! please check Classes`);
     }
   
-    // if class  have students
-    if (validClass?.students?.length !== 0) {
-      const classStudents = validClass?.students;
-      const studentsfindId = await Student.find({ _id: classStudents });
-      const mapoverStudents = studentsfindId?.map((student) => student?.rollNo);
-  
-      const isrollNoAlreadyAsignedInThatClass = mapoverStudents?.find(
-        (number) => number == rollNo
-      );
-  
-      if (isrollNoAlreadyAsignedInThatClass) {
-        throw new ApiError(
-          400,
-          `rollNo already assigned to another student in ${className}  !`
-        );
-      }
-    }
+
   
     if (
       validClass &&
       validClass?._id.toString() === MatchOldClass?._id.toString()
     ) {
+      console.log("yep");
       const updatedStudent = await Student.findByIdAndUpdate(
         req.params.id,
         {
@@ -228,6 +299,9 @@ const getAllStudent = asyncHandler(async (req, res, next) => {
           bloodGroup: bloodGroup && bloodGroup.toUpperCase(),
           address,
           phone,
+          monthlyFee,
+          securityFee,
+          labFee
         },
         { new: true }
       );
@@ -238,13 +312,14 @@ const getAllStudent = asyncHandler(async (req, res, next) => {
           new ApiResponse(
             201,
             updatedStudent,
-            "Student updated with oldclass successfully"
+            "Student updated successfully"
           )
         );
     }
   
     // if className is changed
     else {
+      console.log("c changed");
       const updatedStudent = await Student.findByIdAndUpdate(
         req.params.id,
         {
@@ -263,6 +338,9 @@ const getAllStudent = asyncHandler(async (req, res, next) => {
           bloodGroup: bloodGroup && bloodGroup.toUpperCase(),
           address,
           phone,
+          monthlyFee,
+          securityFee,
+          labFee
         },
         { new: true }
       );
@@ -291,6 +369,57 @@ const getAllStudent = asyncHandler(async (req, res, next) => {
   
   });
   
+  // update student avatar
+  const updateAvatarStudent = asyncHandler(async(req,res)=>{
+    const {avatar} = req.body;
+    const id = req.params?.id
+
+    // find student by id
+    const studentFind = await Student.findOne({_id: id})
+
+    // extract the old avatar public id for removal on cloudinary
+    const avataroldPublicId = extractId(studentFind?.avatar);
+
+    // if public id present so remove 
+    if (avataroldPublicId) {
+      const remOldAvatar = await RemovecloudinaryExistingImg(avataroldPublicId);
+      console.log("done admin sab");
+    }
+    
+    // now get the new avatar file path 
+    let avatarLocalPath = req.file ? req.file?.path : null;
+    if (!avatarLocalPath) {
+      throw new ApiError(400, "Student image is required !");
+    }
+
+    // now upload new file to cloudinary
+    const avatarNew = await cloudinaryUploadImg(avatarLocalPath);
+    
+    if (!avatarNew?.url) {
+      throw new ApiError(400, "Student image is required !");
+    }
+
+    // now update the student avatar with new url
+    const student = await Student.findOneAndUpdate(
+      {_id: id},
+      {
+        $set: {
+          avatar: avatarNew?.url
+        }
+      },
+      {new: true}
+    )
+
+    if (!student) {
+      throw new ApiError(400, `Student avatar not updated !`);
+    }
+  
+    return res
+      .status(200)
+      .json(new ApiResponse(200, student, "student avatar updated successfully"))
+
+  })
+
   // delete student
   const deleteStudent = asyncHandler(async (req, res) => {
     const student = await Student.findByIdAndDelete(req.params.id)
@@ -312,7 +441,7 @@ const getAllStudent = asyncHandler(async (req, res, next) => {
   });
   
   // add academic record
-  const addAcademicRecordStudent = asyncHandler(async (req, res, next) => {
+  const addAcademicRecordStudent = asyncHandler(async (req, res) => {
     const {
       year,
       pClass,
@@ -323,7 +452,10 @@ const getAllStudent = asyncHandler(async (req, res, next) => {
       marksObtained,
       totalMarks,
     } = req.body;
-  
+    
+    if([year, pClass, exam, grade, percentage,positionInClass,marksObtained,totalMarks].some(val=> val?.trim() === "")){
+      throw new ApiError(400, "All fields are Required !")
+    }
     const student = await Student.findById(req.params.id);
   
     if (!student) {
@@ -374,11 +506,35 @@ const getAllStudent = asyncHandler(async (req, res, next) => {
         new ApiResponse(200, student?.academicHistory, "Academic record fetched")
       );
   });
+
+  
+  // single academic record of student
+  const singleAcademicRecord = asyncHandler(async (req, res) => {
+    const student = await Student.find({});
+  
+    if (!student) {
+      throw new ApiError(404, "Students not found!");
+    } 
+    // get all students academic records
+    const findAcademicHistory = student.map(val=> val?.academicHistory)
+    // extract your record matching the params id
+    const findId = findAcademicHistory.map(val=> val?.filter(ids=> ids?._id?.toString() === req.params?.id )) 
+    // filter out only actual record remove empty arrays
+    const filterActualRecord = findId?.filter(val=> val?.length !== 0) 
+
+    if(!filterActualRecord){
+      throw new ApiError(404, "record not found !")
+    }
+  
+    return res.status(200).json(
+      new ApiResponse(200, filterActualRecord?.[0], "Academic record fetched")
+    );
+  });
+  
   
   // update academic record
   const updatedStudentAcedamicRecord = asyncHandler(async (req, res) => {
     const {
-      recordId,
       year,
       pClass,
       exam,
@@ -389,80 +545,87 @@ const getAllStudent = asyncHandler(async (req, res, next) => {
       totalMarks,
     } = req.body;
   
-    const findStudent = await Student.findById(req.params.id);
-    if (!findStudent) {
-      throw new ApiError(404, "Student not found!");
+    const student = await Student.find({});
+  
+    if (!student) {
+      throw new ApiError(404, "Students not found!");
     }
   
-    const record = findStudent.academicHistory.find(
-      (r) => r._id.toString() === recordId
+    const findAcademicHistory = student.map((val) => val?.academicHistory);
+    const findId = findAcademicHistory.map((val) =>
+      val?.filter((ids) => ids?._id?.toString() === req.params?.id)
     );
+    const filterActualRecord = findId?.filter((val) => val?.length !== 0);
+    const pickARecord = filterActualRecord?.[0]?.[0];
   
-    if (!record) {
-      throw new ApiError(404, "Academic record not found!");
+    if (!pickARecord) {
+      throw new ApiError(404, "Record not found!");
     }
   
-    const updatedRecord = (record.year = year || record.year);
-    record.pClass = pClass || record.pClass;
-    record.exam = exam || record.exam;
-    record.grade = grade || record.grade;
-    record.percentage = percentage || record.percentage;
-    record.positionInClass = positionInClass || record.positionInClass;
-    record.marksObtained = marksObtained || record.marksObtained;
-    record.totalMarks = totalMarks || record.totalMarks;
+    // Update the properties with the new values
+    pickARecord.year = year || pickARecord.year;
+    pickARecord.pClass = pClass || pickARecord.pClass;
+    pickARecord.exam = exam || pickARecord.exam;
+    pickARecord.grade = grade || pickARecord.grade;
+    pickARecord.percentage = percentage || pickARecord.percentage;
+    pickARecord.positionInClass = positionInClass || pickARecord.positionInClass;
+    pickARecord.marksObtained = marksObtained || pickARecord.marksObtained;
+    pickARecord.totalMarks = totalMarks || pickARecord.totalMarks;
+  
     console.log("done");
   
-    if (!updatedRecord) {
-      throw new ApiError(404, "record not updated");
-    }
-    console.log(updatedRecord);
+    // Save the updated record using findByIdAndUpdate
+    const updatedRecord = await Student.findOneAndUpdate(
+      { "academicHistory._id": req.params.id },
+      { $set: { "academicHistory.$": pickARecord } },
+      { new: true }
+    );
   
-    const save = await findStudent.save();
-  
-    if (save) {
-      return res
-        .status(201)
-        .json(
-          new ApiResponse(
-            201,
-            updatedRecord,
-            `${findStudent?.fullName}record updated successfuly`
-          )
-        );
+    if (updatedRecord) {
+      return res.status(201).json(
+        new ApiResponse(201, updatedRecord, "Record updated successfully")
+      );
+    } else {
+      throw new ApiError(500, "Failed to update record");
     }
   });
   
+  
   // delete academic record
   const deleteAcademicRecord = asyncHandler(async (req, res) => {
-    const findStudent = await Student.findById(req.params.id);
-    if (!findStudent) {
-      throw new ApiError(404, "Student not found!");
+    const id = req.params?.id;
+  
+    const student = await Student.find({});
+  
+    if (!student) {
+      throw new ApiError(404, "Students not found!");
     }
   
-    const record = findStudent?.academicHistory.find(
-      (r) => r._id.toString() === req.body?.recordId
+    const findAcademicHistory = student.map((val) => val?.academicHistory);
+    const findId = findAcademicHistory.map((val) =>
+      val?.filter((ids) => ids?._id?.toString() === req.params?.id)
     );
+    const filterActualRecord = findId?.filter((val) => val?.length !== 0);
+    const pickARecord = filterActualRecord?.[0]?.[0];
   
-    if (!record) {
-      throw new ApiError(404, "Academic record not found!");
+    if (!pickARecord) {
+      throw new ApiError(404, "Record not found!");
     }
+
   
-    const updatedRecord = findStudent?.academicHistory.filter(
-      (r) => r._id.toString() !== req.body.recordId
+    // Remove the specific academicHistory record using update and $pull
+    const removeRecord = await Student.findOneAndUpdate(
+      { "academicHistory._id": req.params.id },
+      { $pull: { academicHistory: { _id: req.params.id } } },
+      { new: true }
     );
-  
-    const save = await findStudent.save();
-  
-    if (save) {
-      return res
-        .status(201)
-        .json(
-          new ApiResponse(
-            201,
-            updatedRecord,
-            `${findStudent?.fullName}record deleted successfuly`
-          )
-        );
+
+    if (removeRecord) {
+      return res.status(201).json(
+        new ApiResponse(201, removeRecord, "Record deleted successfully")
+      );
+    } else {
+      throw new ApiError(500, "Failed to delete record");
     }
   });
   
@@ -478,7 +641,7 @@ const getAllStudent = asyncHandler(async (req, res, next) => {
 // =======================================TEACHER CONTROLLERS --ADMIN == START =================================================
 
 const getAllTeachers = asyncHandler(async (req, res) => {
-    const teachers = await Teacher.find().populate({
+    const teachers = await Teacher.find().select("subject gender email fullName avatar").populate({
         path: "classesTaught",
         select: "className"
     });
@@ -498,12 +661,76 @@ const getAllTeachers = asyncHandler(async (req, res) => {
     if (!teacher) {
       throw new ApiError(404, "Teacher not found !");
     }
+
+    const teacherOfClass = await Class.findOne({ classTeacherID: req.params?.id })
+    .select("-students -teachersOfClass -subjects")
+    .populate({
+      path: "classTeacherID",
+      select: "fullName",
+    });
+
+  const classNAME = teacherOfClass? teacherOfClass.className : "N/A"
+
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, [teacher, classNAME], "Teacher fetched successfully"));
+
+  });
+
+  // update teacher avatar
+  const updateTeacherAvatar = asyncHandler(async(req,res)=>{
+    const id = req.params?.id
+    const {avatar} = req.body
+
+    const teacher = await Teacher.findOne({_id: id})
+
+    if(!teacher){
+      throw new ApiError(404, "teacher not found")
+    }
+
+    const findTeacherOldPublicId = teacher?.avatar
+    const extractPublicId = extractId(findTeacherOldPublicId)
+
+    if(extractPublicId){
+      const removeOldid = await RemovecloudinaryExistingImg(extractPublicId)
+      console.log("done old id admin");
+    }
+
+    // upload new avatar now
+    const localPathAvatar = req.file ? req.file?.path : null
+
+    if(!localPathAvatar){
+      throw new ApiError(400, "Teacher image is required !")
+    }
+
+    const avatarUpload = await cloudinaryUploadImg(localPathAvatar)
+
+    if (!avatarUpload?.url) {
+      throw new ApiError(400, "Student image is required !");
+    }
+
+    const updatedAvatar = await Teacher.findOneAndUpdate(
+      {_id: id},
+      {
+        $set:{
+          avatar: avatarUpload?.url
+        }
+      },
+      {new: true}
+    )
+
+    if (!updatedAvatar) {
+      throw new ApiError(400, `teacher avatar not updated !`);
+    }
   
     return res
       .status(200)
-      .json(new ApiResponse(200, teacher, "Teacher fetched successfully"));
-  });
+      .json(new ApiResponse(200, updatedAvatar, "teacher avatar updated successfully"));
   
+
+  })
+
   // add teacher --admin
   const addTeacher = asyncHandler(async (req, res) => {
     const {
@@ -516,7 +743,10 @@ const getAllTeachers = asyncHandler(async (req, res) => {
       address,
       gender,
       DOB,
+      status,
       joiningDate,
+      leavingDate,
+      sallary,
       bloodGroup,
       subject,
     } = req.body;
@@ -539,11 +769,13 @@ const getAllTeachers = asyncHandler(async (req, res) => {
     ) {
       throw new ApiError(400, "All fields are required !");
     }
-  
-    const spl = classesTaught?.split(",");
-  
+    // remove white spaces between classnames
+    let cleanedString = classesTaught.replace(/\s*,\s*/g, ',');
+    // convert to array 
+    const spl = cleanedString?.split(",");
+
     if (spl?.length < 3) {
-      if (!classesTaught?.match(",")) {
+      if (!cleanedString?.match(",")) {
         throw new ApiError(
           400,
           "classes must ends with trailing commas ex: class 1,class 2 !"
@@ -587,7 +819,7 @@ const getAllTeachers = asyncHandler(async (req, res) => {
     if (nonExistingClasses.length > 0) {
       throw new ApiError(
         400,
-        `Class/className not found: ${nonExistingClasses.join(", ")}`
+        `${nonExistingClasses.join(", ")} not found:`
       );
     }
   
@@ -615,8 +847,11 @@ const getAllTeachers = asyncHandler(async (req, res) => {
       email,
       phone,
       address,
+      sallary,
       gender: changeToUpperCase(gender),
       DOB,
+      status,
+      leavingDate: leavingDate ? leavingDate : '0-0-0',
       avatar: avatar.url,
       joiningDate,
       bloodGroup: bloodGroup.toUpperCase(),
@@ -652,15 +887,20 @@ const getAllTeachers = asyncHandler(async (req, res) => {
       address,
       gender,
       DOB,
+      status,
       joiningDate,
+      leavingDate,
+      sallary,
       bloodGroup,
       subject,
     } = req.body;
-  
-    const spl = classesTaught?.split(",");
+
+    // remove white spaces between classnames
+    let cleanedString = classesTaught?.replace(/\s*,\s*/g, ',');
+    const spl = cleanedString?.split(",");
   
     if (spl?.length < 3) {
-      if (!classesTaught?.match(",")) {
+      if (!cleanedString?.match(",")) {
         throw new ApiError(
           400,
           "classes must ends with trailing commas ex: class 1,class 2 !"
@@ -707,7 +947,7 @@ const getAllTeachers = asyncHandler(async (req, res) => {
     if (nonExistingClasses.length > 0) {
       throw new ApiError(
         400,
-        `Class/className not found: ${nonExistingClasses.join(", ")}`
+        `${nonExistingClasses.join(", ")} not found !`
       );
     }
   
@@ -754,11 +994,15 @@ const getAllTeachers = asyncHandler(async (req, res) => {
           email,
           phone,
           address,
-          gender: gender && changeToUpperCase(gender),
           DOB,
+          status,
           joiningDate,
+          leavingDate,
+          sallary,
+          gender: gender && changeToUpperCase(gender),
           bloodGroup: bloodGroup && bloodGroup.toUpperCase(),
           subject: subject && changeToUpperCase(subject),
+
         },
         { new: true },
         { validateBeforeSave: false }
@@ -784,7 +1028,9 @@ const getAllTeachers = asyncHandler(async (req, res) => {
       return res
         .status(200)
         .json(new ApiResponse(200, teacher, "Teacher updated successfully"));
-    } else {
+    } 
+    
+    else {
       console.log(" sub name changed and class aslo");
   
       // if subject name  change and class
@@ -797,9 +1043,12 @@ const getAllTeachers = asyncHandler(async (req, res) => {
           email,
           phone,
           address,
-          gender: gender && changeToUpperCase(gender),
           DOB,
+          status,
           joiningDate,
+          leavingDate,
+          sallary,
+          gender: gender && changeToUpperCase(gender),
           bloodGroup: bloodGroup?.toUpperCase(),
           subject: subject && changeToUpperCase(subject),
         },
@@ -1399,6 +1648,11 @@ const allSubjects = asyncHandler(async (req, res) => {
 
 
 export {
+    //user
+    getAllUsers,
+    deleteUser,
+    updateUserRole,
+
     // student
     addStudent,
     getAllStudent,
@@ -1408,11 +1662,14 @@ export {
     allAcademicRecordStudent,
     addAcademicRecordStudent,
     updatedStudentAcedamicRecord,
+    singleAcademicRecord,
     deleteAcademicRecord,
+    updateAvatarStudent,
 
     // teacher
     addTeacher,
     updateTeacher,
+    updateTeacherAvatar,
     getAllTeachers,
     deleteTeacher,
     getTeacherById,

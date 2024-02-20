@@ -98,7 +98,7 @@ const teacherSchema = new Schema(
 
 
 teacherSchema.pre("save", async function (next) {
-  if (!this.isModified("DOB", "joiningDate")) return next();
+  if (!this.isModified("DOB", "joiningDate", "leavingDate")) return next();
 
   this.DOB = parseDate(this.DOB);
   this.joiningDate = parseDate(this.joiningDate);

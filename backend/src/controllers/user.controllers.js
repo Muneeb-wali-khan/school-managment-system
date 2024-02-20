@@ -389,60 +389,7 @@ const updateAvatar = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, user, "user avatar updated successfully !"));
 });
 
-// --admin get all users  --admin
-const getAllUsers = asyncHandler(async (req, res) => {
-  const users = await User.find({}).select(
-    "-password -refreshToken -uniqueCode"
-  );
 
-  return res
-    .status(200)
-    .json(new ApiResponse(200, users, "users fetched successfully !"));
-});
-
-// update user role --admin
-const updateUserRole = asyncHandler(async (req, res) => {
-  const { role } = req.body;
-
-  if (!role) {
-    throw new ApiError(400, "role is required !");
-  }
-
-  const user = await User.findByIdAndUpdate(
-    req.params?.id,
-    {
-      $set: {
-        role,
-      },
-    },
-    { new: true }
-  ).select("-password -uniqueCode");
-
-  if (!user) {
-    throw new ApiError(404, "failed to update user role !");
-  }
-
-  return res
-    .status(200)
-    .json(new ApiResponse(200, user, "user role updated successfully !"));
-});
-
-// --admin delete user --admin
-const deleteUser = asyncHandler(async (req, res) => {
-  const findUser = await User.findById(req.params?.id);
-
-  const publicId = extractId(findUser?.avatar);
-  await RemovecloudinaryExistingImg(publicId);
-
-  const user = await User.findByIdAndDelete(req.params?.id);
-
-  if (!user) {
-    throw new ApiError(404, "user not found !");
-  }
-  return res
-    .status(200)
-    .json(new ApiResponse(200, {}, "user deleted successfully !"));
-});
 
 export {
   registerUser,
@@ -453,9 +400,4 @@ export {
   changePassword,
   updateProfile,
   updateAvatar,
-
-  // admin--
-  getAllUsers,
-  deleteUser,
-  updateUserRole,
 };

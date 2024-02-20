@@ -1,7 +1,34 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import toast from "react-hot-toast";
+import { clearErrorsAuth, logout } from "../../../../store/features/regLogin";
 
 const MobileSideBar = () => {
+
+  const dispatch = useDispatch();
+
+  const { loadingAuth, msgAuth, errorAuth } = useSelector(
+    (state) => state?.user?.userAuth
+  );
+
+  const handleLogout = () => {
+    const confirmLogout = window.confirm("Are you sure you want to logout?");
+    if (!confirmLogout) return;
+    dispatch(logout());
+  };
+
+  useEffect(() => {
+    if (msgAuth) {
+      toast.success(msgAuth);
+    }
+    if (errorAuth) {
+      toast.error(errorAuth);
+    }
+
+    dispatch(clearErrorsAuth());
+  }, [msgAuth, errorAuth, dispatch]);
+
   return (
     <>
       {/* <!-- small menu --> */}
@@ -29,43 +56,52 @@ const MobileSideBar = () => {
                 <div className="flex flex-col gap-10">
                   <div className="flex gap-5 items-center">
                     <a>
-                      <i className="fa-brands fa-windows"  style={{color: "#ffffff"}}>
+                      <i
+                        className="fa-brands fa-windows"
+                        style={{ color: "#ffffff" }}
+                      >
                         {" "}
                       </i>
                     </a>
-                    <Link to="/admin-portal/admin-dash" className="cursor-pointer font-semibold">
+                    <Link
+                      to="/admin-portal/admin-dash"
+                      className="cursor-pointer font-semibold"
+                    >
                       Dashboard
                     </Link>
                   </div>
 
                   <div className="flex gap-4 items-center">
                     <a>
-                      <i className="fa fa-credit-card"  style={{color: "#ffffff"}}>
+                      <i
+                        className="fa-solid fa-graduation-cap"
+                        style={{ color: "#ffffff" }}
+                      >
                         {" "}
                       </i>
                     </a>
                     <Link
-                      to="/admin-portal/admin-payments"
+                      to="/admin-portal/admin-all-students"
                       className="cursor-pointer font-semibold text-gray-200 hover:text-white transition-all"
                     >
-                      Payment Info
+                      All Students
                     </Link>
                   </div>
 
                   <div className="flex gap-3 items-center">
                     <a>
                       <i
-                        className="fa fa-user-plus mr-[2px]"
-                         style={{color: "#ffffff"}}
+                        className="fa fa-chalkboard-teacher mr-[2px]"
+                        style={{ color: "#ffffff" }}
                       >
                         {" "}
                       </i>
                     </a>
                     <Link
-                      to="/admin-portal/admin-registeration"
+                      to="/admin-portal/admin-all-teachers"
                       className="cursor-pointer font-semibold text-gray-200 hover:text-white transition-all"
                     >
-                      Registeration
+                      All Teachers
                     </Link>
                   </div>
 
@@ -73,16 +109,16 @@ const MobileSideBar = () => {
                     <a>
                       <i
                         className="fa fa-book-open mr-[1px]"
-                         style={{color: "#ffffff"}}
+                        style={{ color: "#ffffff" }}
                       >
                         {" "}
                       </i>
                     </a>
                     <Link
-                      to="/dashboard"
+                      to="/teacher-portal/all-class-subjects"
                       className="cursor-pointer font-semibold text-gray-200 hover:text-white transition-all"
                     >
-                      Courses
+                      All Subjects
                     </Link>
                   </div>
 
@@ -90,7 +126,7 @@ const MobileSideBar = () => {
                     <a>
                       <i
                         className="fa fa-file-excel mr-[3px]"
-                         style={{color: "#ffffff"}}
+                        style={{ color: "#ffffff" }}
                       >
                         {" "}
                       </i>
@@ -107,7 +143,7 @@ const MobileSideBar = () => {
                     <a>
                       <i
                         className="fa fa-square-poll-vertical mr-[1px]"
-                         style={{color: "#ffffff"}}
+                        style={{ color: "#ffffff" }}
                       ></i>
                     </a>
                     <Link
@@ -120,7 +156,10 @@ const MobileSideBar = () => {
 
                   <div className="flex gap-4 items-center">
                     <a>
-                      <i className="fa fa-message mr-[3px]"  style={{color: "#ffffff"}}>
+                      <i
+                        className="fa fa-message mr-[3px]"
+                        style={{ color: "#ffffff" }}
+                      >
                         {" "}
                       </i>
                     </a>
@@ -134,15 +173,15 @@ const MobileSideBar = () => {
                 </div>
 
                 {/* <!-- logout div --> */}
-                <div className="flex gap-4 items-center">
+                <div onClick={handleLogout} className="flex gap-4 items-center">
                   <a>
                     <i
                       className="fa fa-right-from-bracket mr-[3px]"
-                       style={{color: "#ffffff"}}
+                      style={{ color: "#ffffff" }}
                     ></i>
                   </a>
                   <a className="cursor-pointer font-semibold text-gray-200 hover:text-white transition-all">
-                    Logout
+                    {loadingAuth ? "Logging out..." : "Logout"}
                   </a>
                 </div>
               </div>

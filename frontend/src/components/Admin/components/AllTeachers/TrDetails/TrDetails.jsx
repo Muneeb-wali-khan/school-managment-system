@@ -1,72 +1,70 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import Loader from "../../../../loader/Loader";
-import TrNav from "../../../Navbar/TrNav";
-import {
-  classStudentDetail,
-  classStudentUpdateAvatar,
-  clearErrorsTeacher,
-  allStudentsClass,
-} from "../../../../../store/features/teacher.reducers";
-import { useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
+import AnNav from "../../../Navbar/AnNav";
+import {adminFetchSingleTeacher, adminUpdateAvatarTeacher, clearErrorTeachers } from "../../../../../store/features/admin.reducers";
+import LoaderAn from "../../../LoaderAn/LoaderAn";
 
-const StDetails = () => {
+const TrDetails = () => {
   const dispatch = useDispatch();
   const params = useParams();
-  const {
-    loadingTeacher,
-    errorTeacher,
-    classStudentDetails,
-    msgAvatar,
-    errAvatar,
-  } = useSelector((state) => state?.teacher?.teacherD);
+  const navigate = useNavigate();
+  const { errTr,msgTr, loadingTr, singleTr } = useSelector(
+    (state) => state.admin.teachers
+  );
+
   const [Avatar, setAvatar] = useState("");
   const [avatarPreveiw, setAvatarPreveiw] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isMenuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
-    dispatch(classStudentDetail(params?.id));
+    dispatch(adminFetchSingleTeacher(params?.id));
   }, [params?.id, dispatch]);
 
   const {
+    firstName,
     fullName,
-    rollNo,
     age,
-    admissionClass,
-    fatherName,
+    email,
+    phone,
+    address,
     gender,
     DOB,
-    monthlyFee,
-    securityFee,
-    labFee,
     joiningDate,
+    leavingDate,
+    status,
     bloodGroup,
-    email,
-    address,
-    phone,
-    academicHistory,
+    subject,
+    sallary,
+    classesTaught,
     avatar,
-  } = classStudentDetails && classStudentDetails ? classStudentDetails : "";
+  } = singleTr && singleTr[0] ? singleTr[0] : "";
 
   const handleAvatarSubmit = (e) => {
     e.preventDefault();
     const formdata = new FormData();
     formdata.append("avatar", Avatar);
-    dispatch(classStudentUpdateAvatar({ id: params?.id, data: formdata }));
+    dispatch(adminUpdateAvatarTeacher({ id: params?.id, data: formdata }));
   };
 
+  const handleAcademicRecord = ()=>{
+    navigate(`/admin-portal/admin-academic-record-student/${params?.id}`)
+  }
+
   useEffect(() => {
-    if (msgAvatar) {
-      toast.success(msgAvatar);
-      dispatch(classStudentDetail(params?.id));
+    if (msgTr) {
+      toast.success(msgTr);
+      dispatch(adminFetchSingleTeacher(params?.id))
       setAvatarPreveiw(null);
     }
-    if (errAvatar) {
-      toast.error(errAvatar);
+    if (errTr) {
+      toast.error(errTr);
     }
-    dispatch(clearErrorsTeacher());
-  }, [msgAvatar, errAvatar, dispatch]);
+    dispatch(clearErrorTeachers());
+  }, [msgTr, errTr, dispatch]);
+
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -81,6 +79,10 @@ const StDetails = () => {
 
   const handleModalClose = () => {
     setIsModalOpen(false);
+  };
+
+  const handleMenuClick = () => {
+    setMenuOpen(!isMenuOpen);
   };
 
   return (
@@ -105,11 +107,41 @@ const StDetails = () => {
       )}
 
       <div className="p-[1.25rem] w-4/5 navdashMain">
-        <TrNav />
-        {loadingTeacher ? (
-          <Loader />
+        <AnNav />
+        {loadingTr ? (
+          <LoaderAn />
         ) : (
-          <div className=" w-[100%] stprofile shadow-lg border-2 border-[#8d5ade9d] shadow-[#6633996e] rounded-md p-6 overflow-hidden mt-6">
+          <div className=" w-[100%] stprofile relative shadow-lg border-2 border-[#8b008b94] shadow-[#8b008bbd]  rounded-md p-6 overflow-hidden mt-6">
+            {/* small menu */}
+            <div className=" absolute top-0 right-0 text-black m-4 text-sm z-50">
+              <button
+                onClick={handleMenuClick}
+                className="py-2 px-4 text-[1.125rem] rounded-full shadow-[#8b008bbd] shadow-md focus:outline-none transition duration-300 transform hover:scale-105"
+              >
+            <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
+              </button>
+              {isMenuOpen && (
+                <div className="origin-top-right z-50 absolute right-0 mt-2 w-40 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
+                  <div className="py-1">
+                    <p
+                      onClick={handleAcademicRecord}
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
+                    >
+                      Academic History
+                    </p>
+                    <Link
+                      to="#"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      Profile History
+                    </Link>
+                    {/* Add more menu items as needed */}
+                  </div>
+                </div>
+              )}
+
+            </div>
+
             {/* avatar + fullname + rollno */}
             <div className="flex  flex-col gap-1 justify-center items-center ">
               <div className="relative group">
@@ -123,8 +155,8 @@ const StDetails = () => {
                 />
                 <img
                   onClick={handleModalShow}
-                  className="object-cover object-center w-[120px] h-[120px] rounded-full"
-                  src={avatarPreveiw ? avatarPreveiw : !avatar ? "/5. College Student.png" : avatar}
+                  className="object-cover object-center w-[120px] h-[120px] rounded-full cursor-pointer"
+                  src={avatarPreveiw ? avatarPreveiw : avatar}
                   alt={`${fullName} Avatar`}
                 />
                 {/* Pen icon */}
@@ -139,7 +171,7 @@ const StDetails = () => {
                 <div className="flex justify-center items-center mt-2 mb-3 text-sm">
                   <button
                     onClick={handleAvatarSubmit}
-                    className="bg-gradient-to-r from-[#8D5ADD] to-[#794ACA] text-white hover:bg-slate-100 border-2 hover:border-2  py-2 px-4 rounded-md transition duration-300 ease-in-out focus:outline-none focus:ring focus:border-blue-300"
+                    className="bg-gradient-to-r from-[#8b008bef] to-[#861686e8]  text-white hover:bg-slate-100 border-2 hover:border-2  py-2 px-4 rounded-md transition duration-300 ease-in-out focus:outline-none focus:ring focus:border-blue-300"
                   >
                     Submit
                   </button>
@@ -149,7 +181,7 @@ const StDetails = () => {
                   <h2 className=" text-xl font-semibold text-gray-800 mb-2">
                     {fullName}
                   </h2>
-                  <p className="text-gray-600 mb-4">Roll No: {rollNo}</p>
+                  <p className="text-gray-600 mb-4">Subject : {subject}</p>
                 </>
               )}
             </div>
@@ -158,17 +190,13 @@ const StDetails = () => {
             <div>
               <table className="w-full">
                 <tbody className=" text-sm">
+                <tr className="border-2 mb-2">
+                    <td className="font-semibold p-2">First Name:</td>
+                    <td>{firstName}</td>
+                  </tr>
                   <tr className="border-2 mb-2">
                     <td className="font-semibold p-2">Age:</td>
                     <td>{age}</td>
-                  </tr>
-                  <tr className="border-2 mb-2">
-                    <td className="font-semibold p-2">Admission Class:</td>
-                    <td>{admissionClass}</td>
-                  </tr>
-                  <tr className="border-2 mb-2">
-                    <td className="font-semibold p-2">Father's Name:</td>
-                    <td>{fatherName}</td>
                   </tr>
                   <tr className="border-2 mb-2">
                     <td className="font-semibold p-2">Gender:</td>
@@ -179,20 +207,20 @@ const StDetails = () => {
                     <td>{DOB}</td>
                   </tr>
                   <tr className="border-2 mb-2">
-                    <td className="font-semibold p-2">Monthly Fee:</td>
-                    <td>{monthlyFee}</td>
+                    <td className="font-semibold p-2">Sallary :</td>
+                    <td>{sallary}</td>
                   </tr>
                   <tr className="border-2 mb-2">
-                    <td className="font-semibold p-2">Security Fee:</td>
-                    <td>{securityFee}</td>
-                  </tr>
-                  <tr className="border-2 mb-2">
-                    <td className="font-semibold p-2">Lab Fee:</td>
-                    <td>{labFee}</td>
+                    <td className="font-semibold p-2">Leaving Date:</td>
+                    <td>{leavingDate === null? "N/A":leavingDate}</td>
                   </tr>
                   <tr className="border-2 mb-2">
                     <td className="font-semibold p-2">Joining Date:</td>
                     <td>{joiningDate}</td>
+                  </tr>
+                  <tr className="border-2 mb-2">
+                    <td className="font-semibold p-2">Status :</td>
+                    <td className={status === "active" ? "text-green-500": "text-red-500"}>{status}</td>
                   </tr>
                   <tr className="border-2 mb-2">
                     <td className="font-semibold p-2">Blood Group:</td>
@@ -210,6 +238,18 @@ const StDetails = () => {
                     <td className="font-semibold p-2">Phone:</td>
                     <td>{phone}</td>
                   </tr>
+                  <tr className="border-2 mb-2">
+                    <td className="font-semibold p-2">Class Teacher :</td>
+                    <td>{singleTr && singleTr[1]}</td>
+                  </tr>
+                  <tr className="border-2 mb-2">
+                    <td className="font-semibold p-2">Classes Taught:</td>
+                    <td>{
+                          classesTaught?.map((val)=>(
+                            <span key={val?._id} className="mx-2">{ val?.className}</span>
+                          ))
+                      }</td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -220,4 +260,4 @@ const StDetails = () => {
   );
 };
 
-export default StDetails;
+export default TrDetails;

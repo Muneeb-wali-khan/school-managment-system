@@ -4,6 +4,7 @@ import userProfileSlice from "./features/user.reducer";
 import {persistStore, persistReducer} from "redux-persist"
 import storage from "redux-persist/lib/storage"
 import teacherReducers from "./features/teacher.reducers";
+import adminReducers from "./features/admin.reducers";
 
 
 
@@ -22,6 +23,7 @@ export const store = configureStore({
         user: persistedReducer,
         profile: userProfileSlice,
         teacher: teacherReducers,
+        admin: adminReducers
     },
     middleware: (getDefaultMiddleware) =>{
         return getDefaultMiddleware({

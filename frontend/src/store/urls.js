@@ -19,6 +19,31 @@ const classSubjectsUrl = "/api/v1/teacher/all-subjects-class"
 const classSubjectsCurriculumUrl = "/api/v1/teacher/curriculum-subject"
 
 
+// admin urls
+
+//student
+const adminAllStudentsUrl = "/api/v1/admin/all-students"
+const adminStudentDetailsUrl = "/api/v1/admin/student/"
+const adminStudentAvatarUrl = "/api/v1/admin/update-student-avatar/"
+const adminStudentRegisterUrl = "/api/v1/admin/add-student"
+const adminStudentUpdateUrl = "/api/v1/admin/update-student/"
+const adminStudentRemoveUrl = "/api/v1/admin/remove-student/"
+const adminStudentAcademicRecordUrl = "/api/v1/admin/all-student-academic-record/"
+const adminSingleAcademicRecordUrl = "/api/v1/admin/single-student-academic-record/"
+const adminAddAcademicRecordUrl = "/api/v1/admin/add-student-academic-record/"
+const adminUpdateAcademicRecordUrl = "/api/v1/admin/update-student-academic-record/"
+const adminDeleteAcademicRecordUrl = "/api/v1/admin/remove-student-academic-record/"
+
+// teacher
+const adminAllTeachersUrl = "/api/v1/admin/all-teachers"
+const adminTeacherDetailsUrl = "/api/v1/admin/single-teacher/"
+const adminTeacherAddUrl = "/api/v1/admin/add-teacher"
+const adminTeacherUpdateUrl = "/api/v1/admin/update-teacher/"
+const adminTeacherUpdateAvatarUrl = "/api/v1/admin/update-avatar-teacher/"
+const adminTeacherDeleteUrl = "/api/v1/admin/remove-teacher/"
+
+
+
 
 export  {
     loginUrl,
@@ -39,5 +64,26 @@ export  {
     classStudentUpdateAvatarUrl,
     classTeachersOfClassUrl,
     classSubjectsUrl,
-    classSubjectsCurriculumUrl
+    classSubjectsCurriculumUrl,
+
+    //admin
+    //students
+    adminAllStudentsUrl,
+    adminStudentDetailsUrl,
+    adminStudentAvatarUrl,
+    adminStudentRegisterUrl,
+    adminStudentUpdateUrl,
+    adminStudentRemoveUrl,
+    adminStudentAcademicRecordUrl,
+    adminSingleAcademicRecordUrl,
+    adminAddAcademicRecordUrl,
+    adminUpdateAcademicRecordUrl,
+    adminDeleteAcademicRecordUrl,
+    // teachers
+    adminAllTeachersUrl,
+    adminTeacherDetailsUrl,
+    adminTeacherAddUrl,
+    adminTeacherUpdateUrl,
+    adminTeacherUpdateAvatarUrl,
+    adminTeacherDeleteUrl
 }

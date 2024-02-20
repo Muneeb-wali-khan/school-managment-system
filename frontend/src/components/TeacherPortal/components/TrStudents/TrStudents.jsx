@@ -95,7 +95,7 @@ const TrStudents = () => {
       name: "gender",
       label: "Gender",
       options: {
-        filter: false,
+        filter: true,
         sort: false,
       },
     },
@@ -189,7 +189,7 @@ const TrStudents = () => {
         />
         <div className="p-[1.25rem] w-4/5 navdashMain">
           <TrNav />
-          <div className="mt-8">
+          <div className="mt-4">
             {allStudentsClass ? (
               <>
                 <div
