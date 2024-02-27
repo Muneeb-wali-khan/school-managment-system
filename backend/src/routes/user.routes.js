@@ -11,7 +11,7 @@ import {
   
 } from "../controllers/user.controllers.js";
 import { upload } from "../middlewares/multer.js";
-import { isAdmin, jwtVerify } from "../middlewares/auth.middleware.js";
+import { jwtVerify } from "../middlewares/auth.middleware.js";
 import multer from "multer";
 import { ApiError } from "../utils/ApiError.js";
 

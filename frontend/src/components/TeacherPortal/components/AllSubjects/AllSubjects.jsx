@@ -75,8 +75,8 @@ const AllSubjects = () => {
         )}
 
         {allSubjectsCl && allSubjectsCl?.subjects && (
-          <div className="overflow-x-auto rounded flex justify-between">
-            <table className="w-[100%]  bg-white border-2 border-[#663399bb]">
+          <div className="overflow-x-auto rounded flex justify-between border-[#663399da] ">
+            <table className="w-[100%]  bg-white border-2 border-[#7626c7bb]">
               <thead>
                 <tr className="text-gray-600">
                   <th className="py-2 text-start px-4 border-b">

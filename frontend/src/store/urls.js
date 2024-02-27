@@ -42,6 +42,18 @@ const adminTeacherUpdateUrl = "/api/v1/admin/update-teacher/"
 const adminTeacherUpdateAvatarUrl = "/api/v1/admin/update-avatar-teacher/"
 const adminTeacherDeleteUrl = "/api/v1/admin/remove-teacher/"
 
+// subjects
+const adminAllSubjectsUrl = "/api/v1/admin/all-subjects"
+const adminSingleSubjectUrl = "/api/v1/admin/single-subject/"
+const adminAddSubjectUrl = "/api/v1/admin/add-subject"
+const adminRemoveSubjectUrl = "/api/v1/admin/remove-subject/"
+const adminAllSubjectCurriculumUrl = "/api/v1/admin/all-curriculums-subject/"
+const adminAddSubjectCurriculumUrl = "/api/v1/admin/add-curriculum/"
+const adminSingleCurriculumUrl = "/api/v1/admin/single-curriculum/"
+const adminUpdateCurriculumUrl = "/api/v1/admin/update-curriculum/"
+const adminDeleteCurriculumUrl = "/api/v1/admin/remove-curriculum/"
+
+
 
 
 
@@ -85,5 +97,17 @@ export  {
     adminTeacherAddUrl,
     adminTeacherUpdateUrl,
     adminTeacherUpdateAvatarUrl,
-    adminTeacherDeleteUrl
+    adminTeacherDeleteUrl,
+
+    // subjects
+    adminAllSubjectsUrl,
+    adminSingleSubjectUrl,
+    adminAddSubjectUrl,
+    adminRemoveSubjectUrl,
+    adminAllSubjectCurriculumUrl,
+    adminAddSubjectCurriculumUrl,
+    adminSingleCurriculumUrl,
+    adminUpdateCurriculumUrl,
+    adminDeleteCurriculumUrl
+
 }

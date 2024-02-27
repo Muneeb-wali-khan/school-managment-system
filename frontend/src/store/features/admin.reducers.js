@@ -4,7 +4,7 @@ import {
     combineReducers,
   } from "@reduxjs/toolkit";
   import axios from "axios";
-import { adminAddAcademicRecordUrl, adminAllStudentsUrl, adminAllTeachersUrl, adminDeleteAcademicRecordUrl, adminSingleAcademicRecordUrl, adminStudentAcademicRecordUrl, adminStudentAvatarUrl, adminStudentDetailsUrl, adminStudentRegisterUrl, adminStudentRemoveUrl, adminStudentUpdateUrl, adminTeacherAddUrl, adminTeacherDeleteUrl, adminTeacherDetailsUrl, adminTeacherUpdateAvatarUrl, adminTeacherUpdateUrl, adminUpdateAcademicRecordUrl } from "../urls";
+import { adminAddAcademicRecordUrl, adminAddSubjectCurriculumUrl, adminAddSubjectUrl, adminAllStudentsUrl, adminAllSubjectCurriculumUrl, adminAllSubjectsUrl, adminAllTeachersUrl, adminDeleteAcademicRecordUrl, adminDeleteCurriculumUrl, adminRemoveSubjectUrl, adminSingleAcademicRecordUrl, adminSingleCurriculumUrl, adminSingleSubjectUrl, adminStudentAcademicRecordUrl, adminStudentAvatarUrl, adminStudentDetailsUrl, adminStudentRegisterUrl, adminStudentRemoveUrl, adminStudentUpdateUrl, adminTeacherAddUrl, adminTeacherDeleteUrl, adminTeacherDetailsUrl, adminTeacherUpdateAvatarUrl, adminTeacherUpdateUrl, adminUpdateAcademicRecordUrl, adminUpdateCurriculumUrl } from "../urls";
 
   
 // all students 
@@ -533,15 +533,305 @@ export const adminRemoveAcademicRecord = createAsyncThunk("admin/studentDeleteAc
   })
 
 
+// =======================================Subjects Slice====================================================================
+
+//all subjects ✅ 
+export const adminFetchAllSubjects = createAsyncThunk("admin/allSubjects",async(id,{rejectWithValue})=>{
+  try {
+    const config = {headers: {"Content-Type": "application/json"}};
+    const res = await axios.get(`${adminAllSubjectsUrl}`,config)
+    return res.data
+
+  } catch (error) {
+    return rejectWithValue(error?.response?.data)
+  }
+})
+
+// single subject ✅
+export const adminFetchSingleSubject = createAsyncThunk("admin/singleSubject",async(id,{rejectWithValue})=>{
+  try {
+    const config = {headers: {"Content-Type": "application/json"}};
+    const res = await axios.get(`${adminSingleSubjectUrl}${id}`,config)
+    return res.data
+
+  } catch (error) {
+    return rejectWithValue(error?.response?.data)
+  }
+})
+
+// add subject ✅
+export const adminAddSubject = createAsyncThunk("admin/addSubject",async(subject,{rejectWithValue})=>{
+  try {
+    const config = {headers: {"Content-Type": "application/json"}};
+    console.log("action" , subject);
+    const res = await axios.post(`${adminAddSubjectUrl}`,subject,config)
+    console.log(res.data);
+    return res.data
+
+  } catch (error) {
+    return rejectWithValue(error?.response?.data)
+  }
+})
+
+
+// delete subject ❌
+export const adminDeleteSubject = createAsyncThunk("admin/deleteSubject",async(id,{rejectWithValue})=>{
+  try {
+    const config = {headers: {"Content-Type": "application/json"}};
+    const res = await axios.delete(`${adminRemoveSubjectUrl}${id}`,config)
+    return res.data
+
+  } catch (error) {
+    return rejectWithValue(error?.response?.data)
+  }
+})
+
+
+// all subject curriculums ✅
+export const adminAllCurriculumsSubject = createAsyncThunk("admin/curriculumsSubject",async(id,{rejectWithValue})=>{
+  try {
+    const config = {headers: {"Content-Type": "application/json"}};
+    const res = await axios.get(`${adminAllSubjectCurriculumUrl}${id}`,config)
+    return res.data
+
+  } catch (error) {
+    return rejectWithValue(error?.response?.data)
+  }
+})
+
+
+// add subject curriculum ✅
+export const adminAddCurriculumSubject = createAsyncThunk("admin/addcurriculumSubject",async({id: id, data:data},{rejectWithValue})=>{
+  try {
+    const config = {headers: {"Content-Type": "application/json"}};
+    const res = await axios.post(`${adminAddSubjectCurriculumUrl}${id}`,data,config)
+    return res.data
+
+  } catch (error) {
+    return rejectWithValue(error?.response?.data)
+  }
+})
+
+// single subject curriculum ✅
+export const adminSingleCurriculumSubject = createAsyncThunk("admin/singleCurriculumSubject",async(id,{rejectWithValue})=>{
+  try {
+    const config = {headers: {"Content-Type": "application/json"}};
+    const res = await axios.get(`${adminSingleCurriculumUrl}${id}`,config)
+    return res.data
+
+  } catch (error) {
+    return rejectWithValue(error?.response?.data)
+  }
+})
+
+// update subject curriculum ✅
+export const adminUpdateCurriculumSubject = createAsyncThunk("admin/updateCurriculumSubject",async({id:id, data:data},{rejectWithValue})=>{
+  try {
+    const config = {headers: {"Content-Type": "application/json"}};
+    const res = await axios.put(`${adminUpdateCurriculumUrl}${id}`,data,config)
+    return res.data
+
+  } catch (error) {
+    return rejectWithValue(error?.response?.data)
+  }
+})
+
+// delete subject curriculum ✅
+export const adminRemoveCurriculumSubject = createAsyncThunk("admin/removeCurriculumSubject",async(id,{rejectWithValue})=>{
+  try {
+    const config = {headers: {"Content-Type": "application/json"}};
+    const res = await axios.delete(`${adminDeleteCurriculumUrl}${id}`,config)
+    return res.data
+
+  } catch (error) {
+    return rejectWithValue(error?.response?.data)
+  }
+})
+
+
+const subjectOptSlice = createSlice({
+  name: 'subjects',
+  initialState:{
+    loadingSb: false,
+    errSb: null,
+    msgSb: null,
+    msgUptSb: null,
+    errUptSb: null,
+    msgDelSb: null,
+    errDelSb: null,
+    curriculums: null,
+    msgUptSbCur: null,
+    errUptSbCur: null,
+    msgDelSbCur: null,
+    errDelSbCur: null,
+    allSb: null,
+    singleSb: null,
+    singleSbCurriculum: null,
+
+
+  },
+
+  reducers:{
+    clearErrorSubjects(state){
+      state.errSb =  null
+      state.msgSb =  null
+      state.msgUptSb =  null
+      state.errUptSb =  null
+      state.msgDelSb =  null
+      state.errDelSb =  null
+      state.msgUptSbCur = null
+      state.errUptSbCur = null
+      state.msgDelSbCur = null
+      state.errDelSbCur = null
+    }
+  },
+
+
+  extraReducers: (builder) => {
+      // all subjects
+      builder.addCase(adminFetchAllSubjects.pending, (state, action)=>{
+        state.loadingSb = true
+        state.errSb = null
+      })
+      builder.addCase(adminFetchAllSubjects.fulfilled, (state, action)=>{
+        state.loadingSb = false
+        state.allSb = action.payload.data
+      })
+      builder.addCase(adminFetchAllSubjects.rejected, (state, action)=>{
+        state.loadingSb = false
+        state.errSb = action.payload.message
+      })
+
+      // single subjects
+      builder.addCase(adminFetchSingleSubject.pending, (state, action)=>{
+        state.loadingSb = true
+        state.errSb = null
+      })
+      builder.addCase(adminFetchSingleSubject.fulfilled, (state, action)=>{
+        state.loadingSb = false
+        state.singleSb = action.payload.data
+      })
+      builder.addCase(adminFetchSingleSubject.rejected, (state, action)=>{
+        state.loadingSb = false
+        state.errSb = action.payload.message
+      })
+
+      // add subject
+      builder.addCase(adminAddSubject.pending, (state, action)=>{
+        state.loadingSb = true
+        state.errSb = null
+      })
+      builder.addCase(adminAddSubject.fulfilled, (state, action)=>{
+        state.loadingSb = false
+        state.msgSb = action.payload.message
+      })
+      builder.addCase(adminAddSubject.rejected, (state, action)=>{
+        state.loadingSb = false
+        state.errSb = action.payload.message
+      })
+
+      // delete subject
+      builder.addCase(adminDeleteSubject.pending, (state, action)=>{
+        state.loadingSb = true
+        state.errDelSb = null
+      })
+      builder.addCase(adminDeleteSubject.fulfilled, (state, action)=>{
+        state.loadingSb = false
+        state.msgDelSb = action.payload.message
+      })
+      builder.addCase(adminDeleteSubject.rejected, (state, action)=>{
+        state.loadingSb = false
+        state.errDelSb = action.payload.message
+      })
+
+
+      // all curriculums of  subject
+      builder.addCase(adminAllCurriculumsSubject.pending, (state, action)=>{
+        state.loadingSb = true
+        state.errSb = null
+      })
+      builder.addCase(adminAllCurriculumsSubject.fulfilled, (state, action)=>{
+        state.loadingSb = false
+        state.curriculums = action.payload.data
+      })
+      builder.addCase(adminAllCurriculumsSubject.rejected, (state, action)=>{
+        state.loadingSb = false
+        state.errSb = action.payload.message
+      })
+
+      // add curriculum of  subject
+      builder.addCase(adminAddCurriculumSubject.pending, (state, action)=>{
+        state.loadingSb = true
+        state.errSb = null
+      })
+      builder.addCase(adminAddCurriculumSubject.fulfilled, (state, action)=>{
+        state.loadingSb = false
+        state.msgSb = action.payload.message
+      })
+      builder.addCase(adminAddCurriculumSubject.rejected, (state, action)=>{
+        state.loadingSb = false
+        state.errSb = action.payload.message
+      })
+
+      // single curriculum of  subject
+      builder.addCase(adminSingleCurriculumSubject.pending, (state, action)=>{
+        state.loadingSb = true
+        state.errSb = null
+      })
+      builder.addCase(adminSingleCurriculumSubject.fulfilled, (state, action)=>{
+        state.loadingSb = false
+        state.singleSbCurriculum = action.payload.data
+      })
+      builder.addCase(adminSingleCurriculumSubject.rejected, (state, action)=>{
+        state.loadingSb = false
+        state.errSb = action.payload.message
+      })
+
+      // Update curriculum of  subject
+      builder.addCase(adminUpdateCurriculumSubject.pending, (state, action)=>{
+        state.loadingSb = true
+        state.errUptSbCur = null
+      })
+      builder.addCase(adminUpdateCurriculumSubject.fulfilled, (state, action)=>{
+        state.loadingSb = false
+        state.msgUptSbCur = action.payload.message
+      })
+      builder.addCase(adminUpdateCurriculumSubject.rejected, (state, action)=>{
+        state.loadingSb = false
+        state.errUptSbCur = action.payload.message
+      })
+
+      // delete curriculum of  subject
+      builder.addCase(adminRemoveCurriculumSubject.pending, (state, action)=>{
+        state.loadingSb = true
+        state.errDelSbCur = null
+      })
+      builder.addCase(adminRemoveCurriculumSubject.fulfilled, (state, action)=>{
+        state.loadingSb = false
+        state.msgDelSbCur = action.payload.message
+      })
+      builder.addCase(adminRemoveCurriculumSubject.rejected, (state, action)=>{
+        state.loadingSb = false
+        state.errDelSbCur = action.payload.message
+      })
+
+
+  }
+
+})
+
+
 
 
 
   export const {clearErrorStudents} = studentOptSlice.actions
   export const {clearErrorTeachers} = teacherOptSlice.actions
+  export const {clearErrorSubjects} = subjectOptSlice.actions
 
   const adminReducers = combineReducers({
     students: studentOptSlice.reducer ,
-    teachers: teacherOptSlice.reducer 
+    teachers: teacherOptSlice.reducer ,
+    subjects: subjectOptSlice.reducer
   })
 
 

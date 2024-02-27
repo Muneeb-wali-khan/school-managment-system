@@ -15,7 +15,7 @@ import toast from "react-hot-toast";
 const AllTeachers = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { loadingTr, errDelTr, msgDelTr, allTr } = useSelector(
+  const { loadingTr, errDelTr, msgDelTr, allTr,errTr } = useSelector(
     (state) => state?.admin?.teachers
   );
 
@@ -205,11 +205,11 @@ const AllTeachers = () => {
           <LoaderAn />
         ) : (
           <>
-            {errDelTr && (
+            {errTr && (
               <p className="text-red-500 text-lg font-semibold mb-4">
                 <div className="flex flex-col items-center justify-center h-[50vh] mt-10 w-full border border-gray-300 rounded-lg shadow-lg">
                   <h1 className="text-4xl font-extrabold text-red-500 mb-2">
-                    {errSt}
+                    {errTr}
                   </h1>
                   <p className="text-lg text-gray-600 leading-6">
                     It seems like you haven't been assigned as the Admin.

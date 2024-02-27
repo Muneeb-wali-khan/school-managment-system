@@ -4,7 +4,6 @@ const subjectSchema = new Schema({
   subjectName: {
     type: String,
     required: true,
-    unique: true,
     trim: true,
   },
   teachers: [

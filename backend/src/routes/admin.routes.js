@@ -40,6 +40,7 @@ import {
   removeSubject,
   singleSubject,
   updateCurriculumSubject,
+  singleCurriculumRecord,
 
 } from "../controllers/admin.controllers.js";
 import multer from "multer";
@@ -98,6 +99,7 @@ router.route("/remove-subject/:id").delete(jwtVerify,isAdmin, removeSubject);
 
 router.route("/all-curriculums-subject/:id").get(jwtVerify,isAdmin, allCurriculumSubject);
 router.route("/add-curriculum/:id").post(jwtVerify,isAdmin, addCurriculumSubject);
+router.route("/single-curriculum/:id").get(jwtVerify,isAdmin, singleCurriculumRecord);
 router.route("/update-curriculum/:id").put(jwtVerify,isAdmin, updateCurriculumSubject);
 router.route("/remove-curriculum/:id").delete(jwtVerify,isAdmin, deleteCurriculumSubject);
 

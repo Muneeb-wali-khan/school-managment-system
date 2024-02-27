@@ -66,7 +66,7 @@ const TrProfiles = () => {
       toast.error(errorUser4);
     }
     dispatch(clearErrorsUserProfile());
-  }, [msgUser4, errorUser4]);
+  }, [dispatch,msgUser4, errorUser4]);
 
   const handleModalShow = () => {
     setIsModalOpenAvatar(true);

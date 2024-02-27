@@ -604,14 +604,17 @@ const curriculumOfSubjectOfClass = asyncHandler(async (req, res) => {
   const mapoverCurriculum = findMyClassCurriculum?.map((cur) =>  cur?.curriculum?.filter((cls)=> cls?.curriculumClass === teacherOfClass?.className ))
 
   const filterbyId = mapoverCurriculum?.map(val => val?.filter(ids=> ids))
+  //filter those who is not null
+  const filterActive = filterbyId?.filter(val=> val?.length !== 0)
+  const  finalCur = filterActive?.map((val)=> val[0])
 
-  if(!filterbyId){
+  if(!filterActive){
     throw new ApiError(404, "curriculum not found !")
   }
 
   return res
     .status(200)
-    .json(new ApiResponse(200, filterbyId, "curiculum"));
+    .json(new ApiResponse(200, finalCur, "curiculum"));
 });
 
 

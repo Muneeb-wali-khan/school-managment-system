@@ -329,23 +329,29 @@ const updateProfile = asyncHandler(async (req, res) => {
     { new: true }
   ).select("-password -uniqueCode");
 
+  if (!user) {
+    throw new ApiError(404, "failed to update user profile !");
+  }
+
   const findTeacherWithFullNameAndEmail = await Teacher.findOne({
     fullName: req?.user?.fullName,
     email: req?.user?.email,
   });
 
-  const updateTeacher = await Teacher.findByIdAndUpdate(
-    findTeacherWithFullNameAndEmail?._id,
-    {
-      $set: {
-        fullName: fullName,
-        email: email,
-      },
+  if(findTeacherWithFullNameAndEmail !== null){
+    const updateTeacher = await Teacher.findByIdAndUpdate(
+      findTeacherWithFullNameAndEmail?._id,
+      {
+        $set: {
+          fullName: fullName,
+          email: email,
+        },
+      }
+    );
+  
+    if (!updateTeacher) {
+      throw new ApiError(404, "failed to update user profile !");
     }
-  );
-
-  if (!user || !updateTeacher) {
-    throw new ApiError(404, "failed to update user profile !");
   }
 
   return res

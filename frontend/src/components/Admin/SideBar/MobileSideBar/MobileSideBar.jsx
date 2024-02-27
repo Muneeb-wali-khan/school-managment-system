@@ -115,7 +115,7 @@ const MobileSideBar = () => {
                       </i>
                     </a>
                     <Link
-                      to="/teacher-portal/all-class-subjects"
+                      to="/admin-portal/admin-all-subjects"
                       className="cursor-pointer font-semibold text-gray-200 hover:text-white transition-all"
                     >
                       All Subjects

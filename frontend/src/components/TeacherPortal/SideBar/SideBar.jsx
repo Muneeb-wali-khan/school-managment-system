@@ -29,14 +29,14 @@ const SideBar = () => {
   return (
     <>
       {/* <!-- Left Sidebar --> */}
-      <div className="w-[32%] max-w-[17%]  h-auto p-[10px] sidebar  rounded-lg m-[20px] bg-[rebeccapurple] text-white shadow-2xl shadow-[#0000006c]">
+      <div className="w-[32%] max-w-[17%]  h-[141vh] p-[10px] sidebar  rounded-lg m-[20px] bg-[rebeccapurple] text-white shadow-2xl shadow-[#0000006c]">
         {/* <!-- logo div  --> */}
         <div className="w-100 flex items-center justify-center pt-3 h-32">
           <img src="/Frame 47.png" height="50" width="100" alt="" />
         </div>
 
         {/* <!-- icons div --> */}
-        <div className="w-100 flex mt-14 pb-5 flex-col justify-between h-[100vh] pl-7">
+        <div className="w-100 flex mt-14 pb-5 flex-col justify-between h-[105vh] pl-7">
           <div className="flex flex-col gap-10">
             <div className="flex gap-5 items-center">
               <a>
@@ -51,7 +51,7 @@ const SideBar = () => {
 
             <div className="flex gap-4 items-center">
               <a>
-                <i class="fa-solid fa-graduation-cap" style={{color: "#ffffff"}}>
+                <i className="fa-solid fa-graduation-cap" style={{color: "#ffffff"}}>
                 {" "}
                 </i>
               </a>
