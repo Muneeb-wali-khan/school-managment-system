@@ -17,6 +17,7 @@ const classStudentUpdateAvatarUrl = "/api/v1/teacher/update-student-avatar/"
 const classTeachersOfClassUrl = "/api/v1/teacher/all-teachers-class"
 const classSubjectsUrl = "/api/v1/teacher/all-subjects-class"
 const classSubjectsCurriculumUrl = "/api/v1/teacher/curriculum-subject"
+const classStudentAttendance = "/api/v1/teacher/take-attendance-class"
 
 
 // admin urls
@@ -53,8 +54,20 @@ const adminSingleCurriculumUrl = "/api/v1/admin/single-curriculum/"
 const adminUpdateCurriculumUrl = "/api/v1/admin/update-curriculum/"
 const adminDeleteCurriculumUrl = "/api/v1/admin/remove-curriculum/"
 
+// classes
+const adminAllClassesUrl = "/api/v1/admin/all-classes"
+const adminSingleClassUrl = "/api/v1/admin/single-class/"
+const adminAddClassUrl = "/api/v1/admin/add-class"
+const adminUpdateClassUrl = "/api/v1/admin/update-class/"
+const adminRemoveClassUrl = "/api/v1/admin/remove-class/"
 
 
+// users
+const adminAllUsersWebAppUrl = "/api/v1/admin/all-users"
+const adminSingleUserWebAppUrl = "/api/v1/admin/single-user/"
+const adminUpdateUserWebAppUrl = "/api/v1/admin/update-user-role/"
+const adminRemoveUserWebAppUrl = "/api/v1/admin/remove-user/"
+const updateUserAvatarUrl = "/api/v1/admin/update-user-avatar/"
 
 
 export  {
@@ -77,8 +90,10 @@ export  {
     classTeachersOfClassUrl,
     classSubjectsUrl,
     classSubjectsCurriculumUrl,
+    classStudentAttendance,
 
-    //admin
+    //admin ROUTES
+
     //students
     adminAllStudentsUrl,
     adminStudentDetailsUrl,
@@ -108,6 +123,20 @@ export  {
     adminAddSubjectCurriculumUrl,
     adminSingleCurriculumUrl,
     adminUpdateCurriculumUrl,
-    adminDeleteCurriculumUrl
+    adminDeleteCurriculumUrl,
+
+    //classes
+    adminAllClassesUrl,
+    adminSingleClassUrl,
+    adminAddClassUrl,
+    adminUpdateClassUrl,
+    adminRemoveClassUrl,
+
+    // users web app
+    adminAllUsersWebAppUrl,
+    adminSingleUserWebAppUrl,
+    adminUpdateUserWebAppUrl,
+    adminRemoveUserWebAppUrl,
+    updateUserAvatarUrl
 
 }

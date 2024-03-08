@@ -95,34 +95,34 @@ const SideBar = () => {
               </Link>
             </div>
 
-            <div className="flex gap-5 items-center">
+            <div className="flex gap-4 items-center">
               <a>
-                <i className="fa fa-file-excel mr-[3px]" style={{color: "#ffffff"}}>
+                <i className="fa fa-users mr-[1px]" style={{color: "#ffffff"}}>
                   {" "}
                 </i>
               </a>
-              <a
-                href="/dashboard"
+              <Link
+                to="/admin-portal/admin-all-classes"
                 className="cursor-pointer font-semibold text-gray-200 hover:text-white transition-all"
               >
-                Drop Semisters
-              </a>
+               All Classes
+              </Link>
             </div>
 
-            <div className="flex gap-5 items-center">
+            <div className="flex gap-4 items-center">
               <a>
-                <i
-                  className="fa fa-square-poll-vertical mr-[1px]"
-                  style={{color: "#ffffff"}}
-                ></i>
+                <i className="fa fa-users mr-[1px]" style={{color: "#ffffff"}}>
+                  {" "}
+                </i>
               </a>
-              <a
-                href="/dashboard"
+              <Link
+                to="/admin-portal/admin-all-users"
                 className="cursor-pointer font-semibold text-gray-200 hover:text-white transition-all"
               >
-                Results
-              </a>
+               All Users
+              </Link>
             </div>
+
 
             <div className="flex gap-4 items-center">
               <a>

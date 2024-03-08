@@ -77,19 +77,6 @@ const AllSubjects = () => {
         <AnNav />
         {loadingSb ? (
           <LoaderAn />
-        ) : errSb ? (
-          <>
-            <div className="text-red-500 text-lg font-semibold mb-4">
-              <div className="flex flex-col items-center justify-center h-[50vh] mt-10 w-full border border-gray-300 rounded-lg shadow-lg">
-                <h1 className="text-4xl font-extrabold text-red-500 mb-2">
-                  {errSb}
-                </h1>
-                <p className="text-lg text-gray-600 leading-6">
-                  It seems like you haven't been assigned as the Admin.
-                </p>
-              </div>
-            </div>
-          </>
         ) : (
           <>
             {allSb && allSb ? (
@@ -100,7 +87,7 @@ const AllSubjects = () => {
                   </button>
                 </div>
 
-                <div className="overflow-x-auto">
+                <div className="overflow-x-auto overflow-y-auto sbdetailsAdminScrollBar max-h-[115vh]">
                   <table className="min-w-full bg-white border-2 rounded-lg border-[#8b008b8e]">
                     <thead className=" bg-[#a139a1] text-white">
                       <tr>
@@ -118,7 +105,7 @@ const AllSubjects = () => {
                           <td className="py-3 px-4 text-left border-b text-[#8b008bb9] font-semibold">
                             {subject.subjectName}
                           </td>
-                          <td className="py-2 px-4 text-left border-b space-x-5">
+                          <td className="py-2 px-4 text-left border-b space-x-5 allSubjectsAdmin">
                             <Link
                               title="Veiw Subject"
                               className="py-1 px-3 rounded-lg"
@@ -135,7 +122,7 @@ const AllSubjects = () => {
                             </Link>
                             <i
                               title="Remove Subject"
-                              className="py-1 px-3  text-red-500 rounded-lg cursor-pointer fa fa-trash"
+                              className="py-1 px-3   text-red-500 rounded-lg cursor-pointer fa fa-trash"
                               onClick={() => handleDeleteSub(subject?._id)}
                             />
                           </td>

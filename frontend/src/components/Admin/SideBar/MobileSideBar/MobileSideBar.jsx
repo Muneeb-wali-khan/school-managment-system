@@ -125,34 +125,39 @@ const MobileSideBar = () => {
                   <div className="flex gap-5 items-center">
                     <a>
                       <i
-                        className="fa fa-file-excel mr-[3px]"
+                        className="fa fa-users mr-[3px]"
                         style={{ color: "#ffffff" }}
                       >
                         {" "}
                       </i>
                     </a>
                     <Link
-                      to="/dashboard"
+                      to="/admin-portal/admin-all-classes"
                       className="cursor-pointer font-semibold text-gray-200 hover:text-white transition-all"
                     >
-                      Drop Semisters
+                      All Classes
                     </Link>
                   </div>
+
 
                   <div className="flex gap-5 items-center">
                     <a>
                       <i
-                        className="fa fa-square-poll-vertical mr-[1px]"
+                        className="fa fa-users mr-[3px]"
                         style={{ color: "#ffffff" }}
-                      ></i>
+                      >
+                        {" "}
+                      </i>
                     </a>
                     <Link
-                      to="/dashboard"
+                      to="/admin-portal/admin-all-users"
                       className="cursor-pointer font-semibold text-gray-200 hover:text-white transition-all"
                     >
-                      Results
+                      All Users
                     </Link>
                   </div>
+
+
 
                   <div className="flex gap-4 items-center">
                     <a>

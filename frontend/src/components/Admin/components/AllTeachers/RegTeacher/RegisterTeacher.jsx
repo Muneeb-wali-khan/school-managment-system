@@ -200,7 +200,7 @@ const RegisterTeacher = () => {
                     <option value="urdu">Urdu</option>
                     <option value="science">Science</option>
                     <option value="maths">Maths</option>
-                    <option value="science">Science</option>
+                    <option value="isl">Isl</option>
                   </select>
                 </div>
 

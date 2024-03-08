@@ -39,9 +39,10 @@ const AnNav = () => {
     dispatch(clearErrorsAuth());
   }, [msgAuth, errorAuth, dispatch]);
 
+
   return (
     <>
-      {loadingAuth && (<LoaderAn />)}
+      {loadingAuth && <LoaderAn />}
       {/* <!-- Navbar --> */}
       <div className="flex justify-between items-center mb-4 pr-2">
         <div className="flex items-center">
@@ -129,12 +130,18 @@ const AnNav = () => {
           </div>
 
           {/* <!-- Bell Icon with Notification Dot --> */}
+
           <div className="relative ml-4">
-            <div className="w-6 h-6 cursor-pointer">
+            <Link to='/admin-portal/admin-add-notification'
+              className="w-6 h-6 cursor-pointer relative"
+            >
               <span className="fa fa-bell"></span>
-            </div>
-            {/* <!-- Notification Dot --> */}
-            <div className="absolute top-0 right-2 h-2 w-2 bg-red-500 rounded-full"></div>
+
+              {/* Notification Dot */}
+                <div className="absolute text-xs -top-1 -right-2 h-2 w-2  rounded-full flex-shrink-0 items-center flex justify-center ">
+                  <i className="fa fa-plus"></i>
+                </div>
+            </Link>
           </div>
         </div>
       </div>

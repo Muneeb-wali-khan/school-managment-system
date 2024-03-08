@@ -111,12 +111,13 @@ const MobileSideBar = () => {
                       </i>
                     </a>
                     <Link
-                      to="/teacher-portal/all-class-subjects"
+                      to="/teacher-portal/take-attendance-student"
                       className="cursor-pointer font-semibold text-gray-200 hover:text-white transition-all"
                     >
                       Class Subjects
                     </Link>
                   </div>
+
 
                   <div className="flex gap-5 items-center">
                     <a>

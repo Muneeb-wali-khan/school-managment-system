@@ -5,7 +5,6 @@ import LoaderTr from "./LoaderTr/LoaderTr"
 import { profileUser } from "../../store/features/user.reducer";
 import { useDispatch } from "react-redux";
 import { allStudentsClass, allSubjectsOfClass, allTeachersOfClass, profileTeacher } from "../../store/features/teacher.reducers";
-import CurriculumSub from "./components/AllSubjects/CurriculumSubject/CurriculumSub";
 
 const AllTeachers = lazy(()=> import("../../components/TeacherPortal/components/AllTeachers/AllTeachers")) 
 const AllSubjects = lazy(()=> import("../../components/TeacherPortal/components/AllSubjects/AllSubjects")) 
@@ -14,6 +13,9 @@ const StDetails = lazy(()=> import("../../components/TeacherPortal/components/Tr
 const UpdateStudent = lazy(()=> import("../../components/TeacherPortal/components/TrStudents/UpdateStudent/UpdateStudent")) 
 const AddStudent = lazy(()=> import("../../components/TeacherPortal/components/TrStudents/AddStudent/AddStudent")) 
 const TrProfiles = lazy(()=> import("../../components/TeacherPortal/components/TrProfiles/TrProfiles")) 
+const CurriculumSub = lazy(()=> import("../../components/TeacherPortal/components/AllSubjects/CurriculumSubject/CurriculumSub")) 
+const TakeAttendance = lazy(()=> import("../../components/TeacherPortal/components/Attendance/TakeAttendance")) 
+
 const SideBar = lazy(()=> import("./SideBar/SideBar")) 
 const TrDash = lazy(()=> import("./DashboardTeacher/TrDash"))
 const NotFound = lazy(()=> import("../Not-Found/NotFound"))
@@ -45,6 +47,7 @@ const Teacher = () => {
           <Route path="/add-student-class" element={< AddStudent/>} />
           <Route path="/update-student-class/:id" element={< UpdateStudent/>} />
           <Route path="/curriculum-subject" element={< CurriculumSub/>} />
+          <Route path="/take-attendance-student" element={< TakeAttendance/>} />
         </Routes>
       </Suspense>
     </div>

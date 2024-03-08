@@ -16,7 +16,7 @@ router.route("/class-teacher-add-student").post(jwtVerify,isTeacher,upload.singl
 router.route("/update-student-class/:id").put(jwtVerify,isTeacher, updateStudentsOfClass)
 router.route("/update-student-avatar/:id").put(jwtVerify,isTeacher,upload.single("avatar"), updateStudentAvatar)
 router.route("/remove-student-class/:id").delete(jwtVerify,isTeacher, deleteStudentFromClass)
-router.route("/take-attedance-class/:id").post(jwtVerify,isTeacher, takeAttendance)
+router.route("/take-attendance-class").post(jwtVerify,isTeacher, takeAttendance)
 
 
 router.route("/all-teachers-class").get(jwtVerify,isTeacher, allTeachersOfSpecificClass)

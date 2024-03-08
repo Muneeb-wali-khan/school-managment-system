@@ -35,21 +35,28 @@ const AllStudents = () => {
   };
 
   useEffect(() => {
+    dispatch(adminFetchAllStudents());
+  }, [dispatch]);
+
+  useEffect(() => {
     if (msgSt) {
       toast.success(msgSt);
       dispatch(adminFetchAllStudents());
     }
     if (errSt) {
-      toast.success(errSt);
+      toast.error(errSt);
+      dispatch(clearErrorStudents());
     }
     dispatch(clearErrorStudents());
-    dispatch(adminFetchAllStudents());
   }, [msgSt, errSt, dispatch]);
 
   const onRequestClose = () => {
     setIsOpen(false);
     setIsStId(null);
   };
+
+  const last48Hours = new Date();
+  last48Hours.setHours(last48Hours.getHours() - 48);
 
   const columns = [
     {
@@ -63,11 +70,44 @@ const AllStudents = () => {
       },
     },
     {
+      name: "createdAt",
+      label: "Created At",
+      options: {
+        filter: false,
+        sort: false,
+        display: false,
+        download: false,
+      },
+    },
+    {
       name: "rollNo",
       label: "Roll No",
       options: {
         filter: false,
         sort: true,
+
+        
+        customBodyRender: (value, tableMeta) => {
+          const roleNo = tableMeta.rowData[2]; // Assuming "fullName" is at index 3
+          const createdAt = tableMeta.rowData[1];
+
+          const isStudentNew = new Date(createdAt) >= last48Hours;
+
+          return (
+            <>
+            <div className="flex items-center gap-2">
+             <span>{roleNo}</span>
+              {isStudentNew && (
+                <div className="relative inline-block mr-2">
+                  <span className="bg-green-400 text-black py-1 px-2  rounded-full text-xs">
+                    new
+                  </span>
+                </div>
+              )}
+            </div>
+            </>
+          );
+        },
       },
     },
     {
@@ -75,11 +115,16 @@ const AllStudents = () => {
       label: "Class",
       options: {
         filter: true,
+        filterType: "multiselect",
         sort: true,
         customBodyRender: (value, tableMeta) => {
           // Access the nested className property
-          const className = tableMeta.rowData[2]?.className?.toLowerCase();
-          return className
+          const className = tableMeta.rowData[3]?.className?.toLowerCase();
+          return className ? (
+            className
+          ) : (
+            <span className="text-red-400">N/A</span>
+          );
         },
       },
     },
@@ -195,25 +240,7 @@ const AllStudents = () => {
           <LoaderAn />
         ) : (
           <>
-            {/* <div className="mt-8 max-w-7xl mx-auto">
-          <h2 className="text-2xl font-bold mb-2 text-[#663399da]">
-            All Students :
-          </h2>
-        </div> */}
-            {errSt && (
-              <p className="text-red-500 text-lg font-semibold mb-4">
-                <div className="flex flex-col items-center justify-center h-[50vh] mt-10 w-full border border-gray-300 rounded-lg shadow-lg">
-                  <h1 className="text-4xl font-extrabold text-red-500 mb-2">
-                    {errSt}
-                  </h1>
-                  <p className="text-lg text-gray-600 leading-6">
-                    It seems like you haven't been assigned as the Admin.
-                  </p>
-                </div>
-              </p>
-            )}
-
-            {allSt && allSt?.length > 0 && (
+            {allSt && allSt?.length > 0 ? (
               <>
                 <div
                   className="mb-4 mt-6 text-[15px]"
@@ -229,6 +256,12 @@ const AllStudents = () => {
                   columns={columns}
                   options={options}
                 />
+              </>
+            ) : (
+              <>
+                <p className="text-gray-600 text-lg font-semibold">
+                  No Students Found ?.
+                </p>
               </>
             )}
           </>

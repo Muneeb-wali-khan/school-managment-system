@@ -173,10 +173,18 @@ const addStudentsToClass = asyncHandler(async (req, res) => {
   }
 
   const StudentExists = await Student.findOne({
-    email: email,
-    fullName: fullName,
+    $or: [
+      {email: email},
+      {fullName: fullName}
+    ]
   });
 
+  if (StudentExists !== null) {
+    throw new ApiError(
+      400,
+      "Student with email and fullName already exists in db !"
+    );
+  } 
   const teacherOfClass = await Class.findOne({ classTeacherID: tr?._id });
   const studentsInClass = teacherOfClass;
 
@@ -186,16 +194,14 @@ const addStudentsToClass = asyncHandler(async (req, res) => {
   if (!teacherOfClass) {
     throw new ApiError(400, "Your'r not yet Class Teacher of any class !");
   }
-  if (StudentExists) {
-    throw new ApiError(
-      400,
-      "Student with email and fullName already exists in db !"
-    );
-  } else if (phone?.length > 11) {
+
+  if (phone?.length > 11) {
     throw new ApiError(400, "Invalid phone number !");
-  } else if (phoneExists) {
+  } 
+  if (phoneExists) {
     throw new ApiError(400, "Phone number already exists !");
-  } else if (dOBExists) {
+  } 
+  if (dOBExists) {
     throw new ApiError(400, "Date of birth already exists !");
   }
 
@@ -621,53 +627,61 @@ const curriculumOfSubjectOfClass = asyncHandler(async (req, res) => {
 // to be continued.....
 // take attendance of class by class Teacher
 const takeAttendance = asyncHandler(async (req, res) => {
-  const {absenceReason,status,attendanceType} = req.body;
+  const attendanceArray = req.body;
 
   const fullName = req?.user?.fullName;
   const email = req?.user?.email;
   const tr = await Teacher.findOne({ email: email, fullName: fullName });
 
   if (!tr) {
-    throw new ApiError(400, "Teacher not found !");
+    throw new ApiError(400, "Teacher not found!");
   }
-  
+
   const teacherOfClass = await Class.findOne({
     classTeacherID: tr?._id,
   })
-  .select("-classTeacherID -teachersOfClass -subjects")
-  .populate({
-    path: "students",
-    select: "fullName",
-  })
-
+    .select("-classTeacherID -teachersOfClass -subjects")
+    .populate({
+      path: "students",
+      select: "fullName",
+    });
 
   if (!teacherOfClass) {
-    throw new ApiError(400, "Your'r not yet Class Teacher of any class !");
+    throw new ApiError(400, "You're not yet the Class Teacher of any class!");
   }
 
+  if (!teacherOfClass.students || teacherOfClass.students.length === 0) {
+    throw new ApiError(400, "No students found in the class!");
+  }
 
-       const allStudents = teacherOfClass?.students;
-       const attendanceAlreadyTaken = await Attendance.find({date})
-       console.log(attendanceAlreadyTaken);
-       const isValidStudent = allStudents?.find((st)=> st?._id?.toString() === req.params?.id )
+  // Validate each attendance record and create an array of valid records
+  const validStatusValues = ["present", "absent"];
+  const attendanceRecords = attendanceArray?.map((record) => {
+    if (
+      !record?.studentID ||
+      !record?.studentName ||
+      !record?.status ||
+      !validStatusValues.includes(record?.status)
+    ) {
+      throw new ApiError(400, "Invalid attendance record");
+    }
 
-       if(!isValidStudent){
-        throw new ApiError(400, `Student not found in class !`);
-       }
-      //   // Create attendance record for student in the class
-      // const attendanceRecord = Attendance.create({
-      //   studentID: req.params?.id,
-      //   classID: teacherOfClass?._id, // Assuming you have a classID in the Class model
-      //   date: new Date(),
-      //   absenceReason,
-      //   status: status && changeToUpperCase(status),
-      //   attendanceType: attendanceType && changeToUpperCase(attendanceType),
-      //   markedBy: tr?._id,
-      // });
+    return {
+      studentID: record?.studentID,
+      studentName: record?.studentName,
+      AttClass: teacherOfClass?.className,
+      date: new Date(),
+      status: record?.status,
+      markedBy: tr?.fullName,
+    };
+  });
 
+  // Save the attendance records to the database
+  await Attendance.insertMany(attendanceRecords);
 
-    res.status(200).json(new ApiResponse(200, {}, "Attendance taken successfully"));
-})
+  res.status(200).json(new ApiResponse(200, {}, "Attendance taken successfully"));
+});
+
 
 
 

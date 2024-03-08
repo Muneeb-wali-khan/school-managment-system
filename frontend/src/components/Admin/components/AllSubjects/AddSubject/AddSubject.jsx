@@ -22,7 +22,7 @@ const AddSubject = ({isOpenSubjectAdd,onCloseSubjectAdd}) => {
         if(errSb){
             toast.error(errSb)
         }
-        clearErrorSubjects()
+        dispatch(clearErrorSubjects())
     },[dispatch,msgSb, errSb])
 
 
@@ -82,3 +82,5 @@ const AddSubject = ({isOpenSubjectAdd,onCloseSubjectAdd}) => {
 }
 
 export default AddSubject
+
+

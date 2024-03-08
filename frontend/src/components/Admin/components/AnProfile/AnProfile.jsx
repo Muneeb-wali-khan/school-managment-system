@@ -123,9 +123,9 @@ const AnProfile = () => {
                   />
                   <img
                     onClick={handleModalShow}
-                    src={avatarView ? avatarView : userProfile?.avatar}
+                    src={avatarView ? avatarView : userProfile && userProfile?.avatar}
                     className="w-[110px] h-[110px] rounded-full mb-2 cursor-pointer"
-                    alt={userProfile?.avatar}
+                    alt={userProfile && userProfile?.avatar}
                   />
                   {/* Pen icon */}
                   <div className="absolute bg-[#00000044] top-0 right-0 group-hover:opacity-100 p-2 opacity-50 transition-opacity duration-300">

@@ -91,18 +91,18 @@ const SideBar = () => {
               </Link>
             </div>
 
-            <div className="flex gap-5 items-center">
+            <div className="flex gap-4 items-center">
               <a>
-                <i className="fa fa-file-excel mr-[3px]" style={{color: "#ffffff"}}>
+                <i className="fa fa-book-open mr-[1px]" style={{color: "#ffffff"}}>
                   {" "}
                 </i>
               </a>
-              <a
-                href="/dashboard"
+              <Link
+                to="/teacher-portal/take-attendance-student"
                 className="cursor-pointer font-semibold text-gray-200 hover:text-white transition-all"
               >
-                Drop Semisters
-              </a>
+               Take Attendance
+              </Link>
             </div>
 
             <div className="flex gap-5 items-center">

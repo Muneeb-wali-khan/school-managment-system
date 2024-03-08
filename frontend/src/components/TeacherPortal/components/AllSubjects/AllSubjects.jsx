@@ -40,7 +40,7 @@ const AllSubjects = () => {
               Subjects Curriculums
             </button>
             {curriculumAddedNew && (
-              <div className=" absolute top-0 right-[-0px]  py-[0.2rem] px-2 bg-red-500 text-white rounded-full text-[0.8rem]">
+              <div className=" absolute animate-shake animate-glow top-0 right-[-0px]  py-[0.2rem] px-2 bg-red-500 text-white rounded-full text-[0.8rem]">
                 New
               </div>
             )}

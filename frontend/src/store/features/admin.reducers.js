@@ -4,7 +4,7 @@ import {
     combineReducers,
   } from "@reduxjs/toolkit";
   import axios from "axios";
-import { adminAddAcademicRecordUrl, adminAddSubjectCurriculumUrl, adminAddSubjectUrl, adminAllStudentsUrl, adminAllSubjectCurriculumUrl, adminAllSubjectsUrl, adminAllTeachersUrl, adminDeleteAcademicRecordUrl, adminDeleteCurriculumUrl, adminRemoveSubjectUrl, adminSingleAcademicRecordUrl, adminSingleCurriculumUrl, adminSingleSubjectUrl, adminStudentAcademicRecordUrl, adminStudentAvatarUrl, adminStudentDetailsUrl, adminStudentRegisterUrl, adminStudentRemoveUrl, adminStudentUpdateUrl, adminTeacherAddUrl, adminTeacherDeleteUrl, adminTeacherDetailsUrl, adminTeacherUpdateAvatarUrl, adminTeacherUpdateUrl, adminUpdateAcademicRecordUrl, adminUpdateCurriculumUrl } from "../urls";
+import { adminAddAcademicRecordUrl, adminAddClassUrl, adminAddSubjectCurriculumUrl, adminAddSubjectUrl, adminAllClassesUrl, adminAllStudentsUrl, adminAllSubjectCurriculumUrl, adminAllSubjectsUrl, adminAllTeachersUrl, adminAllUsersWebAppUrl, adminDeleteAcademicRecordUrl, adminDeleteCurriculumUrl, adminRemoveClassUrl, adminRemoveSubjectUrl, adminRemoveUserWebAppUrl, adminSingleAcademicRecordUrl, adminSingleClassUrl, adminSingleCurriculumUrl, adminSingleSubjectUrl, adminSingleUserWebAppUrl, adminStudentAcademicRecordUrl, adminStudentAvatarUrl, adminStudentDetailsUrl, adminStudentRegisterUrl, adminStudentRemoveUrl, adminStudentUpdateUrl, adminTeacherAddUrl, adminTeacherDeleteUrl, adminTeacherDetailsUrl, adminTeacherUpdateAvatarUrl, adminTeacherUpdateUrl, adminUpdateAcademicRecordUrl, adminUpdateClassUrl, adminUpdateCurriculumUrl, adminUpdateUserWebAppUrl, updateUserAvatarUrl } from "../urls";
 
   
 // all students 
@@ -36,7 +36,7 @@ export const adminFetchSingleStudent = createAsyncThunk("admin/singleStudent", a
 // single student update avatar
 export const adminUpdateSingleStudentAvatar = createAsyncThunk("admin/UpdateStudentAvatar", async({id: id, data: data}, { rejectWithValue })=>{
       try {
-        const config = { headers: { "Content-Type": "multipart/form-data" } };
+        const config = { headers: { "Content-Type": "multipart/form-data"},withCredentials: true };
         const res = await axios.put(`${adminStudentAvatarUrl}${id}`,data, config)
         
         return res.data
@@ -49,7 +49,7 @@ export const adminUpdateSingleStudentAvatar = createAsyncThunk("admin/UpdateStud
 // add/register student 
 export const adminRegisterStudent = createAsyncThunk("admin/registerStudent", async(data, { rejectWithValue })=>{
       try {
-        const config = { headers: { "Content-Type": "multipart/form-data" } };
+        const config = { headers: { "Content-Type": "multipart/form-data"},withCredentials: true };
         const res = await axios.post(`${adminStudentRegisterUrl}`,data, config)
         
         return res.data
@@ -366,7 +366,7 @@ export const adminRemoveAcademicRecord = createAsyncThunk("admin/studentDeleteAc
   // add teacher
   export const adminAddTeacher = createAsyncThunk("admin/AddTeacher", async(data, {rejectWithValue})=>{
     try {
-      const config = { headers: { "Content-Type": "multipart/form-data" } };
+      const config = { headers: { "Content-Type": "multipart/form-data"},withCredentials: true };
       const res = await axios.post(`${adminTeacherAddUrl}`,data,config)
       return res.data
     } catch (error) {
@@ -390,7 +390,7 @@ export const adminRemoveAcademicRecord = createAsyncThunk("admin/studentDeleteAc
   // Update avatar teacher
   export const adminUpdateAvatarTeacher = createAsyncThunk("admin/UpdateAvatarTeacher", async({id: id, data:data}, {rejectWithValue})=>{
     try {
-      const config = { headers: { "Content-Type": "multipart/form-data" } };
+      const config = { headers: { "Content-Type": "multipart/form-data"},withCredentials: true };
       const res = await axios.put(`${adminTeacherUpdateAvatarUrl}${id}`,data,config)
       return res.data
     } catch (error) {
@@ -538,7 +538,7 @@ export const adminRemoveAcademicRecord = createAsyncThunk("admin/studentDeleteAc
 //all subjects ✅ 
 export const adminFetchAllSubjects = createAsyncThunk("admin/allSubjects",async(id,{rejectWithValue})=>{
   try {
-    const config = {headers: {"Content-Type": "application/json"}};
+    const config = {headers: {"Content-Type": "application/json"},withCredentials: true};
     const res = await axios.get(`${adminAllSubjectsUrl}`,config)
     return res.data
 
@@ -550,7 +550,7 @@ export const adminFetchAllSubjects = createAsyncThunk("admin/allSubjects",async(
 // single subject ✅
 export const adminFetchSingleSubject = createAsyncThunk("admin/singleSubject",async(id,{rejectWithValue})=>{
   try {
-    const config = {headers: {"Content-Type": "application/json"}};
+    const config = {headers: {"Content-Type": "application/json"},withCredentials: true};
     const res = await axios.get(`${adminSingleSubjectUrl}${id}`,config)
     return res.data
 
@@ -562,7 +562,8 @@ export const adminFetchSingleSubject = createAsyncThunk("admin/singleSubject",as
 // add subject ✅
 export const adminAddSubject = createAsyncThunk("admin/addSubject",async(subject,{rejectWithValue})=>{
   try {
-    const config = {headers: {"Content-Type": "application/json"}};
+    const config = {
+      headers: {"Content-Type": "application/json"},withCredentials: true};
     console.log("action" , subject);
     const res = await axios.post(`${adminAddSubjectUrl}`,subject,config)
     console.log(res.data);
@@ -574,10 +575,10 @@ export const adminAddSubject = createAsyncThunk("admin/addSubject",async(subject
 })
 
 
-// delete subject ❌
+// delete subject ✅
 export const adminDeleteSubject = createAsyncThunk("admin/deleteSubject",async(id,{rejectWithValue})=>{
   try {
-    const config = {headers: {"Content-Type": "application/json"}};
+    const config = {headers: {"Content-Type": "application/json"},withCredentials: true};
     const res = await axios.delete(`${adminRemoveSubjectUrl}${id}`,config)
     return res.data
 
@@ -590,7 +591,7 @@ export const adminDeleteSubject = createAsyncThunk("admin/deleteSubject",async(i
 // all subject curriculums ✅
 export const adminAllCurriculumsSubject = createAsyncThunk("admin/curriculumsSubject",async(id,{rejectWithValue})=>{
   try {
-    const config = {headers: {"Content-Type": "application/json"}};
+    const config = {headers: {"Content-Type": "application/json"},withCredentials: true};
     const res = await axios.get(`${adminAllSubjectCurriculumUrl}${id}`,config)
     return res.data
 
@@ -603,7 +604,7 @@ export const adminAllCurriculumsSubject = createAsyncThunk("admin/curriculumsSub
 // add subject curriculum ✅
 export const adminAddCurriculumSubject = createAsyncThunk("admin/addcurriculumSubject",async({id: id, data:data},{rejectWithValue})=>{
   try {
-    const config = {headers: {"Content-Type": "application/json"}};
+    const config = {headers: {"Content-Type": "application/json"},withCredentials: true};
     const res = await axios.post(`${adminAddSubjectCurriculumUrl}${id}`,data,config)
     return res.data
 
@@ -615,7 +616,7 @@ export const adminAddCurriculumSubject = createAsyncThunk("admin/addcurriculumSu
 // single subject curriculum ✅
 export const adminSingleCurriculumSubject = createAsyncThunk("admin/singleCurriculumSubject",async(id,{rejectWithValue})=>{
   try {
-    const config = {headers: {"Content-Type": "application/json"}};
+    const config = {headers: {"Content-Type": "application/json"},withCredentials: true};
     const res = await axios.get(`${adminSingleCurriculumUrl}${id}`,config)
     return res.data
 
@@ -627,7 +628,7 @@ export const adminSingleCurriculumSubject = createAsyncThunk("admin/singleCurric
 // update subject curriculum ✅
 export const adminUpdateCurriculumSubject = createAsyncThunk("admin/updateCurriculumSubject",async({id:id, data:data},{rejectWithValue})=>{
   try {
-    const config = {headers: {"Content-Type": "application/json"}};
+    const config = {headers: {"Content-Type": "application/json"},withCredentials: true};
     const res = await axios.put(`${adminUpdateCurriculumUrl}${id}`,data,config)
     return res.data
 
@@ -639,7 +640,7 @@ export const adminUpdateCurriculumSubject = createAsyncThunk("admin/updateCurric
 // delete subject curriculum ✅
 export const adminRemoveCurriculumSubject = createAsyncThunk("admin/removeCurriculumSubject",async(id,{rejectWithValue})=>{
   try {
-    const config = {headers: {"Content-Type": "application/json"}};
+    const config = {headers: {"Content-Type": "application/json"},withCredentials: true};
     const res = await axios.delete(`${adminDeleteCurriculumUrl}${id}`,config)
     return res.data
 
@@ -700,6 +701,7 @@ const subjectOptSlice = createSlice({
       builder.addCase(adminFetchAllSubjects.rejected, (state, action)=>{
         state.loadingSb = false
         state.errSb = action.payload.message
+
       })
 
       // single subjects
@@ -821,17 +823,374 @@ const subjectOptSlice = createSlice({
 })
 
 
+// ================================================== Classes ============================================================
+
+
+// all classes ✅
+export const adminFetchAllClasses = createAsyncThunk("admin/allClasses",async(id,{rejectWithValue})=>{
+  try {
+    const config = {headers: {"Content-Type": "application/json"},withCredentials: true};
+    const res = await axios.get(`${adminAllClassesUrl}`,config)
+    return res.data
+
+  } catch (error) {
+    return rejectWithValue(error?.response?.data)
+  }
+})
+
+// single class ✅
+export const adminFetchSingleClass = createAsyncThunk("admin/singleClass",async(id,{rejectWithValue})=>{
+  try {
+    const config = {headers: {"Content-Type": "application/json"},withCredentials: true};
+    const res = await axios.get(`${adminSingleClassUrl}${id}`,config)
+    return res.data
+
+  } catch (error) {
+    return rejectWithValue(error?.response?.data)
+  }
+})
+
+
+// add class ✅
+export const adminAddClass = createAsyncThunk("admin/addClass",async(data,{rejectWithValue})=>{
+  try {
+    const config = {headers: {"Content-Type": "application/json"},withCredentials: true};
+    const res = await axios.post(`${adminAddClassUrl}`,data,config)
+    return res.data
+
+  } catch (error) {
+    return rejectWithValue(error?.response?.data)
+  }
+})
+
+
+// update class ✅
+export const adminUpdateClass = createAsyncThunk("admin/updateClass",async({id:id, data:data},{rejectWithValue})=>{
+  try {
+    const config = {headers: {"Content-Type": "application/json"},withCredentials: true};
+    const res = await axios.put(`${adminUpdateClassUrl}${id}`,data,config)
+    return res.data
+
+  } catch (error) {
+    return rejectWithValue(error?.response?.data)
+  }
+})
+
+
+// remove class ✅
+export const adminDeleteClass = createAsyncThunk("admin/deleteClass",async(id,{rejectWithValue})=>{
+  try {
+    const config = {headers: {"Content-Type": "application/json"},withCredentials: true};
+    const res = await axios.delete(`${adminRemoveClassUrl}${id}`,config)
+    return res.data
+
+  } catch (error) {
+    return rejectWithValue(error?.response?.data)
+  }
+})
+
+
+
+const classOptSlice = createSlice({
+  name: "class",
+    initialState:{
+    loadingCls: false,
+    errCls: null,
+    msgCls: null,
+    msgUptCls: null,
+    errUptCls: null,
+    msgDelCls: null,
+    errDelCls: null,
+    allCls: null,
+    singleCls: null,
+
+
+  },
+
+  reducers:{
+    clearErrorClasses(state){
+      state.errCls =  null
+      state.msgCls =  null
+      state.msgUptCls =  null
+      state.errUptCls =  null
+      state.msgDelCls =  null
+      state.errDelCls =  null
+    }
+  },
+
+  extraReducers: (builder) =>{
+      // all classes
+      builder.addCase(adminFetchAllClasses.pending, (state, action)=>{
+        state.loadingCls = true
+        state.errCls = null
+      })
+      builder.addCase(adminFetchAllClasses.fulfilled, (state, action)=>{
+        state.loadingCls = false
+        state.allCls = action.payload.data
+      })
+      builder.addCase(adminFetchAllClasses.rejected, (state, action)=>{
+        state.loadingCls = false
+        state.errCls = action.payload.message
+        console.log(action?.payload);
+
+      })
+
+      // single class
+      builder.addCase(adminFetchSingleClass.pending, (state, action)=>{
+        state.loadingCls = true
+        state.errCls = null
+      })
+      builder.addCase(adminFetchSingleClass.fulfilled, (state, action)=>{
+        state.loadingCls = false
+        state.singleCls = action.payload.data
+      })
+      builder.addCase(adminFetchSingleClass.rejected, (state, action)=>{
+        state.loadingCls = false
+        state.errCls = action.payload.message
+      })
+
+      // add class
+      builder.addCase(adminAddClass.pending, (state, action)=>{
+        state.loadingCls = true
+        state.errCls = null
+      })
+      builder.addCase(adminAddClass.fulfilled, (state, action)=>{
+        state.loadingCls = false
+        state.msgCls = action.payload.message
+      })
+      builder.addCase(adminAddClass.rejected, (state, action)=>{
+        state.loadingCls = false
+        state.errCls = action.payload.message
+      })
+
+      // update class
+      builder.addCase(adminUpdateClass.pending, (state, action)=>{
+        state.loadingCls = true
+        state.errUptCls = null
+      })
+      builder.addCase(adminUpdateClass.fulfilled, (state, action)=>{
+        state.loadingCls = false
+        state.msgUptCls = action.payload.message
+      })
+      builder.addCase(adminUpdateClass.rejected, (state, action)=>{
+        state.loadingCls = false
+        state.errUptCls = action.payload.message
+      })
+
+      // delete class
+      builder.addCase(adminDeleteClass.pending, (state, action)=>{
+        state.loadingCls = true
+        state.errDelCls = null
+      })
+      builder.addCase(adminDeleteClass.fulfilled, (state, action)=>{
+        state.loadingCls = false
+        state.msgDelCls = action.payload.message
+      })
+      builder.addCase(adminDeleteClass.rejected, (state, action)=>{
+        state.loadingCls = false
+        state.errDelCls = action.payload.message
+      })
+
+
+  }
+  
+})
+
+// ================================================ Users =================================================================
+
+
+// all user web app ✅
+export const adminFetchAllUsersWebApp = createAsyncThunk("admin/allUsersWebApp",async(id,{rejectWithValue})=>{
+  try {
+    const config = {headers: {"Content-Type": "application/json"},withCredentials: true};
+    const res = await axios.get(`${adminAllUsersWebAppUrl}`,config)
+    return res.data
+
+  } catch (error) {
+    return rejectWithValue(error?.response?.data)
+  }
+})
+
+
+// single user web app ✅
+export const adminFetchSingleUserWebApp = createAsyncThunk("admin/singleUserWebApp",async(id,{rejectWithValue})=>{
+  try {
+    const config = {headers: {"Content-Type": "application/json"},withCredentials: true};
+    const res = await axios.get(`${adminSingleUserWebAppUrl}${id}`,config)
+    return res.data
+
+  } catch (error) {
+    return rejectWithValue(error?.response?.data)
+  }
+})
+
+// update user web app ✅
+export const adminUpdateUserWebApp = createAsyncThunk("admin/updateUserWebApp",async({id, role},{rejectWithValue})=>{
+  try {
+    console.log("action payload", { id, role });
+    const config = {headers: {"Content-Type": "application/json"},withCredentials: true};
+    const res = await axios.put(`${adminUpdateUserWebAppUrl}${id}`,{role},config) // must have to wrap the role as object because it a requested json
+    return res.data
+
+  } catch (error) {
+    return rejectWithValue(error?.response?.data)
+  }
+})
+
+
+// delete user web app ✅
+export const adminDeleteUserWebApp = createAsyncThunk("admin/deleteUserWebApp",async(id,{rejectWithValue})=>{
+  try {
+    console.log("action payload", { id, role });
+    const config = {headers: {"Content-Type": "application/json"},withCredentials: true};
+    const res = await axios.put(`${adminRemoveUserWebAppUrl}${id}`,config) // must have to wrap the role as object because it a requested json
+    return res.data
+
+  } catch (error) {
+    return rejectWithValue(error?.response?.data)
+  }
+})
+
+// update use avatar web app ✅
+export const adminUpdateUserAvatarWebApp = createAsyncThunk("admin/avatarUserWebApp",async({id:id, data:data},{rejectWithValue})=>{
+  try {
+    const config = {headers: {"Content-Type": "multipart/form-data"},withCredentials: true};
+    const res = await axios.put(`${updateUserAvatarUrl}${id}`,data,config) // must have to wrap the role as object because it a requested json
+    return res.data
+
+  } catch (error) {
+    return rejectWithValue(error?.response?.data)
+  }
+})
+
+
+const usersOptSlice = createSlice({
+  name: "users",
+    initialState:{
+    loadingUsersWeb: false,
+    errUsersWeb: null,
+    msgUsersWeb: null,
+    msgUptUsersWeb: null,
+    errUptUsersWeb: null,
+    msgDelUsersWeb: null,
+    errDelUsersWeb: null,
+    errUptUsersAvtWeb: null,
+    msgUptUsersAvtWeb: null,
+    allUsersWeb: null,
+    singleUserWeb: null,
+
+
+  },
+
+  reducers:{
+    clearErrorUsersWeb(state){
+      state.errUsersWeb =  null
+      state.msgUsersWeb =  null
+      state.msgUptUsersWeb =  null
+      state.errUptUsersWeb =  null
+      state.msgDelUsersWeb =  null
+      state.errDelUsersWeb =  null
+      state.errUptUsersAvtWeb =  null
+      state.msgUptUsersAvtWeb =  null
+    }
+  },
+
+  extraReducers: (builder) =>{
+      // all users
+      builder.addCase(adminFetchAllUsersWebApp.pending, (state, action)=>{
+        state.loadingUsersWeb = true
+        state.errUsersWeb = null
+      })
+      builder.addCase(adminFetchAllUsersWebApp.fulfilled, (state, action)=>{
+        state.loadingUsersWeb = false
+        state.allUsersWeb = action.payload.data
+      })
+      builder.addCase(adminFetchAllUsersWebApp.rejected, (state, action)=>{
+        state.loadingUsersWeb = false
+        state.errUsersWeb = action.payload.message
+      })
+
+
+      // single user
+      builder.addCase(adminFetchSingleUserWebApp.pending, (state, action)=>{
+        state.loadingUsersWeb = true
+        state.errUsersWeb = null
+      })
+      builder.addCase(adminFetchSingleUserWebApp.fulfilled, (state, action)=>{
+        state.loadingUsersWeb = false
+        state.singleUserWeb = action.payload.data
+      })
+      builder.addCase(adminFetchSingleUserWebApp.rejected, (state, action)=>{
+        state.loadingUsersWeb = false
+        state.errUsersWeb = action.payload.message
+      })
+
+
+      // update user
+      builder.addCase(adminUpdateUserWebApp.pending, (state, action)=>{
+        state.loadingUsersWeb = true
+        state.errUptUsersWeb = null
+      })
+      builder.addCase(adminUpdateUserWebApp.fulfilled, (state, action)=>{
+        state.loadingUsersWeb = false
+        state.msgUptUsersWeb = action.payload.message
+      })
+      builder.addCase(adminUpdateUserWebApp.rejected, (state, action)=>{
+        state.loadingUsersWeb = false
+        state.errUptUsersWeb = action.payload.message
+      })
+
+      // update user avatar
+      builder.addCase(adminUpdateUserAvatarWebApp.pending, (state, action)=>{
+        state.loadingUsersWeb = true
+        state.errUptUsersAvtWeb = null
+      })
+      builder.addCase(adminUpdateUserAvatarWebApp.fulfilled, (state, action)=>{
+        state.loadingUsersWeb = false
+        state.msgUptUsersAvtWeb = action.payload.message
+      })
+      builder.addCase(adminUpdateUserAvatarWebApp.rejected, (state, action)=>{
+        state.loadingUsersWeb = false
+        state.errUptUsersAvtWeb = action.payload.message
+      })
+
+
+      // delete user
+      builder.addCase(adminDeleteUserWebApp.pending, (state, action)=>{
+        state.loadingUsersWeb = true
+        state.errDelUsersWeb = null
+      })
+      builder.addCase(adminDeleteUserWebApp.fulfilled, (state, action)=>{
+        state.loadingUsersWeb = false
+        state.msgDelUsersWeb = action.payload.message
+      })
+      builder.addCase(adminDeleteUserWebApp.rejected, (state, action)=>{
+        state.loadingUsersWeb = false
+        state.errDelUsersWeb = action.payload.message
+      })
+
+
+
+
+    }
+  
+})
+
 
 
 
   export const {clearErrorStudents} = studentOptSlice.actions
   export const {clearErrorTeachers} = teacherOptSlice.actions
   export const {clearErrorSubjects} = subjectOptSlice.actions
+  export const {clearErrorClasses} = classOptSlice.actions
+  export const {clearErrorUsersWeb} = usersOptSlice.actions
 
   const adminReducers = combineReducers({
     students: studentOptSlice.reducer ,
     teachers: teacherOptSlice.reducer ,
-    subjects: subjectOptSlice.reducer
+    subjects: subjectOptSlice.reducer,
+    classes: classOptSlice.reducer,
+    users: usersOptSlice.reducer
   })
 
 

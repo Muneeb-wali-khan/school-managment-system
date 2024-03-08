@@ -25,6 +25,22 @@ const getAllUsers = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, users, "users fetched successfully !"));
 });
 
+// get single user
+const singleUser  = asyncHandler(async(req,res)=>{
+  const id = req.params?.id;
+
+  const user = await User.findOne({_id: id}).select("-password -uniqueCode -refreshToken")
+
+  if(!user){
+    throw new ApiError(404, "user not found !")
+  }
+
+  return res.status(200).json(
+    new ApiResponse(200, user, "user fetched successfully !")
+  )
+
+})
+
 // update user role
 const updateUserRole = asyncHandler(async (req, res) => {
   const { role } = req.body;
@@ -69,7 +85,46 @@ const deleteUser = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, "user deleted successfully !"));
 });
 
+// update user avatar
+const updateUserAvatar = asyncHandler(async (req, res) => {
+  const avatarLocalPath = req.file ? req.file?.path : null;
+
+  if (!avatarLocalPath) {
+    throw new ApiError(400, "Image is required !");
+  }
+
+  const avatar = await cloudinaryUploadImg(avatarLocalPath);
+
+  if (!avatar?.url) {
+    throw new ApiError(400, "Image is required !");
+  }
+
+  const publicId = extractId(req.user?.avatar);
+  await RemovecloudinaryExistingImg(publicId);
+
+  const user = await User.findByIdAndUpdate(
+    req.params?.id,
+    {
+      $set: {
+        avatar: avatar?.url,
+      },
+    },
+    { new: true }
+  ).select("-password -uniqueCode");
+
+  if (!user) {
+    throw new ApiError(404, "failed to update user avatar !");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, user, "user avatar updated successfully !"));
+});
+
 // =======================================USER CONTROLLERS --ADMIN== END =================================================
+
+
+
 
 
 
@@ -79,7 +134,7 @@ const deleteUser = asyncHandler(async (req, res) => {
 // all students --admin
 const getAllStudent = asyncHandler(async (req, res) => {
   const students = await Student.find()
-    .select("rollNo fullName gender email className")
+    .select("rollNo fullName gender email className createdAt")
     .populate({
       path: "className",
       select: "className",
@@ -633,7 +688,38 @@ const deleteAcademicRecord = asyncHandler(async (req, res) => {
   }
 });
 
+// new students alert
+const newStudentsAlert = asyncHandler(async(req,res)=>{
+
+ 
+  // Find students whose createdAt is within the current day
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0); // Set to midnight
+
+  const todayEnd = new Date();
+  todayEnd.setHours(23, 59, 59, 999); // Set to the end of the day
+
+  const students = await Student.find({
+    createdAt: { $gte: todayStart, $lte: todayEnd }
+  });
+
+
+  // Find students whose createdAt is within the last 48 hours
+  //  const last48Hours = new Date();
+  //  last48Hours.setHours(last48Hours.getHours() - 48);
+ 
+  //  const students = await Student.find({
+  //    createdAt: { $gte: last48Hours }
+  //  });
+ 
+   console.log(students);
+
+})
+
 // =======================================STUDENT CONTROLLERS --ADMIN == END =================================================
+
+
+
 
 
 
@@ -642,16 +728,26 @@ const deleteAcademicRecord = asyncHandler(async (req, res) => {
 // =======================================TEACHER CONTROLLERS --ADMIN == START =================================================
 
 const getAllTeachers = asyncHandler(async (req, res) => {
-  const teachers = await Teacher.find()
-    .select("subject gender email fullName avatar")
-    .populate({
-      path: "classesTaught",
-      select: "className",
-    });
+  const teachers = await Teacher.find().select("subject gender email fullName");
+  const MapOverTeacherIds = teachers?.map((teacher)=> teacher?._id)
+
+  // find classes by classTeacherID
+  const findClasses = await Class.find({
+    classTeacherID: { $in: MapOverTeacherIds }
+  });
+
+  // find classes which matches the  teacher id return as plain object extrac the className also
+  const teacherWithClassName = teachers?.map((teacher)=>{
+    const matchClass = findClasses?.find((cls)=> cls?.classTeacherID?.toString() === teacher?._id?.toString())
+    return {
+      ...teacher.toObject(),
+      className: matchClass ? matchClass?.className : "N/A" 
+    }
+  })
 
   return res
     .status(200)
-    .json(new ApiResponse(200, teachers, "Teachers fetched successfully"));
+    .json(new ApiResponse(200, teacherWithClassName, "Teachers fetched successfully"));
 });
 
 // teacher by id
@@ -1130,6 +1226,9 @@ const deleteTeacher = asyncHandler(async (req, res) => {
 
 
 
+
+
+
 // =======================================CLASS CONTROLLERS --ADMIN == START =================================================
 
 //  all-classes
@@ -1138,7 +1237,7 @@ const allClasses = asyncHandler(async (req, res) => {
     .select("-students -teachersOfClass -subjects")
     .populate({
       path: "classTeacherID",
-      select: "fullName email",
+      select: "fullName",
     });
 
   if (!findclass) {
@@ -1163,24 +1262,35 @@ const addClass = asyncHandler(async (req, res) => {
     }
   }
 
-  if ([className, email, fullName].some((fields) => fields?.trim() === "")) {
+  if ([className, subjects].some((fields) => fields?.trim() === "")) {
     throw new ApiError(400, "all feilds are required !");
   }
-  const findteacher = await Teacher.findOne({ $or: [{ email }, { fullName }] });
-  if (!findteacher) {
-    throw new ApiError(400, "teacher with email/fullName not found");
+
+  // if initaily class teacher is not created yet
+  const findteacher = await Teacher.findOne({
+    email: email,
+    fullName: fullName,
+  });
+
+  if (email && fullName !== "") {
+    if (!findteacher) {
+      throw new ApiError(400, "teacher with email/fullName not found");
+    }
+    const teacherExist = await Class.findOne({
+      classTeacherID: findteacher?._id,
+    });
+
+    if (teacherExist) {
+      throw new ApiError(
+        400,
+        `Class teacher already assigned to ${teacherExist?.className}`
+      );
+    }
   }
 
   const classExist = await Class.findOne({
     className: className?.toUpperCase(),
   });
-  const teacherExist = await Class.findOne({
-    classTeacherID: findteacher?._id,
-  });
-
-  if (teacherExist) {
-    throw new ApiError(400, "Class teacher already assigned to another class");
-  }
 
   const firstlattertoUpperCaseSubjects = spl?.map((sub) =>
     changeToUpperCase(sub)
@@ -1192,27 +1302,24 @@ const addClass = asyncHandler(async (req, res) => {
   // map over find subjects
   const existingSubjects = findSubjects?.map((sub) => sub?.subjectName);
   // check if user provides subjects/subject are present in existingSubjects
-  const nonExistingSubjects = firstlattertoUpperCaseSubjects.filter(
+  const nonExistingSubjects = firstlattertoUpperCaseSubjects?.filter(
     (sub) => !existingSubjects.includes(sub)
   );
 
-  if (nonExistingSubjects.length > 0) {
+  if (nonExistingSubjects?.length > 0) {
     throw new ApiError(
       400,
-      `Subjects/subject not found: ${nonExistingSubjects.join(", ")}`
+      `Subjects/subject not found: ${nonExistingSubjects?.join(", ")}`
     );
   }
 
-  if (!subjects) {
-    throw new ApiError(400, "subjects are required !");
-  }
   if (classExist) {
     throw new ApiError(400, "ClassName already exist");
   }
 
   const classData = await Class.create({
     className: className?.toUpperCase(),
-    classTeacherID: findteacher?._id,
+    classTeacherID: findteacher?._id || null,
     subjects: findSubjects?.map((sub) => sub?._id),
   });
 
@@ -1236,15 +1343,15 @@ const singleClass = asyncHandler(async (req, res) => {
   const classer = await Class.findById(req.params?.id)
     .populate({
       path: "classTeacherID",
-      select: "fullName email",
+      select: "email fullName",
     })
     .populate({
       path: "students",
-      select: "fullName email",
+      select: "fullName gender",
     })
     .populate({
       path: "teachersOfClass",
-      select: "fullName email",
+      select: "fullName subject gender",
     })
     .populate({
       path: "subjects",
@@ -1264,26 +1371,21 @@ const singleClass = asyncHandler(async (req, res) => {
 const updateClass = asyncHandler(async (req, res) => {
   const { className, email, fullName, subjects, teachersOfClass } = req.body;
 
-  const spl = subjects?.split(",");
-
-  if (spl?.length < 1) {
-    if (!subjects?.match(",")) {
-      throw new ApiError(
-        400,
-        "subjects must ends with trailing commas ex: subject1, subject2 !"
-      );
-    }
-  }
-
-  if ([className, email, fullName].some((fields) => fields?.trim() === "")) {
+  if ([className].some((fields) => fields?.trim() === "")) {
     throw new ApiError(400, "all feilds are required !");
+  }
+  if (!subjects) {
+    throw new ApiError(400, "subjects is required !");
   }
   const findteacher = await Teacher.findOne({
     email: email,
     fullName: fullName,
   });
-  if (!findteacher) {
-    throw new ApiError(400, "teacher with email/fullName not found");
+
+  if (email && fullName !== "") {
+    if (!findteacher) {
+      throw new ApiError(400, "teacher with email/fullName not found");
+    }
   }
 
   const classExist = await Class.findById({
@@ -1293,24 +1395,26 @@ const updateClass = asyncHandler(async (req, res) => {
   if (!classExist) {
     throw new ApiError(400, `${className} not found !`);
   }
-  if (allClass.includes(className)) {
+  if (allClass?.includes(className)) {
     throw new ApiError(400, "className already exist !");
   }
 
-  if (classExist?.classTeacherID === null) {
-    const teacherExist = await Class.findOne({
-      classTeacherID: findteacher?._id,
-    });
+  if (email && fullName !== "") {
+    if (classExist?.classTeacherID === null) {
+      const teacherExist = await Class.findOne({
+        classTeacherID: findteacher?._id,
+      });
 
-    if (teacherExist) {
-      throw new ApiError(
-        400,
-        "Class teacher already assigned to another class"
-      );
+      if (teacherExist) {
+        throw new ApiError(
+          400,
+          "Class teacher already assigned to another class"
+        );
+      }
     }
   }
 
-  const firstlattertoUpperCaseSubjects = spl?.map((sub) =>
+  const firstlattertoUpperCaseSubjects = subjects?.map((sub) =>
     changeToUpperCase(sub)
   );
   const findSubjects = await Subject.find({
@@ -1319,14 +1423,14 @@ const updateClass = asyncHandler(async (req, res) => {
   // map over find subjects
   const existingSubjects = findSubjects?.map((sub) => sub?.subjectName);
   // check if user provides subjects/subject are present in existingSubjects
-  const nonExistingSubjects = firstlattertoUpperCaseSubjects.filter(
-    (sub) => !existingSubjects.includes(sub)
+  const nonExistingSubjects = firstlattertoUpperCaseSubjects?.filter(
+    (sub) => !existingSubjects?.includes(sub)
   );
 
-  if (nonExistingSubjects.length > 0) {
+  if (nonExistingSubjects?.length > 0) {
     throw new ApiError(
       400,
-      `Subjects/subject not found: ${nonExistingSubjects.join(", ")}`
+      `Subjects/subject not found: ${nonExistingSubjects?.join(", ")}`
     );
   }
 
@@ -1339,7 +1443,7 @@ const updateClass = asyncHandler(async (req, res) => {
       req.params?.id,
       {
         className: className?.toUpperCase(),
-        classTeacherID: findteacher?._id,
+        classTeacherID: findteacher?._id || null,
         subjects: findSubjects?.map((sub) => sub?._id),
         teachersOfClass: teachersOfClass,
       },
@@ -1374,49 +1478,49 @@ const updateClass = asyncHandler(async (req, res) => {
 
 // delete class --admin
 const deleteClass = asyncHandler(async (req, res) => {
-  // const classer = await Class.findByIdAndDelete(req.params?.id);
+  const classer = await Class.findByIdAndDelete(req.params?.id);
+  const classId = req.params?.id;
 
-  // if (!classer) {
-  //   throw new ApiError(404, "class not found !");
-  // }
-  // // remove that class id from classes of subjects
-  // const removeClassIdFromSubjects = await Subject.find({
-  //   classes: req.params?.id,
-  // });
+  if (!classer) {
+    throw new ApiError(404, "class not found !");
+  }
+  // remove that class id from classes of subjects
+  const removeClassIdFromSubjects = await Subject.find({
+    classes: req.params?.id,
+  });
 
-  // for(const cls of removeClassIdFromSubjects){
-  //     cls?.classes?.pull(req.params?.id)
-  //     await cls.save({ validateBeforeSave: false });
-  // }
+  for (const cls of removeClassIdFromSubjects) {
+    cls?.classes?.pull(req.params?.id);
+    await cls.save({ validateBeforeSave: false });
+    console.log("save subject");
+  }
 
-  // remove deleted className from students className connects with it
-  const cls = await Class.findById(req.params?.id);
-  const studentsId = await Student.find({ _id: { $in: cls?.students } });
-  console.log(studentsId);
-  // const newst = ""
-  // if(studentsId?.length !== 0){
-  //   for (const st of studentsId) {
-  //     st.className = newst;
-  //     await st.save({ validateBeforeSave: false });
-  //     console.log("save st");
-  //   }
-  // }
+  // // remove deleted className from students className connects with it
+  const students = await Student.find({ className: classId });
+
+  for (const student of students) {
+    student.className = null;
+    await student.save({ validateBeforeSave: false });
+    console.log("Saved student");
+  }
 
   // remove  deleted class classTeachers connects with it
-  // const teachersOfClass  = await Teacher.find()
+  const teachersOfClass = await Teacher.find();
+  teachersOfClass?.forEach(async (cls) => {
+    if (cls?.classesTaught?.some((ids) => ids?._id?.toString() === classId)) {
+      await cls?.updateOne(
+        { $pull: { classesTaught: classId } },
+        { validateBeforeSave: false }
+      );
+      console.log("Saved teacher");
+    }
+  });
 
-  // if(teachersOfClass?.length !== 0){
-  //   for(const cls of teachersOfClass){
-  //     cls?.classesTaught?.pull(req.params?.id)
-  //     await cls.save({ validateBeforeSave: false });
-  //     console.log("save teacher");
-  //   }
-  // }
-
-  // return res.status(200).json(new ApiResponse(200, {}, "deleted successfully"));
+  return res.status(200).json(new ApiResponse(200, {}, "deleted successfully"));
 });
 
 // =======================================CLASS CONTROLLERS --ADMIN == END =================================================
+
 
 
 
@@ -1441,7 +1545,7 @@ const singleSubject = asyncHandler(async (req, res) => {
     .select("-curriculum")
     .populate({
       path: "teachers",
-      select: "fullName",
+      select: "fullName gender subject",
     })
     .populate({
       path: "classes",
@@ -1461,27 +1565,32 @@ const addSubject = asyncHandler(async (req, res) => {
   // it will
   const { subjectName, teachers, classes, curriculum } = req.body;
 
-
-  const subjects = await Subject.findOne({ subjectName: changeToUpperCase(subjectName) });
+  const subjects = await Subject.findOne({
+    subjectName: subjectName && changeToUpperCase(subjectName),
+  });
 
   if (subjects) {
     throw new ApiError(400, `${subjectName} subject already exists`);
   }
-  
+
   const subject = await Subject.create({
-    subjectName: changeToUpperCase(subjectName),
+    subjectName: subjectName && changeToUpperCase(subjectName),
     teachers,
     classes,
     curriculum,
   });
 
-  if(subject){
+  if (subject) {
     return res
-    .status(201)
-    .json(new ApiResponse(201, subject, `${subjectName} Subject added successfully`));
+      .status(201)
+      .json(
+        new ApiResponse(
+          201,
+          subject,
+          `${subjectName} Subject added successfully`
+        )
+      );
   }
-
-
 });
 
 // remove subject
@@ -1603,7 +1712,9 @@ const updateCurriculumSubject = asyncHandler(async (req, res) => {
   if (!subject) {
     throw new ApiError(404, "Students not found!");
   }
-  const classer = await Class.findOne({className: curriculumClass?.toUpperCase()});
+  const classer = await Class.findOne({
+    className: curriculumClass?.toUpperCase(),
+  });
 
   if (!classer) {
     throw new ApiError(404, "className not found ! or invalid className");
@@ -1627,7 +1738,8 @@ const updateCurriculumSubject = asyncHandler(async (req, res) => {
 
   // // Update the properties with the new values
   pickARecord.year = year || pickARecord.year;
-  pickARecord.curriculumClass = curriculumClass?.toUpperCase() || pickARecord.curriculumClass;
+  pickARecord.curriculumClass =
+    curriculumClass?.toUpperCase() || pickARecord.curriculumClass;
   pickARecord.description = description || pickARecord.description;
   pickARecord.documentationLink = documentationLink || pickARecord.exam;
   pickARecord.keyTopics = keyTopics || pickARecord.grade;
@@ -1654,7 +1766,6 @@ const updateCurriculumSubject = asyncHandler(async (req, res) => {
 
 // delete curriculum of a subject
 const deleteCurriculumSubject = asyncHandler(async (req, res) => {
-
   const subject = await Subject.find({});
 
   if (!subject) {
@@ -1676,7 +1787,7 @@ const deleteCurriculumSubject = asyncHandler(async (req, res) => {
   if (!pickARecord) {
     throw new ApiError(404, "Record not found!");
   }
-  
+
   // Remove the specific curriculum record using update and $pull
   const removeRecord = await Subject.findOneAndUpdate(
     { "curriculum._id": req.params?.id },
@@ -1687,21 +1798,28 @@ const deleteCurriculumSubject = asyncHandler(async (req, res) => {
   if (removeRecord) {
     return res
       .status(201)
-      .json(
-        new ApiResponse(
-          201,{},`Curriculum record deleted successfuly`
-        )
-      );
+      .json(new ApiResponse(201, {}, `Curriculum record deleted successfuly`));
   }
 });
 
 // =======================================SUBJECT CONTROLLERS --ADMIN == END =================================================
+
+
+
+
+
+
+
+
+
 
 export {
   //user
   getAllUsers,
   deleteUser,
   updateUserRole,
+  singleUser,
+  updateUserAvatar,
 
   // student
   addStudent,
@@ -1715,6 +1833,7 @@ export {
   singleAcademicRecord,
   deleteAcademicRecord,
   updateAvatarStudent,
+  newStudentsAlert,
 
   // teacher
   addTeacher,

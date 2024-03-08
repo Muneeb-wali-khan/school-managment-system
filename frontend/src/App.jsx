@@ -24,6 +24,9 @@ function App() {
   const {errorUser } = useSelector(
     (state) => state?.profile?.userProfile
   );
+  const {errTr } = useSelector(
+    (state) => state?.admin?.teachers
+  );
     
   useEffect(()=>{
     if(errorUser === 401){

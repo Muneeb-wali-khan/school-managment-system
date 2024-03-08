@@ -4,14 +4,19 @@ import {
   combineReducers,
 } from "@reduxjs/toolkit";
 import axios from "axios";
-import { updateAvatarUrl, updatePasswordUrl, updateProfileUrl, userProfileUrl } from "../urls";
+import {
+  updateAvatarUrl,
+  updatePasswordUrl,
+  updateProfileUrl,
+  userProfileUrl,
+} from "../urls";
 
 // loged in user details
 export const profileUser = createAsyncThunk(
   "user/profile",
   async (data, { rejectWithValue }) => {
     try {
-      const config = { headers: { "Content-Type": "application/json" } };
+      const config = { headers: { "Content-Type": "application/json"},withCredentials: true};
       const response = await axios.get(`${userProfileUrl}`, config);
       return response.data;
     } catch (error) {
@@ -25,7 +30,7 @@ export const updatePasswordUser = createAsyncThunk(
   "user/updatePassword",
   async (data, { rejectWithValue }) => {
     try {
-      const config = { headers: { "Content-Type": "application/json" } };
+      const config = { headers: { "Content-Type": "application/json"},withCredentials: true};
       const response = await axios.put(`${updatePasswordUrl}`, data, config);
       return response.data;
     } catch (error) {
@@ -39,7 +44,7 @@ export const updateProfileUser = createAsyncThunk(
   "user/updateProfile",
   async (data, { rejectWithValue }) => {
     try {
-      const config = { headers: { "Content-Type": "application/json" } };
+      const config = { headers: { "Content-Type": "application/json"},withCredentials: true};
       const response = await axios.put(`${updateProfileUrl}`, data, config);
       return response.data;
     } catch (error) {
@@ -48,13 +53,12 @@ export const updateProfileUser = createAsyncThunk(
   }
 );
 
-
 // loged in user avatar update
 export const updateAvatarUser = createAsyncThunk(
   "user/updateAvatarUser",
   async (data, { rejectWithValue }) => {
     try {
-      const config = { headers: { "Content-Type": "multipart/form-data" } };
+      const config = { headers: { "Content-Type": "multipart/form-data"},withCredentials: true};
       const response = await axios.put(`${updateAvatarUrl}`, data, config);
       return response?.data?.message;
     } catch (error) {
@@ -62,8 +66,6 @@ export const updateAvatarUser = createAsyncThunk(
     }
   }
 );
-
-
 
 const userProfileSlice = createSlice({
   name: "user",
@@ -133,14 +135,12 @@ const userProfileSlice = createSlice({
       state.loadingUser = false;
       state.errorUser3 = null;
       state.msgUser3 = action.payload?.message;
-      
     });
     builder.addCase(updateProfileUser.rejected, (state, action) => {
       state.loadingUser = false;
       state.errorUser3 = action.payload?.message;
       state.msgUser3 = null;
     });
-
 
     // update avatar
     builder.addCase(updateAvatarUser.pending, (state, action) => {
@@ -151,14 +151,12 @@ const userProfileSlice = createSlice({
       state.loadingUser = false;
       state.errorUser4 = null;
       state.msgUser4 = action.payload;
-      
     });
     builder.addCase(updateAvatarUser.rejected, (state, action) => {
       state.loadingUser = false;
       state.errorUser4 = action.payload;
       state.msgUser4 = null;
     });
-
   },
 });
 

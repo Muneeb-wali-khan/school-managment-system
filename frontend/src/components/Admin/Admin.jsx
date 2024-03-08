@@ -5,6 +5,33 @@ import LoaderAn from "./LoaderAn/LoaderAn";
 import { useDispatch } from "react-redux";
 import { profileUser } from "../../store/features/user.reducer";
 
+// users
+const AllUsers = lazy(() =>
+  import("./components/AllUsers/AllUsers")
+);
+const UserDetails = lazy(() =>
+  import("./components/AllUsers/UserDetails/UserDetails")
+);
+
+const UpdateUserRole = lazy(() =>
+  import("./components/AllUsers/UpdateUserRole/UpdateUserRole")
+);
+
+
+
+// classes
+const AllClasses = lazy(() =>
+  import("./components/AllClasses/AllClasses")
+);
+const ClsDetaills = lazy(() =>
+  import("./components/AllClasses/ClsDetails/ClsDetaills")
+);
+const UpdateClass = lazy(() =>
+  import("./components/AllClasses/UpdateClass/UpdateClass")
+);
+
+
+
 // subjects
 const AllSubjects = lazy(() =>
   import("./components/AllSubjects/AllSubjects")
@@ -30,6 +57,7 @@ const RegisterTeacher = lazy(() =>
 const UpdateTeacher = lazy(() =>
   import("./components/AllTeachers/UpdateTeacher/UpdateTeacher")
 );
+
 
 // students
 const AllStudents = lazy(() => import("./components/AllStudents/ALLStudents"));
@@ -75,6 +103,15 @@ const Admin = () => {
           <Route path="/admin-all-subjects" element={<AllSubjects />} />
           <Route path="/admin-subject-details/:id" element={<SbDetaills />} />
           <Route path="/admin-subject-curriculums/:id" element={<CurriculumsSubject />} />
+
+          <Route path="/admin-all-classes" element={<AllClasses />} />
+          <Route path="/admin-class-details/:id" element={<ClsDetaills />} />
+          <Route path="/admin-class-update/:id" element={<UpdateClass />} />
+
+
+          <Route path="/admin-all-users" element={<AllUsers />} />
+          <Route path="/admin-user-details/:id" element={<UserDetails />} />
+          <Route path="/admin-update-user" element={<UpdateUserRole />} />
 
         </Routes>
       </Suspense>

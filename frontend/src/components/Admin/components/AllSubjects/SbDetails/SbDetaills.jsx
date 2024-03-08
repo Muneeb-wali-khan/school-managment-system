@@ -56,6 +56,12 @@ const SbDetaills = () => {
                           <th className="py-2 px-4 text-left border-b">
                             Teacher Name
                           </th>
+                          <th className="py-2 px-4 text-left border-b">
+                            Gender
+                          </th>
+                          <th className="py-2 px-4 text-left border-b">
+                            Subject
+                          </th>
                         </tr>
                       </thead>
                       <tbody>
@@ -63,6 +69,12 @@ const SbDetaills = () => {
                           <tr key={teacher?._id} className="hover:bg-gray-100">
                             <td className="py-3 px-4 text-left border-b text-[#8b008bb9] font-semibold">
                               {teacher?.fullName}
+                            </td>
+                            <td className="py-3 px-4 text-left border-b text-[#8b008bb9] font-semibold">
+                              {teacher?.gender}
+                            </td>
+                            <td className="py-3 px-4 text-left border-b text-[#8b008bb9] font-semibold">
+                              {teacher?.subject}
                             </td>
                           </tr>
                         ))}

@@ -13,7 +13,6 @@ const studentSchema = new Schema(
       type: String,
       required: true,
       trim: true,
-      unique: true,
       index: true,
     },
     rollNo: {
@@ -43,7 +42,6 @@ const studentSchema = new Schema(
     DOB: {
       type: Date,
       required: true,
-      unique: true,
     },
     monthlyFee: {
       type: Number,
@@ -68,7 +66,6 @@ const studentSchema = new Schema(
     },
     email: {
       type: String,
-      unique: true,
       trim: true,
       default: null,
     },

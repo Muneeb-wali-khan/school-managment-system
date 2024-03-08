@@ -15,6 +15,7 @@ import {
   classTeachersOfClassUrl,
   classSubjectsUrl,
   classSubjectsCurriculumUrl,
+  classStudentAttendance,
 } from "../urls";
 
 // teacher details
@@ -22,7 +23,7 @@ export const profileTeacher = createAsyncThunk(
   "teacher/profile",
   async (data, { rejectWithValue }) => {
     try {
-      const config = { headers: { "Content-Type": "application/json" } };
+      const config = { headers: { "Content-Type": "application/json"},withCredentials: true };
       const response = await axios.get(`${profileUrlTeacher}`, config);
       return response.data;
     } catch (error) {
@@ -36,7 +37,7 @@ export const allStudentsClass = createAsyncThunk(
   "teacher/classStudents",
   async (data, { rejectWithValue }) => {
     try {
-      const config = { headers: { "Content-Type": "application/json" } };
+      const config = { headers: { "Content-Type": "application/json"},withCredentials: true };
       const response = await axios.get(`${allStudentsClassUrl}`, config);
       return response.data;
     } catch (error) {
@@ -50,7 +51,7 @@ export const classStudentDetail = createAsyncThunk(
   "teacher/classStudent",
   async (id, { rejectWithValue }) => {
     try {
-      const config = { headers: { "Content-Type": "application/json" } };
+      const config = { headers: { "Content-Type": "application/json"},withCredentials: true };
       const response = await axios.get(
         `${classStudentDetailsUrl}${id}`,
         config
@@ -68,7 +69,7 @@ export const classStudentUpdateAvatar = createAsyncThunk(
   "teacher/classStudentUpdateAvatar",
   async ({id: id, data: data}, { rejectWithValue }) => {
     try {
-      const config = { headers: { "Content-Type": "multipart/form-data" } };
+      const config = { headers: { "Content-Type": "multipart/form-data"},withCredentials: true };
       const response = await axios.put(
         `${classStudentUpdateAvatarUrl}${id}`,
         data,
@@ -85,7 +86,7 @@ export const classStudentUpdateAvatar = createAsyncThunk(
 // add student to class
 export const addStudentToClass = createAsyncThunk("teacher/addStudent", async (data, {rejectWithValue})=>{
   try {
-    const config = { headers: { "Content-Type": "multipart/form-data" } };
+    const config = { headers: { "Content-Type": "multipart/form-data"},withCredentials: true };
     const response = await axios.post(`${classAddStudentUrl}`,data, config);
     return response.data;
   } catch (error) {
@@ -97,7 +98,7 @@ export const addStudentToClass = createAsyncThunk("teacher/addStudent", async (d
 // add student to class
 export const UpdateStudentOfClass = createAsyncThunk("teacher/UpdateStudent", async ({id: id, data: data}, {rejectWithValue})=>{
   try {
-    const config = { headers: { "Content-Type": "application/json" } };
+    const config = { headers: { "Content-Type": "application/json"},withCredentials: true };
     const response = await axios.put(`${classUpdateStudentUrl}${id}`,data, config);
     return response.data;
   } catch (error) {
@@ -109,7 +110,7 @@ export const UpdateStudentOfClass = createAsyncThunk("teacher/UpdateStudent", as
 // add student to class
 export const DeleteStudentOfClass = createAsyncThunk("teacher/DeleteStudent", async (id, {rejectWithValue})=>{
   try {
-    const config = { headers: { "Content-Type": "application/json" } };
+    const config = { headers: { "Content-Type": "application/json"},withCredentials: true };
     const response = await axios.delete(`${classDeleteStudentUrl}${id}`, config);
     return response.data;
   } catch (error) {
@@ -121,7 +122,7 @@ export const DeleteStudentOfClass = createAsyncThunk("teacher/DeleteStudent", as
 // all tecahers  of class
 export const allTeachersOfClass = createAsyncThunk("teacher/allTeachersOfClass", async (data, {rejectWithValue})=>{
   try {
-    const config = { headers: { "Content-Type": "application/json" } };
+    const config = { headers: { "Content-Type": "application/json"},withCredentials: true };
     const response = await axios.get(`${classTeachersOfClassUrl}`, config);
     return response.data;
   } catch (error) {
@@ -133,7 +134,7 @@ export const allTeachersOfClass = createAsyncThunk("teacher/allTeachersOfClass",
 // all subjects  of class
 export const allSubjectsOfClass = createAsyncThunk("teacher/allSubjectsOfClass", async (data, {rejectWithValue})=>{
   try {
-    const config = { headers: { "Content-Type": "application/json" } };
+    const config = { headers: { "Content-Type": "application/json"},withCredentials: true };
     const response = await axios.get(`${classSubjectsUrl}`, config);
     return response.data;
   } catch (error) {
@@ -145,8 +146,19 @@ export const allSubjectsOfClass = createAsyncThunk("teacher/allSubjectsOfClass",
 // ccurriculum of subject
 export const curriculumOfSubjectsClass = createAsyncThunk("teacher/curriculumOfSubjectClass", async (id, {rejectWithValue})=>{
   try {
-    const config = { headers: { "Content-Type": "application/json" } };
+    const config = { headers: { "Content-Type": "application/json"},withCredentials: true };
     const response = await axios.get(`${classSubjectsCurriculumUrl}`, config);
+    return response.data;
+  } catch (error) {
+    return rejectWithValue(error?.response?.data);
+  }
+})
+
+// take attendence 
+export const takeAttendance = createAsyncThunk("teacher/takeAttendance", async (data, {rejectWithValue})=>{
+  try {
+    const config = { headers: { "Content-Type": "application/json"},withCredentials: true };
+    const response = await axios.post(`${classStudentAttendance}`,data, config);
     return response.data;
   } catch (error) {
     return rejectWithValue(error?.response?.data);
@@ -160,6 +172,7 @@ const teacherSlice = createSlice({
   initialState: {
     loadingTeacher: false,
     errorTeacher: null,
+    msgTeacher: null,
     profileTeacher: null,
     allTeachersCl: null,
     allSubjectsCl: null,
@@ -179,6 +192,7 @@ const teacherSlice = createSlice({
   reducers: {
     clearErrorsTeacher(state) {
       state.errorTeacher = null;
+      state.msgTeacher = null;
       state.msgAddSt = null;
       state.errAddSt = null;
       state.msgAvatar = null,
@@ -330,6 +344,20 @@ const teacherSlice = createSlice({
       state.subjectCurriculum = action.payload?.data;
     });
     builder.addCase(curriculumOfSubjectsClass.rejected, (state, action) => {
+      state.loadingTeacher = false;
+      state.errorTeacher = action.payload?.message;
+    })
+
+    // attendance of class
+    builder.addCase(takeAttendance.pending, (state, action) => {
+      state.loadingTeacher = true;
+      state.errorTeacher = null;
+    });
+    builder.addCase(takeAttendance.fulfilled, (state, action) => {
+      state.loadingTeacher = false;
+      state.msgTeacher = action.payload?.message;
+    });
+    builder.addCase(takeAttendance.rejected, (state, action) => {
       state.loadingTeacher = false;
       state.errorTeacher = action.payload?.message;
     })

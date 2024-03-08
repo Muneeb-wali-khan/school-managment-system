@@ -15,7 +15,7 @@ import toast from "react-hot-toast";
 const AllTeachers = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { loadingTr, errDelTr, msgDelTr, allTr,errTr } = useSelector(
+  const { loadingTr, errDelTr, msgDelTr, allTr, errTr } = useSelector(
     (state) => state?.admin?.teachers
   );
 
@@ -48,7 +48,6 @@ const AllTeachers = () => {
       toast.success(msgDelTr);
     }
     dispatch(clearErrorTeachers());
-    dispatch(adminFetchAllTeachers());
   }, [errDelTr, msgDelTr, dispatch]);
 
   const onRequestClose = () => {
@@ -73,6 +72,30 @@ const AllTeachers = () => {
       options: {
         filter: true,
         sort: true,
+      },
+    },
+    {
+      name: "className",
+      label: "Teacher Class",
+      options: {
+        filter: true,
+        sort: true,
+
+        customBodyRender: (value, tableMeta)=>{
+          const cls = tableMeta?.rowData?.[2]
+        if(cls === "N/A"){
+          return (
+            <>
+              <span className="text-red-500">{cls}</span>
+            </>
+          )
+        }
+        return (
+          <>
+            <span>{cls}</span>
+          </>
+        )
+        }
       },
     },
 
@@ -205,20 +228,7 @@ const AllTeachers = () => {
           <LoaderAn />
         ) : (
           <>
-            {errTr && (
-              <p className="text-red-500 text-lg font-semibold mb-4">
-                <div className="flex flex-col items-center justify-center h-[50vh] mt-10 w-full border border-gray-300 rounded-lg shadow-lg">
-                  <h1 className="text-4xl font-extrabold text-red-500 mb-2">
-                    {errTr}
-                  </h1>
-                  <p className="text-lg text-gray-600 leading-6">
-                    It seems like you haven't been assigned as the Admin.
-                  </p>
-                </div>
-              </p>
-            )}
-
-            {allTr && allTr?.length > 0 && (
+            {allTr && allTr?.length > 0 ? (
               <>
                 <div
                   className="mb-4 mt-6 text-[15px]"
@@ -234,6 +244,12 @@ const AllTeachers = () => {
                   columns={columns}
                   options={options}
                 />
+              </>
+            ) : (
+              <>
+                <p className="text-gray-600 text-lg font-semibold">
+                  No Teachers Found ?.
+                </p>
               </>
             )}
           </>

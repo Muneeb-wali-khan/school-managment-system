@@ -1,10 +1,6 @@
 import React from 'react'
 
-const DeleteSubject = ({
-    isOpen,
-    onRequestClose,
-    handleDeleteSubject
-}) => {
+const DeleteSubject = ({isOpen,onRequestClose,handleDeleteSubject}) => {
     return (
         <div
           className={`fixed inset-0 flex items-center justify-center z-50 overflow-hidden transition-opacity ${

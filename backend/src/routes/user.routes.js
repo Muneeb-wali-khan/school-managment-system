@@ -11,14 +11,14 @@ import {
   
 } from "../controllers/user.controllers.js";
 import { upload } from "../middlewares/multer.js";
-import { jwtVerify } from "../middlewares/auth.middleware.js";
+import { jwtVerify, registerLimiter } from "../middlewares/auth.middleware.js";
 import multer from "multer";
 import { ApiError } from "../utils/ApiError.js";
 
 const router = Router();
 
 
-router.route("/register").post(upload.single("avatar"), registerUser);
+router.route("/register").post(registerLimiter,upload.single("avatar"), registerUser);
 router.route("/login").post(loginUser);
 
 // protected routes

@@ -4,8 +4,10 @@ import { isAdmin, jwtVerify } from "../middlewares/auth.middleware.js";
 
 import { 
   getAllUsers,
+  singleUser,
   deleteUser,
   updateUserRole,
+  updateUserAvatar,
 
   addTeacher,
   deleteTeacher,
@@ -25,6 +27,7 @@ import {
   addAcademicRecordStudent,
   updatedStudentAcedamicRecord,
   deleteAcademicRecord,
+  newStudentsAlert,
 
   addClass,
   allClasses,
@@ -50,7 +53,9 @@ const router = Router();
 
 // USER ROUTES
 router.route("/all-users").get(jwtVerify,isAdmin, getAllUsers);
+router.route("/single-user/:id").get(jwtVerify,isAdmin, singleUser);
 router.route("/update-user-role/:id").put(jwtVerify,isAdmin, updateUserRole);
+router.route("/update-user-avatar/:id").put(jwtVerify,isAdmin,upload.single("avatar"), updateUserAvatar);
 router.route("/remove-user/:id").delete(jwtVerify,isAdmin, deleteUser);
 
 
@@ -63,6 +68,7 @@ router.route("/add-student").post(jwtVerify,isAdmin, upload.single("avatar"), ad
 router.route("/update-student/:id").put(jwtVerify,isAdmin, updateStudent)
 router.route("/update-student-avatar/:id").put(jwtVerify,isAdmin,upload.single("avatar"),updateAvatarStudent)
 router.route("/remove-student/:id").delete(jwtVerify,isAdmin, deleteStudent)
+router.route("/new-student-alert").get(jwtVerify,isAdmin, newStudentsAlert)
 // academic record of students
 router.route("/all-student-academic-record/:id").get(jwtVerify,isAdmin, allAcademicRecordStudent)
 router.route("/single-student-academic-record/:id").get(jwtVerify,isAdmin, singleAcademicRecord)

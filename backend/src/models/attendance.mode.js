@@ -8,10 +8,13 @@ const attendanceSchema = new Schema(
       ref: "Student",
       required: true,
     },
+    studentName: {
+      type: String,
+      required: true,
+    },
     // Reference to the Class model
-    classID: {
-      type: Schema.Types.ObjectId,
-      ref: "Class",
+    AttClass: {
+      type: String,
       required: true,
     },
     // Date of the attendance record
@@ -22,24 +25,13 @@ const attendanceSchema = new Schema(
     // Status of the attendance (Present or Absent)
     status: {
       type: String,
-      enum: ["Present", "Absent"],
+      enum: ["present", "absent"],
       required: true,
-    },
-    // Reason for the absence (optional)
-    absenceReason: {
-      type: String,
-    },
-
-    // Type of attendance (Present, Late Arrival, Early Departure, etc.)
-    attendanceType: {
-      type: String,
-      enum: ["On time", "Late arrival", "On leaving"],
     },
   
     // User ID of the teacher or admin who marked the attendance
     markedBy: {
-      type: Schema.Types.ObjectId,
-      ref: "Teacher", // Assuming you have a User model for teachers or administrators
+      type: String, // Assuming you have a User model for teachers or administrators
       required: true,
     },
   },

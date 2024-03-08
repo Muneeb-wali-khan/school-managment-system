@@ -38,6 +38,14 @@ const TrNav = () => {
     dispatch(clearErrorsAuth());
   }, [msgAuth, errorAuth,dispatch]);
 
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+
+  const openNotification = () => {
+    // Handle opening the notification or fetching new notifications
+    setIsNotificationOpen(!isNotificationOpen);
+  };
+
+
   return (
     <>
     {
@@ -122,14 +130,62 @@ const TrNav = () => {
             </div>
           </div>
 
+
+
           {/* <!-- Bell Icon with Notification Dot --> */}
           <div className="relative ml-4">
-            <div className="w-6 h-6 cursor-pointer">
+            {/* Bell Icon with Notification Dot */}
+            <div
+              className="w-6 h-6 cursor-pointer relative"
+              onClick={openNotification}
+            >
               <span className="fa fa-bell"></span>
+
+              {/* Notification Dot */}
+                <div className="absolute -top-1 right-1 h-2 w-2 bg-red-500 rounded-full animate-shake animate-glow "></div>
             </div>
-            {/* <!-- Notification Dot --> */}
-            <div className="absolute top-0 right-2 h-2 w-2 bg-red-500 rounded-full"></div>
+
+            {/* Notification Dropdown */}
+            {isNotificationOpen && (
+              <div className="absolute max-h-[300px] overflow-y-auto top-8 right-0 mt-2 w-72 sm:w-80 bg-white border border-gray-300 rounded-md shadow-md overflow-hidden z-10">
+                {/* Notification Header */}
+                <div className="bg-gray-200 p-3 border-b border-gray-300">
+                  <h3 className="text-gray-800 text-lg font-semibold">
+                    Notifications
+                  </h3>
+                </div>
+
+                {/* Notification Items (Replace this with your notification content) */}
+                <div className="p-4 flex flex-col gap-2">
+                  <div className="flex items-center space-x-4 hover:bg-gray-50 cursor-pointer">
+                    <div className="w-10 h-10 bg-gray-300 rounded-full flex-shrink-0 items-center flex justify-center">
+                      <i className="fa fa-person"></i>
+                    </div>
+                    <div>
+                      <div className="text-gray-800">Final Exam Alert</div>
+                      <div className="text-sm text-gray-500">
+                        Final Exam is scheduled to begin soon.
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-4 hover:bg-gray-50 cursor-pointer">
+                    <div className="w-10 h-10 bg-gray-300 rounded-full flex-shrink-0 items-center flex justify-center">
+                      <i className="fa fa-person"></i>
+                    </div>
+                    <div>
+                      <div className="text-gray-800">Final Exam Alert</div>
+                      <div className="text-sm text-gray-500">
+                        Final Exam is scheduled to begin soon.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
+
+
+
         </div>
       </div>
     </>

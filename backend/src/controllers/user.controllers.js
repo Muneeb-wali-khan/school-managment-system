@@ -33,7 +33,8 @@ const generateAccessTokenAndRefreshToken = async (userId) => {
 // cookie oprions
 const cookieOptions = {
   httpOnly: true,
-  secure: true,
+  secure: false,
+  sameSite: 'strict'
 };
 
 
