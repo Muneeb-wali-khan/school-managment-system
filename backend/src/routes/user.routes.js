@@ -38,7 +38,7 @@ router.use((err, req, res, next) => {
   if (err instanceof multer.MulterError) {
     if (err.code === "LIMIT_FILE_SIZE") {
       // Customize the error message for file size limit
-      throw new ApiError(500, "File/image size must be 200 KB or less");
+      throw new ApiError(500, "File/image size must be 300 KB or less");
     }
   }
   if(err instanceof multer.MulterError){

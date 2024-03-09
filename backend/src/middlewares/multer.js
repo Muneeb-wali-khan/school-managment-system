@@ -10,7 +10,7 @@ const storage = multer.diskStorage({
 })
 
 // kb * byte 1kb  = 1024 byte
-const fileSize = 200 * 1024 // = 100kb
+const fileSize = 300 * 1024 // = 300kb
 
 const fileFilter = (req, file, cb) => {
     if(!file.mimetype.startsWith("image/")){

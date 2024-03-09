@@ -624,7 +624,6 @@ const curriculumOfSubjectOfClass = asyncHandler(async (req, res) => {
 });
 
 
-// to be continued.....
 // take attendance of class by class Teacher
 const takeAttendance = asyncHandler(async (req, res) => {
   const attendanceArray = req.body;
@@ -652,6 +651,19 @@ const takeAttendance = asyncHandler(async (req, res) => {
 
   if (!teacherOfClass.students || teacherOfClass.students.length === 0) {
     throw new ApiError(400, "No students found in the class!");
+  }
+
+   // Check if attendance for this class has already been taken today
+   const existingAttendance = await Attendance.findOne({
+    AttClass: teacherOfClass?.className,
+    date: {
+      $gte: new Date().setHours(0, 0, 0, 0), // Today's date
+      $lte: new Date().setHours(23, 59, 59, 999), // End of today
+    },
+  });
+
+  if (existingAttendance) {
+    throw new ApiError(400, "Attendance already been taken today!");
   }
 
   // Validate each attendance record and create an array of valid records
@@ -683,6 +695,79 @@ const takeAttendance = asyncHandler(async (req, res) => {
 });
 
 
+//  get single attendance of class
+const getSingleAttendaceClass = asyncHandler(async(req,res)=>{
+
+  const fullName = req?.user?.fullName;
+  const email = req?.user?.email;
+  const tr = await Teacher.findOne({ email: email, fullName: fullName });
+
+  if (!tr) {
+    throw new ApiError(400, "Teacher not found !");
+  }
+
+  const teacherOfClass = await Class.findOne({
+    classTeacherID: tr?._id,
+  })
+    .select("-classTeacherID -teachersOfClass -subjects")
+    .populate({
+      path: "students",
+      select: "fullName",
+    });
+
+  if (!teacherOfClass) {
+    throw new ApiError(400, "You're not yet the Class Teacher of any class !");
+  }
+
+  const findAttendanceOfClass = await Attendance.find({AttClass: teacherOfClass?.className})
+
+  console.log(findAttendanceOfClass);
+
+  return res.status(200).json(new ApiResponse(200, findAttendanceOfClass, "Attendance fetched"));
+
+})
+
+
+// get attendance of today of  class
+const getAttendanceOfToday = asyncHandler(async(req, res)=>{
+
+  const fullName = req?.user?.fullName;
+  const email = req?.user?.email;
+  const tr = await Teacher.findOne({ email: email, fullName: fullName });
+
+  if (!tr) {
+    throw new ApiError(400, "Teacher not found !");
+  }
+
+  const teacherOfClass = await Class.findOne({
+    classTeacherID: tr?._id,
+  })
+    .select("-classTeacherID -teachersOfClass -subjects")
+    .populate({
+      path: "students",
+      select: "fullName",
+    });
+
+  if (!teacherOfClass) {
+    throw new ApiError(400, "You're not yet the Class Teacher of any class !");
+  }
+
+  const todayAttendanceOfClass = await Attendance.find({
+    AttClass: teacherOfClass?.className,
+    date: {
+      $gte: new Date().setHours(0, 0, 0, 0), // Today's date
+      $lte: new Date().setHours(23, 59, 59, 999), // End of today
+    }
+  })
+
+  if(!todayAttendanceOfClass){
+    throw new ApiError(404, "Today Attendance not Takken !")
+  }
+
+
+  return res.status(200).json(new ApiResponse(200, todayAttendanceOfClass, "Attendance fetched"));
+
+})
 
 
 
@@ -697,6 +782,8 @@ export {
   updateStudentAvatar,
   deleteStudentFromClass,
   takeAttendance,
+  getSingleAttendaceClass,
+  getAttendanceOfToday,
 
   allTeachersOfSpecificClass,
 
