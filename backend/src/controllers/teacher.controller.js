@@ -38,9 +38,6 @@ const getLogedInTeacherDetails = asyncHandler(async (req, res) => {
       select: "fullName",
     });
 
-  if (!teacherOfClass) {
-    throw new ApiError(400, "Your'r not yet Class Teacher of any class !");
-  }
 
   const classNAME = teacherOfClass? teacherOfClass.className : ""
   return res
@@ -195,7 +192,7 @@ const addStudentsToClass = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Your'r not yet Class Teacher of any class !");
   }
 
-  if (phone?.length > 11) {
+  if (phone?.length !== 11) {
     throw new ApiError(400, "Invalid phone number !");
   } 
   if (phoneExists) {
@@ -512,10 +509,6 @@ const allTeachersOfSpecificClass = asyncHandler(async (req, res) => {
 
   const tr = await Teacher.findOne({ email: email, fullName: fullName });
 
-  if (!tr) {
-    throw new ApiError(400, "Teacher not found !");
-  }
-
   const teacherOfClass = await Class.findOne({
     classTeacherID: tr?._id,
   }).populate({
@@ -541,10 +534,6 @@ const allSubjectsOfClass = asyncHandler(async (req, res) => {
   const email = req?.user?.email;
 
   const tr = await Teacher.findOne({ email: email, fullName: fullName });
-
-  if (!tr) {
-    throw new ApiError(400, "Teacher not found !");
-  }
 
   const teacherOfClass = await Class.findOne({
     classTeacherID: tr?._id,
@@ -584,10 +573,6 @@ const curriculumOfSubjectOfClass = asyncHandler(async (req, res) => {
   const email = req?.user?.email;
 
   const tr = await Teacher.findOne({ email: email, fullName: fullName });
-
-  if (!tr) {
-    throw new ApiError(400, "Teacher not found !");
-  }
 
   const teacherOfClass = await Class.findOne({
     classTeacherID: tr?._id,
@@ -631,10 +616,6 @@ const takeAttendance = asyncHandler(async (req, res) => {
   const fullName = req?.user?.fullName;
   const email = req?.user?.email;
   const tr = await Teacher.findOne({ email: email, fullName: fullName });
-
-  if (!tr) {
-    throw new ApiError(400, "Teacher not found!");
-  }
 
   const teacherOfClass = await Class.findOne({
     classTeacherID: tr?._id,
@@ -702,10 +683,6 @@ const getSingleAttendaceClass = asyncHandler(async(req,res)=>{
   const email = req?.user?.email;
   const tr = await Teacher.findOne({ email: email, fullName: fullName });
 
-  if (!tr) {
-    throw new ApiError(400, "Teacher not found !");
-  }
-
   const teacherOfClass = await Class.findOne({
     classTeacherID: tr?._id,
   })
@@ -721,8 +698,6 @@ const getSingleAttendaceClass = asyncHandler(async(req,res)=>{
 
   const findAttendanceOfClass = await Attendance.find({AttClass: teacherOfClass?.className})
 
-  console.log(findAttendanceOfClass);
-
   return res.status(200).json(new ApiResponse(200, findAttendanceOfClass, "Attendance fetched"));
 
 })
@@ -735,9 +710,6 @@ const getAttendanceOfToday = asyncHandler(async(req, res)=>{
   const email = req?.user?.email;
   const tr = await Teacher.findOne({ email: email, fullName: fullName });
 
-  if (!tr) {
-    throw new ApiError(400, "Teacher not found !");
-  }
 
   const teacherOfClass = await Class.findOne({
     classTeacherID: tr?._id,

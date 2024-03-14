@@ -49,7 +49,7 @@ const TrNav = () => {
   return (
     <>
     {
-      loadingAuth && (
+      loadingAuth || loadingTeacher && (
         <Loader/>
       )
     }
@@ -126,7 +126,7 @@ const TrNav = () => {
                       userProfile.fullName.substr(1))) ||
                   "Teacher Name"}
               </p>
-              <p className="text-xs text-gray-600"> {profileTeacher && `Teacher ${profileTeacher[1] }`|| "Class Name"}</p>
+              <p className="text-xs text-gray-600"> {profileTeacher?.[1] ? `Teacher ${profileTeacher[1] }`: "Teacher Only"}</p>
             </div>
           </div>
 

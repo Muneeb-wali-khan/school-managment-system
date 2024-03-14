@@ -18,6 +18,7 @@ const classTeachersOfClassUrl = "/api/v1/teacher/all-teachers-class"
 const classSubjectsUrl = "/api/v1/teacher/all-subjects-class"
 const classSubjectsCurriculumUrl = "/api/v1/teacher/curriculum-subject"
 const classStudentAttendance = "/api/v1/teacher/take-attendance-class"
+const classStudentAttendanceToday = "/api/v1/teacher/attendance-class-today"
 
 
 // admin urls
@@ -91,6 +92,7 @@ export  {
     classSubjectsUrl,
     classSubjectsCurriculumUrl,
     classStudentAttendance,
+    classStudentAttendanceToday,
 
     //admin ROUTES
 

@@ -3,16 +3,16 @@ import TrNav from "../../Navbar/TrNav";
 import { useDispatch, useSelector } from "react-redux";
 import UpdatePassword from "./passwordUpdate/UpdatePassword";
 import UpdateProfile from "./ProfileUpdate/UpdateProfile";
-import Loader from "../../../loader/Loader";
 import {
   clearErrorsUserProfile,
   profileUser,
   updateAvatarUser,
 } from "../../../../store/features/user.reducer";
+import { profileTeacher as profileInfoTeacher } from "../../../../store/features/teacher.reducers";
 import toast from "react-hot-toast";
+import LoaderTr from "../../LoaderTr/LoaderTr";
 
 const TrProfiles = () => {
-  
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [avatar, setAvatar] = useState("");
   const [avatarView, setAvatarView] = useState(null);
@@ -26,6 +26,9 @@ const TrProfiles = () => {
     (state) => state?.teacher?.teacherD
   );
 
+  useEffect(()=>{
+    dispatch(profileInfoTeacher())
+  },[dispatch])
   const openModal = () => {
     setIsModalOpen(true);
   };
@@ -66,7 +69,7 @@ const TrProfiles = () => {
       toast.error(errorUser4);
     }
     dispatch(clearErrorsUserProfile());
-  }, [dispatch,msgUser4, errorUser4]);
+  }, [dispatch, msgUser4, errorUser4]);
 
   const handleModalShow = () => {
     setIsModalOpenAvatar(true);
@@ -100,135 +103,145 @@ const TrProfiles = () => {
       <div className="p-[1.25rem] w-4/5 navdashMain">
         <TrNav />
         {loadingTeacher || loadingUser ? (
-          <Loader />
+          <LoaderTr />
         ) : (
           <>
             {/* teacher information */}
             <div className="flex w-full h-auto mt-8  gap-12 flex-wrap trprofile">
-              <div className=" w-[50%] shadow-lg border-2 border-[#8d5ade9d] shadow-[#6633996e] h-auto TeacherprofileDiv  p-3 py-5  rounded-lg text-gray-700">
-                <h2 className="font-bold text-gray-600 mb-4 mx-5 mt-4">
-                  Teacher Information :{" "}
-                </h2>
+                <>
+                  <div className=" w-[50%] shadow-lg border-2 border-[#8d5ade9d] shadow-[#6633996e] h-auto TeacherprofileDiv  p-3 py-5  rounded-lg text-gray-700">
+                    <h2 className="font-bold text-gray-600 mb-4 mx-5 mt-4">
+                      Teacher Information :{" "}
+                    </h2>
 
-                <div className="flex flex-col items-center justify-center mb-4">
-                  <img
-                    src={(profileTeacher && profileTeacher[0]?.avatar) || ""}
-                    className="w-[110px] h-[110px] rounded-full mb-2"
-                    alt=""
-                  />
-                  <p>
-                    {profileTeacher &&
-                      profileTeacher[0]?.fullName.toUpperCase()}
-                  </p>
-                </div>
+                    <div className="flex flex-col items-center justify-center mb-4">
+                      <img
+                        src={
+                          (profileTeacher && profileTeacher[0]?.avatar) || ""
+                        }
+                        className="w-[110px] h-[110px] rounded-full mb-2"
+                        alt=""
+                      />
+                      <p>
+                        {profileTeacher &&
+                          profileTeacher[0]?.fullName.toUpperCase()}
+                      </p>
+                    </div>
 
-                <div className="flex flex-col px-4">
-                  <div className="flex items-center gap-4 border-2 border-[#80808023] py-1 px-3 ">
-                    <p className=" font-medium">First Name : </p>
-                    <p>{profileTeacher && profileTeacher[0]?.firstName}</p>
+                    <div className="flex flex-col px-4">
+                      <div className="flex items-center gap-4 border-2 border-[#80808023] py-1 px-3 ">
+                        <p className=" font-medium">First Name : </p>
+                        <p>{profileTeacher && profileTeacher[0]?.firstName}</p>
+                      </div>
+
+                      <div className="flex items-center gap-4 border-2 border-[#80808023] py-1 px-3 ">
+                        <p className=" font-medium">Email : </p>
+                        <p>{profileTeacher && profileTeacher[0]?.email}</p>
+                      </div>
+
+                      <div className="flex items-center gap-4 border-2 border-[#80808023] py-1 px-3 ">
+                        <p className=" font-medium">DOB : </p>
+                        <p>
+                          {" "}
+                          {new Date(
+                            profileTeacher && profileTeacher[0]?.DOB
+                          ).toLocaleDateString("en-US", {
+                            day: "numeric",
+                            month: "long",
+                            year: "numeric",
+                          })}
+                        </p>
+                      </div>
+
+                      <div className="flex items-center gap-4 border-2 border-[#80808023] py-1 px-3 ">
+                        <p className=" font-medium">Age : </p>
+                        <p>{profileTeacher && profileTeacher[0]?.age}</p>
+                      </div>
+
+                      <div className="flex items-center gap-4 border-2 border-[#80808023] py-1 px-3 ">
+                        <p className=" font-medium">Address : </p>
+                        <p>{profileTeacher && profileTeacher[0]?.address}</p>
+                      </div>
+
+                      <div className="flex items-center gap-4 border-2 border-[#80808023] py-1 px-3 ">
+                        <p className=" font-medium">Phone : </p>
+                        <p>{profileTeacher && profileTeacher[0]?.phone}</p>
+                      </div>
+
+                      <div className="flex items-center gap-4 border-2 border-[#80808023] py-1 px-3 ">
+                        <p className=" font-medium">Sallary : </p>
+                        <p>
+                          {profileTeacher && profileTeacher[0]?.sallary === 0
+                            ? "N/A"
+                            : profileTeacher && profileTeacher[0]?.sallary}
+                        </p>
+                      </div>
+
+                      <div className="flex items-center gap-4 border-2 border-[#80808023] py-1 px-3 ">
+                        <p className=" font-medium">Joining Date : </p>
+                        <p>
+                          {" "}
+                          {new Date(
+                            profileTeacher && profileTeacher[0]?.joiningDate
+                          ).toLocaleDateString("en-US", {
+                            day: "numeric",
+                            month: "long",
+                            year: "numeric",
+                          })}
+                        </p>
+                      </div>
+
+                      <div className="flex items-center gap-4 border-2 border-[#80808023] py-1 px-3 ">
+                        <p className=" font-medium">Status : </p>
+                        <p
+                          className={`${
+                            profileTeacher &&
+                            profileTeacher[0]?.status === "active"
+                              ? "text-green-500"
+                              : "text-red-500"
+                          }`}
+                        >
+                          {profileTeacher && profileTeacher[0]?.status}
+                        </p>
+                      </div>
+
+                      <div className="flex items-center gap-4 border-2 border-[#80808023] py-1 px-3 ">
+                        <p className=" font-medium">Blood Group : </p>
+                        <p>{profileTeacher && profileTeacher[0]?.bloodGroup}</p>
+                      </div>
+
+                      <div className="flex items-center gap-4 border-2 border-[#80808023] py-1 px-3 ">
+                        <p className=" font-medium">Gender : </p>
+                        <p>{profileTeacher && profileTeacher[0]?.gender}</p>
+                      </div>
+
+                      <div className="flex items-center gap-4 border-2 border-[#80808023] py-1 px-3 ">
+                        <p className=" font-medium">Designation : </p>
+                        <p>
+                          {profileTeacher && profileTeacher[0]?.designation}
+                        </p>
+                      </div>
+
+                      <div className="flex items-center gap-4 border-2 border-[#80808023] py-1 px-3 ">
+                        <p className=" font-medium">Subject : </p>
+                        <p>{profileTeacher && profileTeacher[0]?.subject}</p>
+                      </div>
+
+                      <div className="flex gap-1 border-2 border-[#80808023] py-1 px-3 ">
+                        <p className=" font-medium">Classes Taught : </p>
+                        <p className=" lowercase">
+                          {profileTeacher &&
+                            profileTeacher[0]?.classesTaught?.map((val) => (
+                              <span key={val?.className}>
+                                {val?.className}{" "}
+                              </span>
+                            ))}
+                        </p>
+                      </div>
+                    </div>
                   </div>
+                </>
 
-                  <div className="flex items-center gap-4 border-2 border-[#80808023] py-1 px-3 ">
-                    <p className=" font-medium">Email : </p>
-                    <p>{profileTeacher && profileTeacher[0]?.email}</p>
-                  </div>
-
-                  <div className="flex items-center gap-4 border-2 border-[#80808023] py-1 px-3 ">
-                    <p className=" font-medium">DOB : </p>
-                    <p>
-                      {" "}
-                      {new Date(
-                        profileTeacher && profileTeacher[0]?.DOB
-                      ).toLocaleDateString("en-US", {
-                        day: "numeric",
-                        month: "long",
-                        year: "numeric",
-                      })}
-                    </p>
-                  </div>
-
-                  <div className="flex items-center gap-4 border-2 border-[#80808023] py-1 px-3 ">
-                    <p className=" font-medium">Age : </p>
-                    <p>{profileTeacher && profileTeacher[0]?.age}</p>
-                  </div>
-
-                  <div className="flex items-center gap-4 border-2 border-[#80808023] py-1 px-3 ">
-                    <p className=" font-medium">Address : </p>
-                    <p>{profileTeacher && profileTeacher[0]?.address}</p>
-                  </div>
-
-                  <div className="flex items-center gap-4 border-2 border-[#80808023] py-1 px-3 ">
-                    <p className=" font-medium">Phone : </p>
-                    <p>{profileTeacher && profileTeacher[0]?.phone}</p>
-                  </div>
-
-                  <div className="flex items-center gap-4 border-2 border-[#80808023] py-1 px-3 ">
-                    <p className=" font-medium">Sallary : </p>
-                    <p>
-                      {profileTeacher && profileTeacher[0]?.sallary === 0
-                        ? "N/A"
-                        : profileTeacher && profileTeacher[0]?.sallary}
-                    </p>
-                  </div>
-
-                  <div className="flex items-center gap-4 border-2 border-[#80808023] py-1 px-3 ">
-                    <p className=" font-medium">Joining Date : </p>
-                    <p>
-                      {" "}
-                      {new Date(
-                        profileTeacher && profileTeacher[0]?.joiningDate
-                      ).toLocaleDateString("en-US", {
-                        day: "numeric",
-                        month: "long",
-                        year: "numeric",
-                      })}
-                    </p>
-                  </div>
-
-                  <div className="flex items-center gap-4 border-2 border-[#80808023] py-1 px-3 ">
-                    <p className=" font-medium">Status : </p>
-                    <p
-                      className={`${
-                        profileTeacher && profileTeacher[0]?.status === "active"
-                          ? "text-green-500"
-                          : "text-red-500"
-                      }`}
-                    >
-                      {profileTeacher && profileTeacher[0]?.status}
-                    </p>
-                  </div>
-
-                  <div className="flex items-center gap-4 border-2 border-[#80808023] py-1 px-3 ">
-                    <p className=" font-medium">Blood Group : </p>
-                    <p>{profileTeacher && profileTeacher[0]?.bloodGroup}</p>
-                  </div>
-
-                  <div className="flex items-center gap-4 border-2 border-[#80808023] py-1 px-3 ">
-                    <p className=" font-medium">Gender : </p>
-                    <p>{profileTeacher && profileTeacher[0]?.gender}</p>
-                  </div>
-
-                  <div className="flex items-center gap-4 border-2 border-[#80808023] py-1 px-3 ">
-                    <p className=" font-medium">Designation : </p>
-                    <p>{profileTeacher && profileTeacher[0]?.designation}</p>
-                  </div>
-
-                  <div className="flex items-center gap-4 border-2 border-[#80808023] py-1 px-3 ">
-                    <p className=" font-medium">Subject : </p>
-                    <p>{profileTeacher && profileTeacher[0]?.subject}</p>
-                  </div>
-
-                  <div className="flex gap-1 border-2 border-[#80808023] py-1 px-3 ">
-                    <p className=" font-medium">Classes Taught : </p>
-                    <p className=" lowercase">
-                      {profileTeacher &&
-                        profileTeacher[0]?.classesTaught?.map((val) => (
-                          <span key={val?.className}>{val?.className} </span>
-                        ))}
-                    </p>
-                  </div>
-                </div>
-              </div>
 
               {/* user info */}
               <div className=" w-[40%]  h-[100%] border-2 border-[#8d5ade9d] shadow-lg shadow-[#6633996e] p-3 py-5 TeacherprofileDiv rounded-lg text-gray-700">

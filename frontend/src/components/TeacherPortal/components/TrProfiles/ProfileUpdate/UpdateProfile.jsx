@@ -9,6 +9,7 @@ import {
 const UpdateProfile = ({ isOpenProfile, onCloseProfile }) => {
   const [email, setEmail] = useState("");
   const [fullName, setFullName] = useState("");
+  const [username, setUserName] = useState("");
 
   const dispatch = useDispatch();
   const { userProfile, loadingUser, errorUser3, msgUser3 } = useSelector(
@@ -17,7 +18,7 @@ const UpdateProfile = ({ isOpenProfile, onCloseProfile }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    dispatch(updateProfileUser({ email, fullName }));
+    dispatch(updateProfileUser({ email, fullName ,username}));
   };
 
   useEffect(() => {
@@ -35,8 +36,9 @@ const UpdateProfile = ({ isOpenProfile, onCloseProfile }) => {
     if (userProfile) {
       setEmail(userProfile?.email || "");
       setFullName(userProfile?.fullName || "");
+      setUserName(userProfile?.username || "");
     }
-  }, [userProfile?.email, userProfile?.fullName]);
+  }, [userProfile?.email, userProfile?.fullName,userProfile?.username]);
 
   return (
     <div className={`fixed inset-0 z-50 ${isOpenProfile ? "" : "hidden"}`}>
@@ -52,6 +54,26 @@ const UpdateProfile = ({ isOpenProfile, onCloseProfile }) => {
           </h2>
 
           <form onSubmit={handleSubmit}>
+            <div className="mb-4 relative">
+              <label
+                htmlFor="new username"
+                className="block text-white font-semibold mb-2"
+              >
+                New UserName:
+              </label>
+              <div className="flex items-center">
+                <input
+                  disabled={loadingUser ? true : false}
+                  name="username"
+                  value={username}
+                  type="text"
+                  onChange={(e) => setUserName(e.target.value)}
+                  className="w-full px-4 py-2 bg-white bg-opacity-20 border rounded-md focus:outline-none focus:border-blue-500 text-white"
+                  required
+                />
+              </div>
+            </div>
+
             <div className="mb-4 relative">
               <label
                 htmlFor="new email"

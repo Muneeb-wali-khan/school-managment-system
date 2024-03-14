@@ -16,6 +16,7 @@ import {
   classSubjectsUrl,
   classSubjectsCurriculumUrl,
   classStudentAttendance,
+  classStudentAttendanceToday,
 } from "../urls";
 
 // teacher details
@@ -165,6 +166,17 @@ export const takeAttendance = createAsyncThunk("teacher/takeAttendance", async (
   }
 })
 
+//  attendence today 
+export const showAttendanceToday = createAsyncThunk("teacher/showAttendanceToday", async (data, {rejectWithValue})=>{
+  try {
+    const config = { headers: { "Content-Type": "application/json"},withCredentials: true };
+    const response = await axios.get(`${classStudentAttendanceToday}`, config);
+    return response.data;
+  } catch (error) {
+    return rejectWithValue(error?.response?.data);
+  }
+})
+
 
 
 const teacherSlice = createSlice({
@@ -179,6 +191,7 @@ const teacherSlice = createSlice({
     subjectCurriculum: null,
     allStudentsClass: null,
     classStudentDetails: null,
+    attendanceToday: null,
     msgAvatar: null,
     errAvatar: null,
     msgAddSt: null,
@@ -187,6 +200,8 @@ const teacherSlice = createSlice({
     errUptSt: null,
     msgDelSt: null,
     errDelSt: null,
+    errAttSt : null,
+    msgAttSt : null
   },
 
   reducers: {
@@ -201,6 +216,8 @@ const teacherSlice = createSlice({
       state.errUptSt = null
       state.msgDelSt = null,
       state.errDelSt = null
+      state.errAttSt = null,
+      state.msgAttSt = null
 
     },
   },
@@ -348,18 +365,33 @@ const teacherSlice = createSlice({
       state.errorTeacher = action.payload?.message;
     })
 
-    // attendance of class
+    // take attendance of class
     builder.addCase(takeAttendance.pending, (state, action) => {
       state.loadingTeacher = true;
-      state.errorTeacher = null;
+      state.errAttSt = null;
     });
     builder.addCase(takeAttendance.fulfilled, (state, action) => {
       state.loadingTeacher = false;
-      state.msgTeacher = action.payload?.message;
+      state.msgAttSt = action.payload?.message;
     });
     builder.addCase(takeAttendance.rejected, (state, action) => {
       state.loadingTeacher = false;
-      state.errorTeacher = action.payload?.message;
+      state.errAttSt = action.payload?.message;
+    })
+
+
+    // show attendance of today if takened
+    builder.addCase(showAttendanceToday.pending, (state, action) => {
+      state.loadingTeacher = true;
+      state.errAttSt = null;
+    });
+    builder.addCase(showAttendanceToday.fulfilled, (state, action) => {
+      state.loadingTeacher = false;
+      state.attendanceToday = action.payload?.data;
+    });
+    builder.addCase(showAttendanceToday.rejected, (state, action) => {
+      state.loadingTeacher = false;
+      state.errAttSt = action.payload?.message;
     })
 
 

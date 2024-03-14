@@ -111,10 +111,27 @@ const MobileSideBar = () => {
                       </i>
                     </a>
                     <Link
-                      to="/teacher-portal/take-attendance-student"
+                      to="/teacher-portal/all-class-subjects"
                       className="cursor-pointer font-semibold text-gray-200 hover:text-white transition-all"
                     >
                       Class Subjects
+                    </Link>
+                  </div>
+
+                  <div className="flex gap-4 items-center">
+                    <a>
+                      <i
+                        className="fa fa-book-open mr-[1px]"
+                        style={{ color: "#ffffff" }}
+                      >
+                        {" "}
+                      </i>
+                    </a>
+                    <Link
+                      to="/teacher-portal/take-attendance-student"
+                      className="cursor-pointer font-semibold text-gray-200 hover:text-white transition-all"
+                    >
+                      Take Attendance
                     </Link>
                   </div>
 

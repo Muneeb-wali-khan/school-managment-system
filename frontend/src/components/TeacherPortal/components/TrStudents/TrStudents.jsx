@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import TrNav from "../../Navbar/TrNav";
 import { useDispatch, useSelector } from "react-redux";
-import Loader from "../../../loader/Loader";
 import MUIDataTable from "mui-datatables";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import DeleteModal from "./DeleteModal/DeleteModal";
@@ -11,6 +10,7 @@ import {
   allStudentsClass as fetchAllStudents,
 } from "../../../../store/features/teacher.reducers";
 import toast from "react-hot-toast";
+import LoaderTr from "../../LoaderTr/LoaderTr";
 
 const TrStudents = () => {
   const {
@@ -25,6 +25,10 @@ const TrStudents = () => {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [isStId, setIsStId] = useState(null);
+
+  useEffect(()=>{
+    dispatch(fetchAllStudents());
+  },[dispatch])
 
   const onDelete = (id) => {
     setIsStId(id);
@@ -214,7 +218,7 @@ const TrStudents = () => {
                 />
               </>
             ) : (
-              <Loader />
+              <LoaderTr />
             )}
           </div>
         </div>
@@ -224,7 +228,7 @@ const TrStudents = () => {
     return (
       <>
         {loadingTeacher ? (
-          <Loader />
+          <LoaderTr />
         ) : (
           <div className="p-[1.25rem] w-4/5 navdashMain">
             <TrNav />
@@ -242,7 +246,7 @@ const TrStudents = () => {
 
             <div className="flex flex-col items-center justify-center h-[50vh] mt-10 w-full border border-gray-300 rounded-lg shadow-lg">
               <h1 className="text-4xl font-extrabold text-red-500 mb-2">
-                {errorTeacher}
+              You're not yet the Class Teacher of any class !
               </h1>
               <p className="text-lg text-gray-600 leading-6">
                 It seems like you haven't been assigned as the Class Teacher for

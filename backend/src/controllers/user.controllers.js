@@ -33,7 +33,7 @@ const generateAccessTokenAndRefreshToken = async (userId) => {
 // cookie oprions
 const cookieOptions = {
   httpOnly: true,
-  secure: false,
+  secure: false,  // false because i don't have https ssl
   sameSite: 'strict'
 };
 
@@ -314,9 +314,9 @@ const changePassword = asyncHandler(async (req, res) => {
 
 // update user profile
 const updateProfile = asyncHandler(async (req, res) => {
-  const { fullName, email } = req.body;
+  const { fullName, email ,username} = req.body;
 
-  if (!fullName && !email) {
+  if (!fullName && !email || !username) {
     throw new ApiError(400, "All fields are required !");
   }
   const user = await User.findByIdAndUpdate(
@@ -325,6 +325,7 @@ const updateProfile = asyncHandler(async (req, res) => {
       $set: {
         fullName,
         email,
+        username
       },
     },
     { new: true }
@@ -349,7 +350,7 @@ const updateProfile = asyncHandler(async (req, res) => {
         },
       }
     );
-  
+
     if (!updateTeacher) {
       throw new ApiError(404, "failed to update user profile !");
     }

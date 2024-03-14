@@ -4,7 +4,7 @@ import { lazy, Suspense } from "react";
 import LoaderTr from "./LoaderTr/LoaderTr"
 import { profileUser } from "../../store/features/user.reducer";
 import { useDispatch } from "react-redux";
-import { allStudentsClass, allSubjectsOfClass, allTeachersOfClass, profileTeacher } from "../../store/features/teacher.reducers";
+import { profileTeacher } from "../../store/features/teacher.reducers";
 
 const AllTeachers = lazy(()=> import("../../components/TeacherPortal/components/AllTeachers/AllTeachers")) 
 const AllSubjects = lazy(()=> import("../../components/TeacherPortal/components/AllSubjects/AllSubjects")) 
@@ -26,10 +26,7 @@ const Teacher = () => {
 
   useEffect(() => {
     dispatch(profileUser());
-    dispatch(profileTeacher());
-    dispatch(allStudentsClass());
-    dispatch(allTeachersOfClass());
-    dispatch(allSubjectsOfClass());
+    dispatch(profileTeacher())
   }, [dispatch]);
 
   return (

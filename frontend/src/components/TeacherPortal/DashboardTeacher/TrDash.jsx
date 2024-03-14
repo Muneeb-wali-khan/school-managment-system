@@ -1,8 +1,17 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import TrNav from '../Navbar/TrNav'
 import TrBanner from '../Banner/TrBanner'
+import { useDispatch } from 'react-redux'
+import { profileTeacher } from '../../../store/features/teacher.reducers'
 
 const TrDash = () => {
+  const dispatch = useDispatch()
+
+  useEffect(()=>{
+    dispatch(profileTeacher())
+  },[dispatch])
+  
+
   return (
     <>
         {/* <!-- Main Content --> */}
