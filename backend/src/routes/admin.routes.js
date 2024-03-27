@@ -15,6 +15,7 @@ import {
   getTeacherById,
   updateTeacher,
   updateTeacherAvatar,
+  getAllAttendacesOfClass,
   
   addStudent,
   deleteStudent,
@@ -27,7 +28,6 @@ import {
   addAcademicRecordStudent,
   updatedStudentAcedamicRecord,
   deleteAcademicRecord,
-  newStudentsAlert,
 
   addClass,
   allClasses,
@@ -68,7 +68,7 @@ router.route("/add-student").post(jwtVerify,isAdmin, upload.single("avatar"), ad
 router.route("/update-student/:id").put(jwtVerify,isAdmin, updateStudent)
 router.route("/update-student-avatar/:id").put(jwtVerify,isAdmin,upload.single("avatar"),updateAvatarStudent)
 router.route("/remove-student/:id").delete(jwtVerify,isAdmin, deleteStudent)
-router.route("/new-student-alert").get(jwtVerify,isAdmin, newStudentsAlert)
+
 // academic record of students
 router.route("/all-student-academic-record/:id").get(jwtVerify,isAdmin, allAcademicRecordStudent)
 router.route("/single-student-academic-record/:id").get(jwtVerify,isAdmin, singleAcademicRecord)
@@ -85,6 +85,7 @@ router.route("/add-teacher").post(jwtVerify,isAdmin, upload.single("avatar"), ad
 router.route("/update-teacher/:id").put(jwtVerify,isAdmin, updateTeacher)
 router.route("/update-avatar-teacher/:id").put(jwtVerify,isAdmin,upload.single("avatar"), updateTeacherAvatar)
 router.route("/remove-teacher/:id").delete(jwtVerify,isAdmin, deleteTeacher)
+router.route("/all-attendances-class/:className").get(jwtVerify,isAdmin, getAllAttendacesOfClass)
 
 
 

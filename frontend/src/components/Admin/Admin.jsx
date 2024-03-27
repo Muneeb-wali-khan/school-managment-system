@@ -29,6 +29,9 @@ const ClsDetaills = lazy(() =>
 const UpdateClass = lazy(() =>
   import("./components/AllClasses/UpdateClass/UpdateClass")
 );
+const AttendancesClass = lazy(() =>
+  import("./components/AllClasses/AttendancesCls/AttendancesClass")
+);
 
 
 
@@ -107,6 +110,7 @@ const Admin = () => {
           <Route path="/admin-all-classes" element={<AllClasses />} />
           <Route path="/admin-class-details/:id" element={<ClsDetaills />} />
           <Route path="/admin-class-update/:id" element={<UpdateClass />} />
+          <Route path="/admin-attendances-class/:className" element={<AttendancesClass />} />
 
 
           <Route path="/admin-all-users" element={<AllUsers />} />

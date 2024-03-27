@@ -3,7 +3,7 @@ import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { clearErrorsAuth, logout } from "../../../store/features/regLogin";
-import Loader from "../../loader/Loader";
+import LoaderTr from "../../TeacherPortal/LoaderTr/LoaderTr";
 
 const TrNav = () => {
   const dispatch = useDispatch()
@@ -50,7 +50,7 @@ const TrNav = () => {
     <>
     {
       loadingAuth || loadingTeacher && (
-        <Loader/>
+        <LoaderTr/>
       )
     }
       {/* <!-- Navbar --> */}

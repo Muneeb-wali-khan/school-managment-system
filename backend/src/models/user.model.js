@@ -43,7 +43,11 @@ const userSchema = new Schema(
       type: String,
       required: true,
     },
-
+    isActive: {
+      type: Boolean,
+      default: false,
+    },
+    
     refreshToken: {
       type: String,
     },
@@ -78,7 +82,7 @@ userSchema.methods.generateAccessToken =  function(){
       firstName:  this.firstName,
       fullName: this.fullName,
     },
-    process.env.JWT_ACCESS_SECRET,
+    process.env?.JWT_ACCESS_SECRET,
     {
       expiresIn: process.env.JWT_ACCESS_EXPIRES_IN,
     }

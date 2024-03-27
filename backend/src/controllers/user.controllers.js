@@ -11,6 +11,7 @@ import {
   cloudinaryUploadImg,
 } from "../utils/cloudinary.js";
 import { extractId } from "../utils/extractCloudinaryId.js";
+import {Student} from "../models/student.model.js";
 
 // generate tokens
 const generateAccessTokenAndRefreshToken = async (userId) => {
@@ -34,7 +35,9 @@ const generateAccessTokenAndRefreshToken = async (userId) => {
 const cookieOptions = {
   httpOnly: true,
   secure: false,  // false because i don't have https ssl
-  sameSite: 'strict'
+  sameSite: 'strict',
+  maxAge: 24 * 60 * 60 * 1000, // 1 day
+  
 };
 
 
@@ -179,12 +182,25 @@ const loginUser = asyncHandler(async (req, res) => {
   }
   //grenerate tokens
   const { accessToken, refreshToken } =
-    await generateAccessTokenAndRefreshToken(emailCheckUser._id); // dont forget to add await
+    await generateAccessTokenAndRefreshToken(emailCheckUser?._id); // dont forget to add await
 
   // retrieve and remove some fields
-  const logedinUser = await User.findById(emailCheckUser._id).select(
+  const logedinUser = await User.findById(emailCheckUser?._id).select(
     "-password -refreshToken -uniqueCode"
   );
+
+  if (!logedinUser) {
+    throw new ApiError(400, "failed to loged in !");
+  }
+  // set isActive True
+  const user = await User.findByIdAndUpdate(
+    emailCheckUser?._id,
+    {
+      $set: {
+        isActive: true,
+      }
+    }
+  )
 
   //set tokens in cookie
 
@@ -205,8 +221,8 @@ const loginUser = asyncHandler(async (req, res) => {
 // logout
 const logoutUser = asyncHandler(async (req, res) => {
   // get the id of user from req body as we have saved it in auth middleware
-  const user = User.findByIdAndUpdate(
-    req.user._id,
+  const user =  await User.findByIdAndUpdate(
+    req.user?._id,
     {
       $set: {
         refreshToken: undefined,
@@ -214,6 +230,21 @@ const logoutUser = asyncHandler(async (req, res) => {
     },
     { new: true }
   );
+
+  const setactiveFalse = await User.findOneAndUpdate(
+    {
+      _id: req.user?._id
+    },
+    {
+      $set: {
+        isActive: false,
+      }
+    }
+  )
+
+  if (!user) {
+    throw new ApiError(400, "failed to logout !");
+  }
 
   return res
     .status(200)
@@ -335,6 +366,7 @@ const updateProfile = asyncHandler(async (req, res) => {
     throw new ApiError(404, "failed to update user profile !");
   }
 
+  // find teacher 
   const findTeacherWithFullNameAndEmail = await Teacher.findOne({
     fullName: req?.user?.fullName,
     email: req?.user?.email,
@@ -352,6 +384,28 @@ const updateProfile = asyncHandler(async (req, res) => {
     );
 
     if (!updateTeacher) {
+      throw new ApiError(404, "failed to update user profile !");
+    }
+  }
+
+  // find student 
+  const findStudentWithFullNameAndEmail = await Student.findOne({
+    fullName: req?.user?.fullName,
+    email: req?.user?.email,
+  });
+
+  if(findStudentWithFullNameAndEmail !== null){
+    const updateStudent = await Student.findByIdAndUpdate(
+      findStudentWithFullNameAndEmail?._id,
+      {
+        $set: {
+          fullName: fullName,
+          email: email,
+        },
+      }
+    );
+
+    if (!updateStudent) {
       throw new ApiError(404, "failed to update user profile !");
     }
   }

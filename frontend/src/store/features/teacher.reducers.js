@@ -17,6 +17,11 @@ import {
   classSubjectsCurriculumUrl,
   classStudentAttendance,
   classStudentAttendanceToday,
+  classAbsentNotifyStudents,
+  giveAssignmentsClass,
+  allAssignmentsClass,
+  updateAssignmentOfClassUrl,
+  singleAssignmentClass,
 } from "../urls";
 
 // teacher details
@@ -178,6 +183,67 @@ export const showAttendanceToday = createAsyncThunk("teacher/showAttendanceToday
 })
 
 
+//  notify absent students 
+export const notifyAbsentStudents = createAsyncThunk("teacher/notifyAbsent", async (data, {rejectWithValue})=>{
+  try {
+    const config = { headers: { "Content-Type": "application/json"},withCredentials: true };
+    const response = await axios.post(`${classAbsentNotifyStudents}`, config);
+    return response.data;
+  } catch (error) {
+    return rejectWithValue(error?.response?.data);
+  }
+})
+
+
+//  give assigments class 
+export const createAssignmentsOfClass = createAsyncThunk("teacher/createAssigmentsClass", async (data, {rejectWithValue})=>{
+  try {
+    const config = { headers: { "Content-Type": "application/json"},withCredentials: true };
+    const response = await axios.post(`${giveAssignmentsClass}`,data, config);
+    return response.data;
+  } catch (error) {
+    return rejectWithValue(error?.response?.data);
+  }
+})
+
+
+
+//  all assigments class 
+export const allAssignmentsOfClass = createAsyncThunk("teacher/allAssigmentsClass", async (data, {rejectWithValue})=>{
+  try {
+    const config = { headers: { "Content-Type": "application/json"},withCredentials: true };
+    const response = await axios.get(`${allAssignmentsClass}`, config);
+    return response.data;
+  } catch (error) {
+    return rejectWithValue(error?.response?.data);
+  }
+})
+
+//  single assigments class 
+export const singleAssignmentOfClass = createAsyncThunk("teacher/singleAssigmentClass", async (id, {rejectWithValue})=>{
+  try {
+    const config = { headers: { "Content-Type": "application/json"},withCredentials: true };
+    const response = await axios.get(`${singleAssignmentClass}${id}`, config);
+    return response.data;
+  } catch (error) {
+    return rejectWithValue(error?.response?.data);
+  }
+})
+
+
+
+//  update assigment class 
+export const updateAssignmentOfClass = createAsyncThunk("teacher/updateAssigmentClass", async ({id:id, data: data}, {rejectWithValue})=>{
+  try {
+    const config = { headers: { "Content-Type": "application/json"},withCredentials: true };
+    const response = await axios.put(`${updateAssignmentOfClassUrl}${id}`,data, config);
+    return response.data;
+  } catch (error) {
+    return rejectWithValue(error?.response?.data);
+  }
+})
+
+
 
 const teacherSlice = createSlice({
   name: "teacher",
@@ -192,6 +258,8 @@ const teacherSlice = createSlice({
     allStudentsClass: null,
     classStudentDetails: null,
     attendanceToday: null,
+    assigments: null,
+    singleAssigment: null,
     msgAvatar: null,
     errAvatar: null,
     msgAddSt: null,
@@ -201,7 +269,11 @@ const teacherSlice = createSlice({
     msgDelSt: null,
     errDelSt: null,
     errAttSt : null,
-    msgAttSt : null
+    msgAttSt : null,
+    errorNotify : null,
+    msgNotify : null,
+    errorAssigment : null,
+    msgAssigment : null
   },
 
   reducers: {
@@ -217,7 +289,11 @@ const teacherSlice = createSlice({
       state.msgDelSt = null,
       state.errDelSt = null
       state.errAttSt = null,
-      state.msgAttSt = null
+      state.msgAttSt = null,
+      state.errorNotify = null,
+      state.msgNotify = null,
+      state.errorAssigment = null,
+      state.msgAssigment = null
 
     },
   },
@@ -383,7 +459,7 @@ const teacherSlice = createSlice({
     // show attendance of today if takened
     builder.addCase(showAttendanceToday.pending, (state, action) => {
       state.loadingTeacher = true;
-      state.errAttSt = null;
+      state.errorTeacher = null;
     });
     builder.addCase(showAttendanceToday.fulfilled, (state, action) => {
       state.loadingTeacher = false;
@@ -391,7 +467,77 @@ const teacherSlice = createSlice({
     });
     builder.addCase(showAttendanceToday.rejected, (state, action) => {
       state.loadingTeacher = false;
-      state.errAttSt = action.payload?.message;
+      state.errorTeacher = action.payload?.message;
+    })
+
+    // notify absent students
+    builder.addCase(notifyAbsentStudents.pending, (state, action) => {
+      state.loadingTeacher = true;
+      state.errorNotify = null;
+    });
+    builder.addCase(notifyAbsentStudents.fulfilled, (state, action) => {
+      state.loadingTeacher = false;
+      state.msgNotify = action.payload?.message;
+    });
+    builder.addCase(notifyAbsentStudents.rejected, (state, action) => {
+      state.loadingTeacher = false;
+      state.errorNotify = action.payload?.message;
+    })
+
+    // give assigment to class
+    builder.addCase(createAssignmentsOfClass.pending, (state, action) => {
+      state.loadingTeacher = true;
+      state.errorAssigment = null;
+    });
+    builder.addCase(createAssignmentsOfClass.fulfilled, (state, action) => {
+      state.loadingTeacher = false;
+      state.msgAssigment = action.payload?.message;
+    });
+    builder.addCase(createAssignmentsOfClass.rejected, (state, action) => {
+      state.loadingTeacher = false;
+      state.errorAssigment = action.payload?.message;
+    })
+
+    // all assigments of class
+    builder.addCase(allAssignmentsOfClass.pending, (state, action) => {
+      state.loadingTeacher = true;
+      state.errorTeacher = null;
+    });
+    builder.addCase(allAssignmentsOfClass.fulfilled, (state, action) => {
+      state.loadingTeacher = false;
+      state.assigments = action.payload?.data;
+    });
+    builder.addCase(allAssignmentsOfClass.rejected, (state, action) => {
+      state.loadingTeacher = false;
+      state.errorTeacher = action.payload?.message;
+    })
+
+    // // single assigment of class
+    builder.addCase(singleAssignmentOfClass.pending, (state, action) => {
+      state.loadingTeacher = true;
+      state.errorAssigment = null;
+    });
+    builder.addCase(singleAssignmentOfClass.fulfilled, (state, action) => {
+      state.loadingTeacher = false;
+      state.singleAssigment = action.payload?.data;
+    });
+    builder.addCase(singleAssignmentOfClass.rejected, (state, action) => {
+      state.loadingTeacher = false;
+      state.errorAssigment = action.payload?.message;
+    })
+
+    // update assigment of class
+    builder.addCase(updateAssignmentOfClass.pending, (state, action) => {
+      state.loadingTeacher = true;
+      state.errorAssigment = null;
+    });
+    builder.addCase(updateAssignmentOfClass.fulfilled, (state, action) => {
+      state.loadingTeacher = false;
+      state.msgAssigment = action.payload?.message;
+    });
+    builder.addCase(updateAssignmentOfClass.rejected, (state, action) => {
+      state.loadingTeacher = false;
+      state.errorAssigment = action.payload?.message;
     })
 
 

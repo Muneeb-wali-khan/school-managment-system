@@ -10,7 +10,7 @@ import {
 const UpdateProfile = ({ isOpenProfile, onCloseProfile }) => {
   const [email, setEmail] = useState("");
   const [fullName, setFullName] = useState("");
-  const [username, setUsername] = useState("")
+  const [username, setUserName] = useState("");
 
   const dispatch = useDispatch();
   const { userProfile, loadingUser, errorUser3, msgUser3 } = useSelector(
@@ -25,8 +25,8 @@ const UpdateProfile = ({ isOpenProfile, onCloseProfile }) => {
   useEffect(() => {
     if (msgUser3 ) {
       toast.success(msgUser3);
-      dispatch(profileUser())
       onCloseProfile();
+      dispatch(profileUser());
     }
     if (errorUser3) {
       toast.error(errorUser3);
@@ -38,7 +38,7 @@ const UpdateProfile = ({ isOpenProfile, onCloseProfile }) => {
     if (userProfile) {
       setEmail(userProfile?.email || "");
       setFullName(userProfile?.fullName || "");
-      setUsername(userProfile?.username || "");
+      setUserName(userProfile?.username || "");
     }
   }, [userProfile?.email, userProfile?.fullName,userProfile?.username]);
 
@@ -49,7 +49,7 @@ const UpdateProfile = ({ isOpenProfile, onCloseProfile }) => {
           onClick={() => onCloseProfile()}
           className="fixed inset-0 bg-black opacity-50"
         ></div>
-        <div className="bg-gradient-to-r from-[#8b008bef] to-[#861686] w-full sm:w-96 p-8 rounded-md shadow-md transform transition-transform duration-300 hover:scale-105 z-50 mx-4 sm:mx-auto">
+        <div className="bg-gradient-to-r from-[#577a7a] to-[#2F4F4F] w-full sm:w-96 p-8 rounded-md shadow-md transform transition-transform duration-300 hover:scale-105 z-50 mx-4 sm:mx-auto">
           <h2 className="text-2xl sm:text-2xl font-bold text-white mb-6 flex items-center justify-center gap-4">
             Update Profile
             <i className="fa fa-user"></i>
@@ -58,7 +58,7 @@ const UpdateProfile = ({ isOpenProfile, onCloseProfile }) => {
           <form onSubmit={handleSubmit}>
             <div className="mb-4 relative">
               <label
-                htmlFor="new userName"
+                htmlFor="new username"
                 className="block text-white font-semibold mb-2"
               >
                 New UserName:
@@ -69,7 +69,7 @@ const UpdateProfile = ({ isOpenProfile, onCloseProfile }) => {
                   name="username"
                   value={username}
                   type="text"
-                  onChange={(e) => setUsername(e.target.value)}
+                  onChange={(e) => setUserName(e.target.value)}
                   className="w-full px-4 py-2 bg-white bg-opacity-20 border rounded-md focus:outline-none focus:border-blue-500 text-white"
                   required
                 />

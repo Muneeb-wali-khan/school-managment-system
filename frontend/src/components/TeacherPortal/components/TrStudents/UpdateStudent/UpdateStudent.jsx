@@ -38,8 +38,8 @@ const UpdateStudent = () => {
 
   const handleInputChange = (e)=>{
     setStudentData({...studentData, [e.target.name]: e.target.value})
-    console.log(studentData);
   }
+  
   const handleSubmit = (e) => {
     e.preventDefault();
     const formdata = new FormData();
@@ -75,6 +75,8 @@ const UpdateStudent = () => {
       }
       dispatch(clearErrorsTeacher())
   },[msgUptSt, errUptSt, dispatch])
+
+
 
   useEffect(()=>{
     if(classStudentDetails){

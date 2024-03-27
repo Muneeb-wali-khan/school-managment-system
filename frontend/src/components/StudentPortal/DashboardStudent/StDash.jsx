@@ -1,8 +1,16 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import StNav from '../Navbar/StNav'
 import StBanner from '../Banner/StBanner'
+import { useDispatch } from 'react-redux'
+import { profileStudent } from '../../../store/features/student.reducers'
 
 const StDash = () => {
+  const dispatch = useDispatch()
+
+  useEffect(()=>{
+    dispatch(profileStudent())
+  },[dispatch])
+
   return (
     <>
         {/* <!-- Main Content --> */}
@@ -42,7 +50,7 @@ const StDash = () => {
 
               {/* <!-- Card 2 --> */}
               <div
-                class="w-64 bg-white flex border-2 border-[#925FE2] flex-col items-center text-center rounded-2xl p-6 shadow-2xl"
+                class="w-64 bg-white flex border-2 border-[darkslategrey] flex-col items-center text-center rounded-2xl p-6 shadow-2xl"
               >
                 <img
                   class="mb-4"
@@ -74,21 +82,21 @@ const StDash = () => {
             {/* <!-- Cards Section 2 --> */}
             <div class="flex justify-between items-center px-2">
               <h3 class="text-lg font-bold mt-5">Enrolled Courses</h3>
-              <h4 class="text-[#925FE2] font-bold cursor-pointer">See all</h4>
+              <h4 class="text-[darkslategrey] font-bold cursor-pointer">See all</h4>
             </div>
 
             <div class="flex gap-4 cardsec2">
               {/* <!-- Card 1 --> */}
               <div
-                class="firstbottomdiv w-67 flex bg-[#915fe250] rounded-2xl p-4 pl-6 pr-6 shadow-xl border-2 border-[#925FE2]"
+                class="firstbottomdiv w-67 flex bg-[darkslategrey] rounded-2xl p-4 pl-6 pr-6 shadow-xl border-2 border-[darkslategrey]"
               >
                 {/* <!-- left div --> */}
                 <div>
-                  <h4 class="text-lg text-[#925FE2] font-bold mb-5">
+                  <h4 class="text-lg text-[#d6d6d6] font-bold mb-5">
                     Python Programming
                   </h4>
                   <button
-                    class="px-7 py-1 font-bold mb-2 bg-[#925FE2] text-white rounded-full"
+             class="px-7 mb-2 py-1 font-bold bg-[#d6d6d6] text-[darkslategrey] rounded-full"
                   >
                     Veiw
                   </button>
@@ -107,15 +115,15 @@ const StDash = () => {
 
               {/* <!-- Card 2 --> */}
               <div
-                class="firstbottomdiv w-67 flex bg-[#915fe250] rounded-2xl p-4 pl-6 pr-6 shadow-xl"
+                class="firstbottomdiv w-67 flex bg-[darkslategrey] rounded-2xl p-4 pl-6 pr-6 shadow-xl"
               >
                 {/* <!-- left div --> */}
                 <div>
-                  <h4 class="text-lg text-[#925FE2] font-bold mb-5">
+                  <h4 class="text-lg text-[#d6d6d6] font-bold mb-5">
                     Javascript Programming
                   </h4>
                   <button
-                    class="px-7 mb-2 py-1 font-bold bg-[#925FE2] text-white rounded-full"
+                    class="px-7 mb-2 py-1 font-bold bg-[#d6d6d6] text-[darkslategrey] rounded-full"
                   >
                     Veiw
                   </button>
@@ -145,7 +153,7 @@ const StDash = () => {
               <div class="flex items-center gap-4">
                 {/* <!-- Avatar 1 --> */}
                 <div
-                  class="border-2 border-[#925FE2] overflow-hidden rounded-full"
+                  class="border-2 border-[darkslategrey] overflow-hidden rounded-full"
                 >
                   <img
                     class="w-14 h-14"
@@ -155,7 +163,7 @@ const StDash = () => {
                 </div>
                 {/* <!-- Avatar 2 --> */}
                 <div
-                  class="border-2 border-[#925FE2] overflow-hidden rounded-full"
+                  class="border-2 border-[darkslategrey] overflow-hidden rounded-full"
                 >
                   <img
                     class="w-14 h-14"
@@ -165,7 +173,7 @@ const StDash = () => {
                 </div>
                 {/* <!-- Avatar 3 --> */}
                 <div
-                  class="border-2 border-[#925FE2] overflow-hidden rounded-full"
+                  class="border-2 border-[darkslategrey] overflow-hidden rounded-full"
                 >
                   <img
                     class="w-14 h-14"
@@ -176,7 +184,7 @@ const StDash = () => {
               </div>
               <div class="flex items-center justify-between pr-2">
                 <h3 class="text-lg font-bold">Daily Notice</h3>
-                <h4 class="text-[#925FE2] font-bold cursor-pointer">See all</h4>
+                <h4 class="text-[darkslategrey] font-bold cursor-pointer">See all</h4>
               </div>
             </div>
 

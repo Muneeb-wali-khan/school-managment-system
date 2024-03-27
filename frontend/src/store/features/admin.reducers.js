@@ -4,7 +4,7 @@ import {
     combineReducers,
   } from "@reduxjs/toolkit";
   import axios from "axios";
-import { adminAddAcademicRecordUrl, adminAddClassUrl, adminAddSubjectCurriculumUrl, adminAddSubjectUrl, adminAllClassesUrl, adminAllStudentsUrl, adminAllSubjectCurriculumUrl, adminAllSubjectsUrl, adminAllTeachersUrl, adminAllUsersWebAppUrl, adminDeleteAcademicRecordUrl, adminDeleteCurriculumUrl, adminRemoveClassUrl, adminRemoveSubjectUrl, adminRemoveUserWebAppUrl, adminSingleAcademicRecordUrl, adminSingleClassUrl, adminSingleCurriculumUrl, adminSingleSubjectUrl, adminSingleUserWebAppUrl, adminStudentAcademicRecordUrl, adminStudentAvatarUrl, adminStudentDetailsUrl, adminStudentRegisterUrl, adminStudentRemoveUrl, adminStudentUpdateUrl, adminTeacherAddUrl, adminTeacherDeleteUrl, adminTeacherDetailsUrl, adminTeacherUpdateAvatarUrl, adminTeacherUpdateUrl, adminUpdateAcademicRecordUrl, adminUpdateClassUrl, adminUpdateCurriculumUrl, adminUpdateUserWebAppUrl, updateUserAvatarUrl } from "../urls";
+import { AdminAllAttendancesClassUrl, adminAddAcademicRecordUrl, adminAddClassUrl, adminAddSubjectCurriculumUrl, adminAddSubjectUrl, adminAllClassesUrl, adminAllStudentsUrl, adminAllSubjectCurriculumUrl, adminAllSubjectsUrl, adminAllTeachersUrl, adminAllUsersWebAppUrl, adminDeleteAcademicRecordUrl, adminDeleteCurriculumUrl, adminRemoveClassUrl, adminRemoveSubjectUrl, adminRemoveUserWebAppUrl, adminSingleAcademicRecordUrl, adminSingleClassUrl, adminSingleCurriculumUrl, adminSingleSubjectUrl, adminSingleUserWebAppUrl, adminStudentAcademicRecordUrl, adminStudentAvatarUrl, adminStudentDetailsUrl, adminStudentRegisterUrl, adminStudentRemoveUrl, adminStudentUpdateUrl, adminTeacherAddUrl, adminTeacherDeleteUrl, adminTeacherDetailsUrl, adminTeacherUpdateAvatarUrl, adminTeacherUpdateUrl, adminUpdateAcademicRecordUrl, adminUpdateClassUrl, adminUpdateCurriculumUrl, adminUpdateUserWebAppUrl, updateUserAvatarUrl } from "../urls";
 
   
 // all students 
@@ -890,6 +890,19 @@ export const adminDeleteClass = createAsyncThunk("admin/deleteClass",async(id,{r
 })
 
 
+// All Attendances Class  ❌
+export const adminAllAttendancesClass = createAsyncThunk("admin/AllAttendancesClass",async(className,{rejectWithValue})=>{
+  try {
+    const config = {headers: {"Content-Type": "application/json"},withCredentials: true};
+    const res = await axios.get(`${AdminAllAttendancesClassUrl}${className}`,config)
+    return res.data
+
+  } catch (error) {
+    return rejectWithValue(error?.response?.data)
+  }
+})
+
+
 
 const classOptSlice = createSlice({
   name: "class",
@@ -903,6 +916,7 @@ const classOptSlice = createSlice({
     errDelCls: null,
     allCls: null,
     singleCls: null,
+    attendances: null
 
 
   },
@@ -989,6 +1003,20 @@ const classOptSlice = createSlice({
       builder.addCase(adminDeleteClass.rejected, (state, action)=>{
         state.loadingCls = false
         state.errDelCls = action.payload.message
+      })
+
+      // all attendances class
+      builder.addCase(adminAllAttendancesClass.pending, (state, action)=>{
+        state.loadingCls = true
+        state.errCls = null
+      })
+      builder.addCase(adminAllAttendancesClass.fulfilled, (state, action)=>{
+        state.loadingCls = false
+        state.attendances = action.payload.data
+      })
+      builder.addCase(adminAllAttendancesClass.rejected, (state, action)=>{
+        state.loadingCls = false
+        state.errCls = action.payload.message
       })
 
 

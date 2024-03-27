@@ -105,6 +105,20 @@ const SideBar = () => {
               </Link>
             </div>
 
+            <div className="flex gap-4 items-center">
+              <a>
+                <i className="fa fa-file-alt mr-[1px]" style={{color: "#ffffff"}}>
+                  {" "}
+                </i>
+              </a>
+              <Link
+                to="/teacher-portal/give-assigments-class"
+                className="cursor-pointer font-semibold text-gray-200 hover:text-white transition-all"
+              >
+               Assignments
+              </Link>
+            </div>
+
             <div className="flex gap-5 items-center">
               <a>
                 <i

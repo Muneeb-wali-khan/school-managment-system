@@ -11,6 +11,7 @@ import { User } from "../models/user.model.js";
 import { RemovecloudinaryExistingImg } from "../utils/cloudinary.js";
 import { extractId } from "../utils/extractCloudinaryId.js";
 import { parseDate } from "../utils/parseDate.js";
+import { Attendance } from "../models/attendance.mode.js";
 
 // =======================================USER CONTROLLERS --ADMIN== START =================================================
 
@@ -120,6 +121,31 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, user, "user avatar updated successfully !"));
 });
+
+
+// send notification for all 
+const sendNotification = asyncHandler(async (req, res) => {
+  const { title, message } = req.body;
+
+  if (!title || !message) {
+    throw new ApiError(400, "All fields are required !");
+  }
+
+  const users = await User.find({}).select("-password -uniqueCode");
+
+  users.forEach(async (user) => {
+    await user.createNotification({
+      title,
+      message,
+    });
+  });
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, {}, "notification sent successfully !"));
+})
+
+
 
 // =======================================USER CONTROLLERS --ADMIN== END =================================================
 
@@ -688,33 +714,7 @@ const deleteAcademicRecord = asyncHandler(async (req, res) => {
   }
 });
 
-// new students alert
-const newStudentsAlert = asyncHandler(async(req,res)=>{
 
- 
-  // Find students whose createdAt is within the current day
-  const todayStart = new Date();
-  todayStart.setHours(0, 0, 0, 0); // Set to midnight
-
-  const todayEnd = new Date();
-  todayEnd.setHours(23, 59, 59, 999); // Set to the end of the day
-
-  const students = await Student.find({
-    createdAt: { $gte: todayStart, $lte: todayEnd }
-  });
-
-
-  // Find students whose createdAt is within the last 48 hours
-  //  const last48Hours = new Date();
-  //  last48Hours.setHours(last48Hours.getHours() - 48);
- 
-  //  const students = await Student.find({
-  //    createdAt: { $gte: last48Hours }
-  //  });
- 
-   console.log(students);
-
-})
 
 // =======================================STUDENT CONTROLLERS --ADMIN == END =================================================
 
@@ -1221,6 +1221,25 @@ const deleteTeacher = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, "Teacher deleted successfully"));
 });
 
+
+// get all atendances of class
+const getAllAttendacesOfClass = asyncHandler(async(req, res)=>{
+  const { className } = req.params;
+
+  // Find all attendances for the specified class
+  const findclass = await Attendance.find({ AttClass: className?.toUpperCase() });
+  
+  if (!findclass || findclass.length === 0) {
+    // If no attendances are found, return an error
+    throw new ApiError(404, "Attendances not found for class " + className);
+  }
+
+  // Return the found attendances
+  return res.status(200).json(new ApiResponse(200, findclass, "class"));
+})
+
+
+
 // =======================================TEACHER CONTROLLERS --ADMIN == END =================================================
 
 
@@ -1519,6 +1538,7 @@ const deleteClass = asyncHandler(async (req, res) => {
 
   return res.status(200).json(new ApiResponse(200, {}, "deleted successfully"));
 });
+
 
 // =======================================CLASS CONTROLLERS --ADMIN == END =================================================
 
@@ -1834,7 +1854,6 @@ export {
   singleAcademicRecord,
   deleteAcademicRecord,
   updateAvatarStudent,
-  newStudentsAlert,
 
   // teacher
   addTeacher,
@@ -1843,6 +1862,7 @@ export {
   getAllTeachers,
   deleteTeacher,
   getTeacherById,
+  getAllAttendacesOfClass,
 
   // class
   addClass,

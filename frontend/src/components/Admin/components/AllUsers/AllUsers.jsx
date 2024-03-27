@@ -15,15 +15,11 @@ import UpdateUserRole from "./UpdateUserRole/UpdateUserRole";
 
 const AllUsers = () => {
   const dispatch = useDispatch();
-  const {
-    loadingUsersWeb,
-    errDelUsersWeb,
-    msgDelUsersWeb,
-    allUsersWeb,
-  } = useSelector((state) => state?.admin?.users);
+  const { loadingUsersWeb, errDelUsersWeb, msgDelUsersWeb, allUsersWeb } =
+    useSelector((state) => state?.admin?.users);
 
-    const [isOpen, setIsOpen] = useState(false);
-    const [isUserId, setIsUserId] = useState(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const [isUserId, setIsUserId] = useState(null);
   const [isUserUptId, setIsUserUptId] = useState(null);
   const [isOpenUpdateUserWeb, SetIsOpenUpdateUserWeb] = useState(false);
 
@@ -42,36 +38,35 @@ const AllUsers = () => {
     SetIsOpenUpdateUserWeb(false);
   };
 
-
   // delete modal
-    const onDelete = (id) => {
-      setIsUserId(id);
-      setIsOpen(true);
-    };
+  const onDelete = (id) => {
+    setIsUserId(id);
+    setIsOpen(true);
+  };
 
-    const handleConfirmDelete = () => {
-      if (isUserId) {
-        dispatch(adminDeleteUserWebApp(isTrId));
-        setIsUserId(null);
-        setIsOpen(false);
-      }
-    };
-
-    useEffect(() => {
-      if (errDelUsersWeb) {
-        toast.success(errDelUsersWeb);
-        dispatch(adminFetchAllUsersWebApp());
-      }
-      if (msgDelUsersWeb) {
-        toast.success(msgDelUsersWeb);
-      }
-      dispatch(clearErrorUsersWeb());
-    }, [errDelUsersWeb, msgDelUsersWeb, dispatch]);
-
-    const onRequestClose = () => {
+  const handleConfirmDelete = () => {
+    if (isUserId) {
+      dispatch(adminDeleteUserWebApp(isTrId));
+      setIsUserId(null);
       setIsOpen(false);
-      setIsTrId(null);
-    };
+    }
+  };
+
+  useEffect(() => {
+    if (errDelUsersWeb) {
+      toast.success(errDelUsersWeb);
+      dispatch(adminFetchAllUsersWebApp());
+    }
+    if (msgDelUsersWeb) {
+      toast.success(msgDelUsersWeb);
+    }
+    dispatch(clearErrorUsersWeb());
+  }, [errDelUsersWeb, msgDelUsersWeb, dispatch]);
+
+  const onRequestClose = () => {
+    setIsOpen(false);
+    setIsTrId(null);
+  };
 
   const columns = [
     {
@@ -93,6 +88,7 @@ const AllUsers = () => {
 
         customBodyRender: (value, tableMeta) => {
           const Role = tableMeta?.rowData[1];
+          const isActive = tableMeta?.rowData[6];
           if (Role === "admin") {
             return (
               <>
@@ -102,13 +98,23 @@ const AllUsers = () => {
           } else if (Role === "teacher") {
             return (
               <>
-                <span className="text-green-600">{Role}</span>
+                <div className="relative">
+                  <span className="text-green-600">{Role}</span>
+                  <span className="absolute -top-2 right-3  text-[0.45rem] text-white rounded-full">
+                    {isActive ? "🟢" : "🔘"}
+                  </span>
+                </div>
               </>
             );
           } else if (Role === "student") {
             return (
               <>
-                <span className="text-blue-600">{Role}</span>
+                <div className="relative">
+                  <span className="text-blue-600">{Role}</span>
+                  <span className="absolute -top-2 right-3 text-[0.45rem] text-white rounded-full">
+                    {isActive ? "🟢" : "🔘"}
+                  </span>
+                </div>
               </>
             );
           }
@@ -184,6 +190,17 @@ const AllUsers = () => {
             </>
           );
         },
+      },
+    },
+
+    {
+      name: "isActive",
+      label: "Active",
+      options: {
+        filter: false,
+        sort: false,
+        display: false,
+        download: false,
       },
     },
   ];

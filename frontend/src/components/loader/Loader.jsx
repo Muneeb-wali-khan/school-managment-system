@@ -5,7 +5,7 @@ const Loader = () => {
   return (
     <div className='flex items-center justify-center h-[100vh] bg-slate-50'>
         <div>
-           <div className="loader"></div>
+           <div id="loader"></div>
         </div>
     </div>
   )

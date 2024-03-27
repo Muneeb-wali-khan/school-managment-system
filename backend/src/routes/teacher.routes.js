@@ -3,7 +3,7 @@ import { ApiError } from "../utils/ApiError.js";
 import multer from "multer";
 import { upload } from "../middlewares/multer.js";
 import {  isTeacher, jwtVerify } from "../middlewares/auth.middleware.js";
-import { addStudentsToClass, allStudentsOfSpecificClass, allSubjectsOfClass, allTeachersOfSpecificClass, curriculumOfSubjectOfClass, deleteStudentFromClass, getAttendanceOfToday, getLogedInTeacherDetails, getSingleAttendaceClass, getStudentDetail,  takeAttendance, updateStudentAvatar, updateStudentsOfClass } from "../controllers/teacher.controller.js";
+import { addStudentsToClass, allAssignmentsOfClass, allStudentsOfSpecificClass, allSubjectsOfClass, allTeachersOfSpecificClass, curriculumOfSubjectOfClass, deleteAssigment, deleteStudentFromClass, getAttendanceOfToday, getLogedInTeacherDetails, getSingleAssignment, getStudentDetail,  giveAssignments,  notifyAbsenties,  takeAttendance, updateAssigment, updateStudentAvatar, updateStudentsOfClass } from "../controllers/teacher.controller.js";
 const router = Router();
 
 
@@ -17,8 +17,13 @@ router.route("/update-student-class/:id").put(jwtVerify,isTeacher, updateStudent
 router.route("/update-student-avatar/:id").put(jwtVerify,isTeacher,upload.single("avatar"), updateStudentAvatar)
 router.route("/remove-student-class/:id").delete(jwtVerify,isTeacher, deleteStudentFromClass)
 router.route("/take-attendance-class").post(jwtVerify,isTeacher, takeAttendance)
-router.route("/attendance-class").get(jwtVerify,isTeacher, getSingleAttendaceClass)
 router.route("/attendance-class-today").get(jwtVerify,isTeacher, getAttendanceOfToday)
+router.route("/notify-students-absent").post(jwtVerify,isTeacher, notifyAbsenties)
+router.route("/give-assigment-class").post(jwtVerify,isTeacher, giveAssignments)
+router.route("/all-assigments-class").get(jwtVerify,isTeacher, allAssignmentsOfClass)
+router.route("/single-assigment-class").get(jwtVerify,isTeacher, getSingleAssignment)
+router.route("/update-assigment-class").put(jwtVerify,isTeacher, updateAssigment)
+router.route("/delete-assigment-class").delete(jwtVerify,isTeacher, deleteAssigment)
 
 
 router.route("/all-teachers-class").get(jwtVerify,isTeacher, allTeachersOfSpecificClass)

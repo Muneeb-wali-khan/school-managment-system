@@ -1,11 +1,8 @@
 import { Class } from "../models/class.model.js";
-import { Student } from "../models/student.model.js";
-import { Teacher } from "../models/teacher.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import { Subject } from "../models/subject.model.js";
-import { changeToUpperCase } from "../utils/toUpperCase.js";
+
 
 //  all-classes
 const allClasses = asyncHandler(async (req, res) => {

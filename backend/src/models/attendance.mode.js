@@ -12,6 +12,10 @@ const attendanceSchema = new Schema(
       type: String,
       required: true,
     },
+    studentEmail: {
+      type: String,
+      required: true,
+    },
     // Reference to the Class model
     AttClass: {
       type: String,

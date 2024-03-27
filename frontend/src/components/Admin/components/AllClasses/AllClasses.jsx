@@ -66,6 +66,7 @@ const AllClasses = () => {
     setIsStId(null);
   };
 
+
   return (
     <>
       <AddClass
@@ -142,6 +143,15 @@ const AllClasses = () => {
                               title="Remove Class"
                               className="py-1 px-3  text-red-500 rounded-lg cursor-pointer fa fa-trash"
                               onClick={() => handleDeleteCls(cls?._id)}
+                            />
+                            <i
+                              title="Attendances Record"
+                              className="py-1 px-3  text-gray-500 rounded-lg cursor-pointer fa fa-database"
+                              onClick={() =>
+                                navigate(
+                                  `/admin-portal/admin-attendances-class/${cls?.className}`
+                                )
+                              }
                             />
                           </td>
                         </tr>

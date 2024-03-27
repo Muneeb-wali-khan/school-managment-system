@@ -19,9 +19,23 @@ const classSubjectsUrl = "/api/v1/teacher/all-subjects-class"
 const classSubjectsCurriculumUrl = "/api/v1/teacher/curriculum-subject"
 const classStudentAttendance = "/api/v1/teacher/take-attendance-class"
 const classStudentAttendanceToday = "/api/v1/teacher/attendance-class-today"
+const classAbsentNotifyStudents = "/api/v1/teacher/notify-students-absent"
+const giveAssignmentsClass = "/api/v1/teacher/give-assigment-class"
+const allAssignmentsClass = "/api/v1/teacher/all-assigments-class"
+const singleAssignmentClass = "/api/v1/teacher/single-assigment-class?id="
+const updateAssignmentOfClassUrl = "/api/v1/teacher/update-assigment-class?id="
 
 
-// admin urls
+// student urls
+const profileUrlStudent = "/api/v1/student/student-profile"
+const StudentAttendanceUrl = "/api/v1/student/student-attendance-record"
+
+
+
+
+
+
+// ADMIN urls
 
 //student
 const adminAllStudentsUrl = "/api/v1/admin/all-students"
@@ -61,6 +75,7 @@ const adminSingleClassUrl = "/api/v1/admin/single-class/"
 const adminAddClassUrl = "/api/v1/admin/add-class"
 const adminUpdateClassUrl = "/api/v1/admin/update-class/"
 const adminRemoveClassUrl = "/api/v1/admin/remove-class/"
+const AdminAllAttendancesClassUrl = "/api/v1/admin/all-attendances-class/"
 
 
 // users
@@ -93,8 +108,20 @@ export  {
     classSubjectsCurriculumUrl,
     classStudentAttendance,
     classStudentAttendanceToday,
+    classAbsentNotifyStudents,
+    giveAssignmentsClass,
+    allAssignmentsClass,
+    singleAssignmentClass,
+    updateAssignmentOfClassUrl,
 
-    //admin ROUTES
+
+    // student urls
+    profileUrlStudent,
+    StudentAttendanceUrl,
+
+
+
+    //ADMIN ROUTES
 
     //students
     adminAllStudentsUrl,
@@ -133,6 +160,7 @@ export  {
     adminAddClassUrl,
     adminUpdateClassUrl,
     adminRemoveClassUrl,
+    AdminAllAttendancesClassUrl,
 
     // users web app
     adminAllUsersWebAppUrl,

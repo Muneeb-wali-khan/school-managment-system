@@ -14,7 +14,8 @@ const UpdateStudent = lazy(()=> import("../../components/TeacherPortal/component
 const AddStudent = lazy(()=> import("../../components/TeacherPortal/components/TrStudents/AddStudent/AddStudent")) 
 const TrProfiles = lazy(()=> import("../../components/TeacherPortal/components/TrProfiles/TrProfiles")) 
 const CurriculumSub = lazy(()=> import("../../components/TeacherPortal/components/AllSubjects/CurriculumSubject/CurriculumSub")) 
-const TakeAttendance = lazy(()=> import("../../components/TeacherPortal/components/Attendance/TakeAttendance")) 
+const Attendance = lazy(()=> import("../../components/TeacherPortal/components/Attendance/Attendance")) 
+const Assigments = lazy(()=> import("../../components/TeacherPortal/components/Assignments/Assigments")) 
 
 const SideBar = lazy(()=> import("./SideBar/SideBar")) 
 const TrDash = lazy(()=> import("./DashboardTeacher/TrDash"))
@@ -44,7 +45,8 @@ const Teacher = () => {
           <Route path="/add-student-class" element={< AddStudent/>} />
           <Route path="/update-student-class/:id" element={< UpdateStudent/>} />
           <Route path="/curriculum-subject" element={< CurriculumSub/>} />
-          <Route path="/take-attendance-student" element={< TakeAttendance/>} />
+          <Route path="/take-attendance-student" element={< Attendance/>} />
+          <Route path="/give-assigments-class" element={< Assigments/>} />
         </Routes>
       </Suspense>
     </div>
