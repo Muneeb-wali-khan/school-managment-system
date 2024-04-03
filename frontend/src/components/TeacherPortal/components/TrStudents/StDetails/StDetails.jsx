@@ -124,7 +124,13 @@ const StDetails = () => {
                 <img
                   onClick={handleModalShow}
                   className="object-cover object-center w-[120px] h-[120px] rounded-full"
-                  src={avatarPreveiw ? avatarPreveiw : !avatar ? "/5. College Student.png" : avatar}
+                  src={
+                    avatarPreveiw
+                      ? avatarPreveiw
+                      : !avatar
+                      ? "/5. College Student.png"
+                      : avatar
+                  }
                   alt={`${fullName} Avatar`}
                 />
                 {/* Pen icon */}
@@ -176,7 +182,14 @@ const StDetails = () => {
                   </tr>
                   <tr className="border-2 mb-2">
                     <td className="font-semibold p-2">Date of Birth:</td>
-                    <td>{DOB}</td>
+                    <td>
+                      {DOB &&
+                        new Date(DOB).toLocaleString("en-US", {
+                          year: "numeric",
+                          day: "numeric",
+                          month: "long",
+                        })}
+                    </td>
                   </tr>
                   <tr className="border-2 mb-2">
                     <td className="font-semibold p-2">Monthly Fee:</td>
@@ -192,7 +205,14 @@ const StDetails = () => {
                   </tr>
                   <tr className="border-2 mb-2">
                     <td className="font-semibold p-2">Joining Date:</td>
-                    <td>{joiningDate}</td>
+                    <td>
+                      {joiningDate &&
+                        new Date(joiningDate).toLocaleString("en-US", {
+                          year: "numeric",
+                          day: "numeric",
+                          month: "long",
+                        })}
+                    </td>
                   </tr>
                   <tr className="border-2 mb-2">
                     <td className="font-semibold p-2">Blood Group:</td>

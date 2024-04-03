@@ -3,14 +3,18 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import AnNav from "../../../Navbar/AnNav";
-import {adminFetchSingleStudent, adminUpdateSingleStudentAvatar, clearErrorStudents } from "../../../../../store/features/admin.reducers";
+import {
+  adminFetchSingleStudent,
+  adminUpdateSingleStudentAvatar,
+  clearErrorStudents,
+} from "../../../../../store/features/admin.reducers";
 import LoaderAn from "../../../LoaderAn/LoaderAn";
 
 const StDetails = () => {
   const dispatch = useDispatch();
   const params = useParams();
   const navigate = useNavigate();
-  const { allSt, errSt,msgSt, loadingSt, singleSt } = useSelector(
+  const { allSt, errSt, msgSt, loadingSt, singleSt } = useSelector(
     (state) => state.admin.students
   );
 
@@ -47,17 +51,19 @@ const StDetails = () => {
     e.preventDefault();
     const formdata = new FormData();
     formdata.append("avatar", Avatar);
-    dispatch(adminUpdateSingleStudentAvatar({ id: params?.id, data: formdata }));
+    dispatch(
+      adminUpdateSingleStudentAvatar({ id: params?.id, data: formdata })
+    );
   };
 
-  const handleAcademicRecord = ()=>{
-    navigate(`/admin-portal/admin-academic-record-student/${params?.id}`)
-  }
+  const handleAcademicRecord = () => {
+    navigate(`/admin-portal/admin-academic-record-student/${params?.id}`);
+  };
 
   useEffect(() => {
     if (msgSt) {
       toast.success(msgSt);
-      dispatch(adminFetchSingleStudent(params?.id))
+      dispatch(adminFetchSingleStudent(params?.id));
       setAvatarPreveiw(null);
     }
     if (errSt) {
@@ -65,7 +71,6 @@ const StDetails = () => {
     }
     dispatch(clearErrorStudents());
   }, [msgSt, errSt, dispatch]);
-
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -119,7 +124,7 @@ const StDetails = () => {
                 onClick={handleMenuClick}
                 className="py-2 px-4 text-[1.125rem] rounded-full shadow-[#8b008bbd] shadow-md focus:outline-none transition duration-300 transform hover:scale-105"
               >
-            <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
+                <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
               </button>
               {isMenuOpen && (
                 <div className="origin-top-right z-50 absolute right-0 mt-2 w-40 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
@@ -140,7 +145,6 @@ const StDetails = () => {
                   </div>
                 </div>
               )}
-
             </div>
 
             {/* avatar + fullname + rollno */}
@@ -209,7 +213,14 @@ const StDetails = () => {
                   </tr>
                   <tr className="border-2 mb-2">
                     <td className="font-semibold p-2">Date of Birth:</td>
-                    <td>{DOB}</td>
+                    <td>
+                      {DOB &&
+                        new Date(DOB).toLocaleString("en-US", {
+                          year: "numeric",
+                          day: "numeric",
+                          month: "long",
+                        })}
+                    </td>
                   </tr>
                   <tr className="border-2 mb-2">
                     <td className="font-semibold p-2">Monthly Fee:</td>
@@ -225,7 +236,14 @@ const StDetails = () => {
                   </tr>
                   <tr className="border-2 mb-2">
                     <td className="font-semibold p-2">Joining Date:</td>
-                    <td>{joiningDate}</td>
+                    <td>
+                      {joiningDate &&
+                        new Date(joiningDate).toLocaleString("en-US", {
+                          year: "numeric",
+                          day: "numeric",
+                          month: "long",
+                        })}
+                    </td>
                   </tr>
                   <tr className="border-2 mb-2">
                     <td className="font-semibold p-2">Blood Group:</td>

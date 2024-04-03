@@ -12,6 +12,7 @@ import { RemovecloudinaryExistingImg } from "../utils/cloudinary.js";
 import { extractId } from "../utils/extractCloudinaryId.js";
 import { parseDate } from "../utils/parseDate.js";
 import { Attendance } from "../models/attendance.mode.js";
+import { AdminNotify } from "../models/notification.model.js";
 
 // =======================================USER CONTROLLERS --ADMIN== START =================================================
 
@@ -125,24 +126,25 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
 
 // send notification for all 
 const sendNotification = asyncHandler(async (req, res) => {
-  const { title, message } = req.body;
+  const { title, desc,fileLink } = req.body;
 
-  if (!title || !message) {
+  if (!title || !desc) {
     throw new ApiError(400, "All fields are required !");
   }
 
-  const users = await User.find({}).select("-password -uniqueCode");
+  const createNotification = await AdminNotify.create({
+   title,
+   desc,
+   fileLink
+ })
 
-  users.forEach(async (user) => {
-    await user.createNotification({
-      title,
-      message,
-    });
-  });
+  if(!createNotification){
+    throw new ApiError(400, "failed to send notification !")
+  }
 
   return res
     .status(200)
-    .json(new ApiResponse(200, {}, "notification sent successfully !"));
+    .json(new ApiResponse(200, createNotification, "notification sent successfully !"));
 })
 
 
@@ -1863,6 +1865,7 @@ export {
   deleteTeacher,
   getTeacherById,
   getAllAttendacesOfClass,
+  sendNotification,
 
   // class
   addClass,

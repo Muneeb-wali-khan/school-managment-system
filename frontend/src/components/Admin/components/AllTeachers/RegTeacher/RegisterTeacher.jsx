@@ -24,10 +24,10 @@ const RegisterTeacher = () => {
     address: "",
     gender: "",
     sallary: 0,
-    DOB: Date,
+    DOB: "",
     status: "",
-    joiningDate: Date,
-    leavingDate: Date,
+    joiningDate: "",
+    leavingDate: "",
     avatar: "",
     subject: "",
     bloodGroup: "",
@@ -251,7 +251,7 @@ const RegisterTeacher = () => {
                   </label>
                   <input
                   onChange={handleInputChange}
-                    type="text"
+                    type="date"
                     id="dob"
                     value={teacherData?.DOB}
                     name="DOB"
@@ -268,7 +268,7 @@ const RegisterTeacher = () => {
                   </label>
                   <input
                   onChange={handleInputChange}
-                    type="text"
+                    type="date"
                     value={teacherData?.joiningDate}
                     name="joiningDate"
                     className="mt-1 border-[#7a49c986] p-2 w-full border rounded-md focus:outline-none focus:border-blue-500"
@@ -277,7 +277,7 @@ const RegisterTeacher = () => {
 
               </div>
 
-              {/* gender, joining date, blood g */}
+              {/* gender, leaving date, blood g */}
               <div className="grid mb-3 grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
                   <label
@@ -307,7 +307,7 @@ const RegisterTeacher = () => {
                   </label>
                   <input
                   onChange={handleInputChange}
-                    type="text"
+                    type="date"
                     value={teacherData?.leavingDate}
                     name="leavingDate"
                     className="mt-1 border-[#7a49c986] p-2 w-full border rounded-md focus:outline-none focus:border-blue-500"

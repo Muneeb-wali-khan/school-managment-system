@@ -51,7 +51,7 @@ const AllUsers = () => {
       setIsOpen(false);
     }
   };
-
+  
   useEffect(() => {
     if (errDelUsersWeb) {
       toast.success(errDelUsersWeb);

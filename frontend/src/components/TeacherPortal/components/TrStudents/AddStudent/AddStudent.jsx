@@ -28,9 +28,9 @@ const AddStudent = () => {
     phone: "",
     address: "",
     gender: "",
-    DOB: Date,
+    DOB: "",
     avatar: "",
-    joiningDate: Date,
+    joiningDate: "",
     bloodGroup: "",
   });
 
@@ -275,7 +275,7 @@ const AddStudent = () => {
                   </label>
                   <input
                   onChange={handleInputChange}
-                    type="text"
+                    type="date"
                     id="dob"
                     value={studentData?.DOB}
                     name="DOB"
@@ -314,7 +314,7 @@ const AddStudent = () => {
                   </label>
                   <input
                   onChange={handleInputChange}
-                    type="text"
+                    type="date"
                     value={studentData?.joiningDate}
                     id="joiningDate"
                     name="joiningDate"

@@ -139,13 +139,13 @@ const studentSchema = new Schema(
 
 
 
-studentSchema.pre("save", async function (next) {
-  if (!this.isModified("DOB", "joiningDate")) return next();
+// studentSchema.pre("save", async function (next) {
+//   if (!this.isModified("DOB", "joiningDate")) return next();
 
-  this.DOB = parseDate(this.DOB);
-  this.joiningDate = parseDate(this.joiningDate);
+//   this.DOB = parseDate(this.DOB);
+//   this.joiningDate = parseDate(this.joiningDate);
 
-  next();
-});
+//   next();
+// });
 
 export const Student = mongoose.model("Student", studentSchema);

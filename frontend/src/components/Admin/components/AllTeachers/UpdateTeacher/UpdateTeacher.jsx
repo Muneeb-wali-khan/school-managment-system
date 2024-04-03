@@ -28,10 +28,10 @@ const UpdateTeacher = () => {
     address: "",
     gender: "",
     sallary: 0,
-    DOB: Date,
+    DOB: "",
     status: "",
-    joiningDate: Date,
-    leavingDate: Date,
+    joiningDate: "",
+    leavingDate: "",
     avatar: "",
     subject: "",
     bloodGroup: "",
@@ -45,6 +45,7 @@ const UpdateTeacher = () => {
     setTeacherData({ ...teacherData, [e.target.name]: e.target.value });
     console.log(teacherData);
   };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     const formdata = new FormData();
@@ -81,6 +82,10 @@ const UpdateTeacher = () => {
   }, [msgUptTr, errUptTr, dispatch]);
 
   useEffect(() => {
+    const formattedDOBDate = singleTr?.[0].DOB ? new Date(singleTr?.[0].DOB).toISOString().split('T')[0] : '';
+    const formattedJoinDate = singleTr?.[0].joiningDate ? new Date(singleTr?.[0].joiningDate).toISOString().split('T')[0] : '';
+    const formattedLeaveDate = singleTr?.[0].leavingDate ? new Date(singleTr?.[0].leavingDate).toISOString().split('T')[0] : '';
+
     if (singleTr?.[0]) {
       setTeacherData({
         firstName: singleTr?.[0]?.firstName,
@@ -94,10 +99,10 @@ const UpdateTeacher = () => {
         address: singleTr?.[0]?.address,
         gender: singleTr?.[0]?.gender,
         sallary: singleTr?.[0]?.sallary,
-        DOB: singleTr?.[0]?.DOB,
+        DOB: formattedDOBDate,
         status: singleTr?.[0]?.status,
-        joiningDate: singleTr?.[0]?.joiningDate,
-        leavingDate: singleTr?.[0]?.leavingDate,
+        joiningDate: formattedJoinDate,
+        leavingDate: formattedLeaveDate,
         avatar: singleTr?.[0]?.avatar,
         bloodGroup: singleTr?.[0]?.bloodGroup,
         subject: singleTr?.[0]?.subject,
@@ -270,18 +275,8 @@ const UpdateTeacher = () => {
                 </label>
                 <input
                   onChange={handleInputChange}
-                  type="text"
-                  value={
-                    teacherData?.DOB
-                      ? new Date(teacherData?.DOB)
-                          .toLocaleDateString("en-US", {
-                            day: "numeric",
-                            month: "numeric",
-                            year: "numeric",
-                          })
-                          .replace(/[/]/g, "-")
-                      : "" // Display an empty string for null values
-                  }
+                  type="date"
+                  value={teacherData.DOB}
                   name="DOB"
                   className="mt-1 border-[#7a49c986] p-2 w-full border rounded-md focus:outline-none focus:border-blue-500"
                 />
@@ -296,25 +291,15 @@ const UpdateTeacher = () => {
                 </label>
                 <input
                   onChange={handleInputChange}
-                  type="text"
-                  value={
-                    teacherData?.joiningDate
-                      ? new Date(teacherData?.joiningDate)
-                          .toLocaleDateString("en-US", {
-                            day: "numeric",
-                            month: "numeric",
-                            year: "numeric",
-                          })
-                          .replace(/[/]/g, "-")
-                      : "" // Display an empty string for null values
-                  }
+                  type="date"
+                  value={teacherData.joiningDate}
                   name="joiningDate"
                   className="mt-1 border-[#7a49c986] p-2 w-full border rounded-md focus:outline-none focus:border-blue-500"
                 />
               </div>
             </div>
 
-            {/* gender, joining date, blood g */}
+            {/* gender, leaving date, blood g */}
             <div className="grid mb-3 grid-cols-1 sm:grid-cols-3 gap-4">
               <div>
                 <label
@@ -345,17 +330,7 @@ const UpdateTeacher = () => {
                 <input
                   onChange={handleInputChange}
                   type="text"
-                  value={
-                    teacherData?.leavingDate
-                      ? new Date(teacherData?.leavingDate)
-                          .toLocaleDateString("en-US", {
-                            day: "numeric",
-                            month: "numeric",
-                            year: "numeric",
-                          })
-                          .replace(/[/]/g, "-")
-                      : "" // Display an empty string for null values
-                  }
+                  value={teacherData.leavingDate}
                   name="leavingDate"
                   className="mt-1 border-[#7a49c986] p-2 w-full border rounded-md focus:outline-none focus:border-blue-500"
                 />

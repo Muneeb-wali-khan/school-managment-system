@@ -3,14 +3,18 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import AnNav from "../../../Navbar/AnNav";
-import {adminFetchSingleTeacher, adminUpdateAvatarTeacher, clearErrorTeachers } from "../../../../../store/features/admin.reducers";
+import {
+  adminFetchSingleTeacher,
+  adminUpdateAvatarTeacher,
+  clearErrorTeachers,
+} from "../../../../../store/features/admin.reducers";
 import LoaderAn from "../../../LoaderAn/LoaderAn";
 
 const TrDetails = () => {
   const dispatch = useDispatch();
   const params = useParams();
   const navigate = useNavigate();
-  const { errTr,msgTr, loadingTr, singleTr } = useSelector(
+  const { errTr, msgTr, loadingTr, singleTr } = useSelector(
     (state) => state.admin.teachers
   );
 
@@ -49,14 +53,14 @@ const TrDetails = () => {
     dispatch(adminUpdateAvatarTeacher({ id: params?.id, data: formdata }));
   };
 
-  const handleAcademicRecord = ()=>{
-    navigate(`/admin-portal/admin-academic-record-student/${params?.id}`)
-  }
+  const handleAcademicRecord = () => {
+    navigate(`/admin-portal/admin-academic-record-student/${params?.id}`);
+  };
 
   useEffect(() => {
     if (msgTr) {
       toast.success(msgTr);
-      dispatch(adminFetchSingleTeacher(params?.id))
+      dispatch(adminFetchSingleTeacher(params?.id));
       setAvatarPreveiw(null);
     }
     if (errTr) {
@@ -64,7 +68,6 @@ const TrDetails = () => {
     }
     dispatch(clearErrorTeachers());
   }, [msgTr, errTr, dispatch]);
-
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -118,7 +121,7 @@ const TrDetails = () => {
                 onClick={handleMenuClick}
                 className="py-2 px-4 text-[1.125rem] rounded-full shadow-[#8b008bbd] shadow-md focus:outline-none transition duration-300 transform hover:scale-105"
               >
-            <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
+                <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
               </button>
               {isMenuOpen && (
                 <div className="origin-top-right z-50 absolute right-0 mt-2 w-40 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
@@ -139,7 +142,6 @@ const TrDetails = () => {
                   </div>
                 </div>
               )}
-
             </div>
 
             {/* avatar + fullname + rollno */}
@@ -190,7 +192,7 @@ const TrDetails = () => {
             <div>
               <table className="w-full">
                 <tbody className=" text-sm">
-                <tr className="border-2 mb-2">
+                  <tr className="border-2 mb-2">
                     <td className="font-semibold p-2">First Name:</td>
                     <td>{firstName}</td>
                   </tr>
@@ -204,7 +206,14 @@ const TrDetails = () => {
                   </tr>
                   <tr className="border-2 mb-2">
                     <td className="font-semibold p-2">Date of Birth:</td>
-                    <td>{DOB}</td>
+                    <td>
+                      {DOB &&
+                        new Date(DOB).toLocaleString("en-US", {
+                          year: "numeric",
+                          day: "numeric",
+                          month: "long",
+                        })}
+                    </td>
                   </tr>
                   <tr className="border-2 mb-2">
                     <td className="font-semibold p-2">Sallary :</td>
@@ -212,15 +221,37 @@ const TrDetails = () => {
                   </tr>
                   <tr className="border-2 mb-2">
                     <td className="font-semibold p-2">Leaving Date:</td>
-                    <td>{leavingDate === null? "N/A":leavingDate}</td>
+                    <td>
+                      {leavingDate === null
+                        ? "N/A"
+                        : leavingDate &&
+                          new Date(leavingDate).toLocaleString("en-US", {
+                            year: "numeric",
+                            day: "numeric",
+                            month: "long",
+                          })}
+                    </td>
                   </tr>
                   <tr className="border-2 mb-2">
                     <td className="font-semibold p-2">Joining Date:</td>
-                    <td>{joiningDate}</td>
+                    <td>
+                      {joiningDate &&
+                        new Date(joiningDate).toLocaleString("en-US", {
+                          year: "numeric",
+                          day: "numeric",
+                          month: "long",
+                        })}
+                    </td>
                   </tr>
                   <tr className="border-2 mb-2">
                     <td className="font-semibold p-2">Status :</td>
-                    <td className={status === "active" ? "text-green-500": "text-red-500"}>{status}</td>
+                    <td
+                      className={
+                        status === "active" ? "text-green-500" : "text-red-500"
+                      }
+                    >
+                      {status}
+                    </td>
                   </tr>
                   <tr className="border-2 mb-2">
                     <td className="font-semibold p-2">Blood Group:</td>
@@ -244,11 +275,13 @@ const TrDetails = () => {
                   </tr>
                   <tr className="border-2 mb-2">
                     <td className="font-semibold p-2">Classes Taught:</td>
-                    <td>{
-                          classesTaught?.map((val)=>(
-                            <span key={val?._id} className="mx-2">{ val?.className}</span>
-                          ))
-                      }</td>
+                    <td>
+                      {classesTaught?.map((val) => (
+                        <span key={val?._id} className="mx-2">
+                          {val?.className}
+                        </span>
+                      ))}
+                    </td>
                   </tr>
                 </tbody>
               </table>

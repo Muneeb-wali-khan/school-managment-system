@@ -22,6 +22,7 @@ import {
   allAssignmentsClass,
   updateAssignmentOfClassUrl,
   singleAssignmentClass,
+  deleteAssignmentOfClassUrl,
 } from "../urls";
 
 // teacher details
@@ -237,6 +238,17 @@ export const updateAssignmentOfClass = createAsyncThunk("teacher/updateAssigment
   try {
     const config = { headers: { "Content-Type": "application/json"},withCredentials: true };
     const response = await axios.put(`${updateAssignmentOfClassUrl}${id}`,data, config);
+    return response.data;
+  } catch (error) {
+    return rejectWithValue(error?.response?.data);
+  }
+})
+
+//  delete assigment class 
+export const removeAssignmentOfClass = createAsyncThunk("teacher/deleteAssigmentClass", async (id, {rejectWithValue})=>{
+  try {
+    const config = { headers: { "Content-Type": "application/json"},withCredentials: true };
+    const response = await axios.delete(`${deleteAssignmentOfClassUrl}${id}`, config);
     return response.data;
   } catch (error) {
     return rejectWithValue(error?.response?.data);
@@ -536,6 +548,21 @@ const teacherSlice = createSlice({
       state.msgAssigment = action.payload?.message;
     });
     builder.addCase(updateAssignmentOfClass.rejected, (state, action) => {
+      state.loadingTeacher = false;
+      state.errorAssigment = action.payload?.message;
+    })
+
+
+    // delete assigment of class
+    builder.addCase(removeAssignmentOfClass.pending, (state, action) => {
+      state.loadingTeacher = true;
+      state.errorAssigment = null;
+    });
+    builder.addCase(removeAssignmentOfClass.fulfilled, (state, action) => {
+      state.loadingTeacher = false;
+      state.msgAssigment = action.payload?.message;
+    });
+    builder.addCase(removeAssignmentOfClass.rejected, (state, action) => {
       state.loadingTeacher = false;
       state.errorAssigment = action.payload?.message;
     })

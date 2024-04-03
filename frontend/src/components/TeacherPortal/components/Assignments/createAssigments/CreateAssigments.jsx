@@ -34,11 +34,18 @@ const CreateAssignments = ({ loadingTeacher }) => {
     >
       <div className="flex flex-col gap-8">
         <h2 className="text-2xl font-semibold mb-4 text-[#663399]">
-          Create Assigment :
+          Create Assignment :
         </h2>
         <div className="relative">
+          <label
+            htmlFor="subject"
+            className="block text-gray-700 font-semibold mb-1"
+          >
+            Subject:
+          </label>
           <input
             type="text"
+            id="subject"
             name="subject"
             value={subject}
             onChange={handleChange}
@@ -46,29 +53,43 @@ const CreateAssignments = ({ loadingTeacher }) => {
             className="form-input pl-10 pr-4 bg-gray-100 p-2 rounded-lg border-gray-300 w-full shadow-sm"
             required
           />
-          <span className="absolute left-3 top-1/2 transform -translate-y-1/2">
+          <span className="absolute left-3 bottom-[-3px] transform -translate-y-1/2">
             <i className="fas fa-book text-gray-400"></i>
           </span>
         </div>
 
         <div className="relative">
+          <label
+            htmlFor="dueDate"
+            className="block text-gray-700 font-semibold mb-1"
+          >
+            Due Date:
+          </label>
           <input
             type="date"
+            id="dueDate"
             name="dueDate"
             value={dueDate}
             onChange={handleChange}
             placeholder="Due Date"
-            className="form-input pl-10 pr-4 bg-gray-100 p-2 rounded-lg border-gray-300  w-full shadow-sm"
+            className="form-input pl-10 pr-4 bg-gray-100 p-2 rounded-lg border-gray-300 w-full shadow-sm"
             required
           />
-          <span className="absolute left-3 top-1/2 transform -translate-y-1/2">
+          <span className="absolute left-3 bottom-[-3px] transform -translate-y-1/2">
             <i className="far fa-calendar-alt text-gray-400"></i>
           </span>
         </div>
 
         <div className="relative">
+          <label
+            htmlFor="docLink"
+            className="block text-gray-700 font-semibold mb-1"
+          >
+            Document Link:
+          </label>
           <input
             type="url"
+            id="docLink"
             name="docLink"
             value={docLink}
             onChange={handleChange}
@@ -76,7 +97,7 @@ const CreateAssignments = ({ loadingTeacher }) => {
             className="form-input pl-10 pr-4 bg-gray-100 p-2 rounded-lg border-gray-300 w-full shadow-sm"
             required
           />
-          <span className="absolute left-3 top-1/2 transform -translate-y-1/2">
+          <span className="absolute left-3 bottom-[-3px] transform -translate-y-1/2">
             <i className="fas fa-link text-gray-400"></i>
           </span>
         </div>

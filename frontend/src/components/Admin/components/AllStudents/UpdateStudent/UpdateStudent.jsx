@@ -28,8 +28,8 @@ const UpdateStudent = () => {
     phone: "",
     address: "",
     gender: "",
-    DOB: Date,
-    joiningDate: Date,
+    DOB: "",
+    joiningDate: "",
     bloodGroup:  "",
   });
 
@@ -80,6 +80,9 @@ const UpdateStudent = () => {
 
   useEffect(()=>{
     if(singleSt){
+       const formattedDOBDate = singleSt.DOB ? new Date(singleSt?.DOB).toISOString().split('T')[0] : '';
+       const formattedJoinDate = singleSt.joiningDate ? new Date(singleSt?.joiningDate).toISOString().split('T')[0] : '';
+
         setStudentData({
             firstName: singleSt?.firstName,
             fullName:singleSt?.fullName,
@@ -94,8 +97,8 @@ const UpdateStudent = () => {
             labFee: singleSt?.labFee,
             phone: singleSt?.phone,
             address: singleSt?.address,
-            DOB: singleSt?.DOB,
-            joiningDate: singleSt?.joiningDate,
+            DOB: formattedDOBDate,
+            joiningDate: formattedJoinDate,
             bloodGroup:singleSt?.bloodGroup,
             avatar:singleSt?.avatar,
             gender: singleSt?.gender
@@ -295,13 +298,9 @@ const UpdateStudent = () => {
                   </label>
                   <input
                   onChange={handleInputChange}
-                    type="text"
+                    type="date"
                     id="dob"
-                    value={new Date(studentData?.DOB).toLocaleDateString("en-US",{
-                        day: "numeric",
-                        month: "numeric",
-                        year: "numeric",
-                    }).replace(/[/]/g, '-') || ''}
+                    value={studentData.DOB}
                     name="DOB"
                     className="mt-1 border-[#7a49c986] p-2 w-full border rounded-md focus:outline-none focus:border-blue-500"
                   />
@@ -338,12 +337,8 @@ const UpdateStudent = () => {
                   </label>
                   <input
                   onChange={handleInputChange}
-                    type="text"
-                    value={new Date(studentData?.joiningDate).toLocaleDateString("en-US",{
-                        day: "numeric",
-                        month: "numeric",
-                        year: "numeric",
-                    }).replace(/[/]/g, '-') || ''}
+                    type="date"
+                    value={studentData.joiningDate}
                     id="joiningDate"
                     name="joiningDate"
                     className="mt-1 border-[#7a49c986] p-2 w-full border rounded-md focus:outline-none focus:border-blue-500"

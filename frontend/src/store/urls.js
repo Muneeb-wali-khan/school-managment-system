@@ -24,6 +24,7 @@ const giveAssignmentsClass = "/api/v1/teacher/give-assigment-class"
 const allAssignmentsClass = "/api/v1/teacher/all-assigments-class"
 const singleAssignmentClass = "/api/v1/teacher/single-assigment-class?id="
 const updateAssignmentOfClassUrl = "/api/v1/teacher/update-assigment-class?id="
+const deleteAssignmentOfClassUrl = "/api/v1/teacher/delete-assigment-class?id="
 
 
 // student urls
@@ -113,6 +114,7 @@ export  {
     allAssignmentsClass,
     singleAssignmentClass,
     updateAssignmentOfClassUrl,
+    deleteAssignmentOfClassUrl,
 
 
     // student urls
