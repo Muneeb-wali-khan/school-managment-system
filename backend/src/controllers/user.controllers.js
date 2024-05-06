@@ -11,7 +11,7 @@ import {
   cloudinaryUploadImg,
 } from "../utils/cloudinary.js";
 import { extractId } from "../utils/extractCloudinaryId.js";
-import {Student} from "../models/student.model.js";
+import { Student } from "../models/student.model.js";
 
 // generate tokens
 const generateAccessTokenAndRefreshToken = async (userId) => {
@@ -30,16 +30,13 @@ const generateAccessTokenAndRefreshToken = async (userId) => {
   }
 };
 
-
 // cookie oprions
 const cookieOptions = {
   httpOnly: true,
-  secure: false,  // false because i don't have https ssl
-  sameSite: 'strict',
+  secure: false, // false because i don't have https ssl
+  sameSite: "strict",
   maxAge: 24 * 60 * 60 * 1000, // 1 day
-  
 };
-
 
 // register
 const registerUser = asyncHandler(async (req, res) => {
@@ -147,7 +144,6 @@ const registerUser = asyncHandler(async (req, res) => {
     .json(new ApiResponse(201, createdUser, "User created successfully !"));
 });
 
-
 // login
 const loginUser = asyncHandler(async (req, res) => {
   // get data
@@ -193,14 +189,11 @@ const loginUser = asyncHandler(async (req, res) => {
     throw new ApiError(400, "failed to loged in !");
   }
   // set isActive True
-  const user = await User.findByIdAndUpdate(
-    emailCheckUser?._id,
-    {
-      $set: {
-        isActive: true,
-      }
-    }
-  )
+  const user = await User.findByIdAndUpdate(emailCheckUser?._id, {
+    $set: {
+      isActive: true,
+    },
+  });
 
   //set tokens in cookie
 
@@ -217,11 +210,10 @@ const loginUser = asyncHandler(async (req, res) => {
     );
 });
 
-
 // logout
 const logoutUser = asyncHandler(async (req, res) => {
   // get the id of user from req body as we have saved it in auth middleware
-  const user =  await User.findByIdAndUpdate(
+  const user = await User.findByIdAndUpdate(
     req.user?._id,
     {
       $set: {
@@ -233,14 +225,14 @@ const logoutUser = asyncHandler(async (req, res) => {
 
   const setactiveFalse = await User.findOneAndUpdate(
     {
-      _id: req.user?._id
+      _id: req.user?._id,
     },
     {
       $set: {
         isActive: false,
-      }
+      },
     }
-  )
+  );
 
   if (!user) {
     throw new ApiError(400, "failed to logout !");
@@ -252,7 +244,6 @@ const logoutUser = asyncHandler(async (req, res) => {
     .clearCookie("accessToken")
     .json(new ApiResponse(200, {}, "user loged out successfully !"));
 });
-
 
 // refresh accessToken
 const refreshAccessToken = asyncHandler(async (req, res) => {
@@ -301,7 +292,6 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     );
 });
 
-
 // get current user details
 const getCurrentUser = asyncHandler(async (req, res) => {
   // const user = await User.findById(req.user?._id).select("-password -refreshToken -uniqueCode")
@@ -341,13 +331,11 @@ const changePassword = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, "password updated successfully !"));
 });
 
-
-
 // update user profile
 const updateProfile = asyncHandler(async (req, res) => {
-  const { fullName, email ,username} = req.body;
+  const { fullName, email, username } = req.body;
 
-  if (!fullName && !email || !username) {
+  if ((!fullName && !email) || !username) {
     throw new ApiError(400, "All fields are required !");
   }
   const user = await User.findByIdAndUpdate(
@@ -356,7 +344,7 @@ const updateProfile = asyncHandler(async (req, res) => {
       $set: {
         fullName,
         email,
-        username
+        username,
       },
     },
     { new: true }
@@ -366,13 +354,13 @@ const updateProfile = asyncHandler(async (req, res) => {
     throw new ApiError(404, "failed to update user profile !");
   }
 
-  // find teacher 
+  // find teacher
   const findTeacherWithFullNameAndEmail = await Teacher.findOne({
     fullName: req?.user?.fullName,
     email: req?.user?.email,
   });
 
-  if(findTeacherWithFullNameAndEmail !== null){
+  if (findTeacherWithFullNameAndEmail !== null) {
     const updateTeacher = await Teacher.findByIdAndUpdate(
       findTeacherWithFullNameAndEmail?._id,
       {
@@ -388,13 +376,13 @@ const updateProfile = asyncHandler(async (req, res) => {
     }
   }
 
-  // find student 
+  // find student
   const findStudentWithFullNameAndEmail = await Student.findOne({
     fullName: req?.user?.fullName,
     email: req?.user?.email,
   });
 
-  if(findStudentWithFullNameAndEmail !== null){
+  if (findStudentWithFullNameAndEmail !== null) {
     const updateStudent = await Student.findByIdAndUpdate(
       findStudentWithFullNameAndEmail?._id,
       {
@@ -429,8 +417,10 @@ const updateAvatar = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Image is required !");
   }
 
-  const publicId = extractId(req.user?.avatar);
-  await RemovecloudinaryExistingImg(publicId);
+  if (req.user?.avatar !== "") {
+    const publicId = extractId(req.user?.avatar);
+    await RemovecloudinaryExistingImg(publicId);
+  }
 
   const user = await User.findByIdAndUpdate(
     req.user?._id,
@@ -446,12 +436,15 @@ const updateAvatar = asyncHandler(async (req, res) => {
     throw new ApiError(404, "failed to update user avatar !");
   }
 
+  const getUserAgain = await User.findById(req.user?._id).select("-password -uniqueCode");;
+  if (!getUserAgain) {
+    throw new ApiError(404, "failed to update user avatar !");
+  }
+
   return res
     .status(200)
-    .json(new ApiResponse(200, user, "user avatar updated successfully !"));
+    .json(new ApiResponse(200, getUserAgain, "user avatar updated successfully !"));
 });
-
-
 
 export {
   registerUser,

@@ -132,7 +132,7 @@ const AnNav = () => {
           {/* <!-- Bell Icon with Notification Dot --> */}
 
           <div className="relative ml-4">
-            <Link to='/admin-portal/admin-add-notification'
+            <Link to='/admin-portal/admin-all-notifications'
               className="w-6 h-6 cursor-pointer relative"
             >
               <span className="fa fa-bell"></span>

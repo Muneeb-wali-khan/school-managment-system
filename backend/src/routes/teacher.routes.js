@@ -3,7 +3,7 @@ import { ApiError } from "../utils/ApiError.js";
 import multer from "multer";
 import { upload } from "../middlewares/multer.js";
 import {  isTeacher, jwtVerify } from "../middlewares/auth.middleware.js";
-import { addStudentsToClass, allAssignmentsOfClass, allStudentsOfSpecificClass, allSubjectsOfClass, allTeachersOfSpecificClass, curriculumOfSubjectOfClass, deleteAssigment, deleteStudentFromClass, getAttendanceOfToday, getLogedInTeacherDetails, getSingleAssignment, getStudentDetail,  giveAssignments,  notifyAbsenties,  takeAttendance, updateAssigment, updateStudentAvatar, updateStudentsOfClass } from "../controllers/teacher.controller.js";
+import { addStudentsToClass, allAssignmentsOfClass, allStudentsOfSpecificClass, allSubjectsOfClass, allTeachersNotifications, allTeachersOfSpecificClass, curriculumOfSubjectOfClass, deleteAssigment, deleteNotification, deleteStudentFromClass, getAllNotifications, getAttendanceOfToday, getLogedInTeacherDetails, getNotificationById, getSingleAssignment, getStudentDetail,  giveAssignments,  notifyAbsenties,  notifySingleStudent,  sendNotificationStudents,  singleTeacherNotifications,  takeAttendance, updateAssigment, updateNotification, updateStudentAvatar, updateStudentsOfClass } from "../controllers/teacher.controller.js";
 const router = Router();
 
 
@@ -24,6 +24,14 @@ router.route("/all-assigments-class").get(jwtVerify,isTeacher, allAssignmentsOfC
 router.route("/single-assigment-class").get(jwtVerify,isTeacher, getSingleAssignment)
 router.route("/update-assigment-class").put(jwtVerify,isTeacher, updateAssigment)
 router.route("/delete-assigment-class").delete(jwtVerify,isTeacher, deleteAssigment)
+router.route("/all-notifications-for-teachers").get(jwtVerify,isTeacher, allTeachersNotifications)
+router.route("/single-teacher-notifications").get(jwtVerify,isTeacher, singleTeacherNotifications)
+router.route("/notify-students-class").post(jwtVerify,isTeacher, sendNotificationStudents)
+router.route("/notify-single-student-class").post(jwtVerify,isTeacher, notifySingleStudent)
+router.route("/all-notifications-class").get(jwtVerify,isTeacher, getAllNotifications)
+router.route("/single-notification-class/:id").get(jwtVerify,isTeacher, getNotificationById)
+router.route("/update-notification-class/:id").put(jwtVerify,isTeacher, updateNotification)
+router.route("/delete-notification-class/:id").delete(jwtVerify,isTeacher, deleteNotification)
 
 
 router.route("/all-teachers-class").get(jwtVerify,isTeacher, allTeachersOfSpecificClass)

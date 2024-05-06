@@ -43,15 +43,15 @@ const SideBar = () => {
 
             <div className="flex gap-3 items-center">
               <a>
-                <i className="fa fa-user-plus mr-[2px]" style={{color: "#ffffff"}}>
+                <i className="fa fa-file-pen mr-[2px]" style={{color: "#ffffff"}}>
                   {" "}
                 </i>
               </a>
               <Link
-                to="/student-portal/student-registeration"
+                to="/student-portal/student-assigments"
                 className="cursor-pointer font-semibold text-gray-200 hover:text-white transition-all"
               >
-                Registeration
+                Assignments
               </Link>
             </div>
 

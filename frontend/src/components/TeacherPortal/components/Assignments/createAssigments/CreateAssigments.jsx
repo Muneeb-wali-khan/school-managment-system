@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { createAssignmentsOfClass } from "../../../../../store/features/teacher.reducers";
 
-const CreateAssignments = ({ loadingTeacher }) => {
+const CreateAssignments = ({ loadingAssigments }) => {
   const dispatch = useDispatch();
   const [formData, setFormData] = useState({
     subject: "",
@@ -106,7 +106,7 @@ const CreateAssignments = ({ loadingTeacher }) => {
           type="submit"
           className="bg-gradient-to-r from-[#8D5ADD] to-[#794ACA] text-white px-4 py-2 rounded-md font-semibold transition duration-300 hover:bg-[#663399d7] focus:outline-none focus:ring focus:border-blue-300 w-full"
         >
-          {loadingTeacher ? "Creating..." : "Create Assignment"}
+          {loadingAssigments ? "Creating..." : "Create Assignment"}
         </button>
       </div>
     </form>

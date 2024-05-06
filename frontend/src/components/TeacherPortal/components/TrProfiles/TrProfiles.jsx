@@ -5,12 +5,9 @@ import UpdatePassword from "./passwordUpdate/UpdatePassword";
 import UpdateProfile from "./ProfileUpdate/UpdateProfile";
 import {
   clearErrorsUserProfile,
-  profileUser,
   updateAvatarUser,
 } from "../../../../store/features/user.reducer";
-import { profileTeacher as profileInfoTeacher } from "../../../../store/features/teacher.reducers";
 import toast from "react-hot-toast";
-import LoaderTr from "../../LoaderTr/LoaderTr";
 
 const TrProfiles = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -22,13 +19,11 @@ const TrProfiles = () => {
   const { userProfile, loadingUser, errorUser4, msgUser4 } = useSelector(
     (state) => state?.profile?.userProfile
   );
-  const { profileTeacher, loadingTeacher } = useSelector(
+  const { profileTeacher, loadingProfileTeacher } = useSelector(
     (state) => state?.teacher?.teacherD
   );
 
-  useEffect(()=>{
-    dispatch(profileInfoTeacher())
-  },[dispatch])
+
   const openModal = () => {
     setIsModalOpen(true);
   };
@@ -62,7 +57,6 @@ const TrProfiles = () => {
   useEffect(() => {
     if (msgUser4) {
       toast.success(msgUser4);
-      dispatch(profileUser());
       setAvatarView(null);
     }
     if (errorUser4) {
@@ -102,9 +96,6 @@ const TrProfiles = () => {
 
       <div className="p-[1.25rem] w-4/5 navdashMain">
         <TrNav />
-        {loadingTeacher || loadingUser ? (
-          <LoaderTr />
-        ) : (
           <>
             {/* teacher information */}
             <div className="flex w-full h-auto mt-8  gap-12 flex-wrap trprofile">
@@ -280,7 +271,7 @@ const TrProfiles = () => {
                         onClick={handleAvatarSubmit}
                         className="bg-gradient-to-r from-[#8D5ADD] to-[#794ACA] text-white hover:bg-slate-100 border-2 hover:border-2  py-2 px-4 rounded-md transition duration-300 ease-in-out focus:outline-none focus:ring focus:border-blue-300"
                       >
-                        Submit
+                        {loadingUser ? 'Updating...': 'Update'}
                       </button>
                     </div>
                   ) : (
@@ -352,7 +343,6 @@ const TrProfiles = () => {
               </div>
             </div>
           </>
-        )}
       </div>
       <UpdatePassword isOpen={isModalOpen} onClose={closeModal} />
       <UpdateProfile

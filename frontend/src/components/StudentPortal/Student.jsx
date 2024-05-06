@@ -8,8 +8,8 @@ import { profileUser } from "../../store/features/user.reducer";
 import { profileStudent } from "../../store/features/student.reducers";
 
 const StAttendanceRecord = lazy(() => import("./components/StAttendanceRecords/StAttendanceRecord"));
+const StAssigments = lazy(() => import("./components/StAssigments/StAssigments"));
 const StProfiles = lazy(() => import("./components/StProfiles/StProfiles"));
-const StPayments = lazy(() => import("./StPayments/StPayments"));
 const SideBar = lazy(() => import("./SideBar/SideBar"));
 const StDash = lazy(() => import("./DashboardStudent/StDash"));
 const NotFound = lazy(() => import("../Not-Found/NotFound"));
@@ -31,7 +31,7 @@ const Student = () => {
           <Route path="/*" element={<NotFound />} />
           <Route path="/student-profile" element={<StProfiles />} />
           <Route path="/student-attendance-record" element={<StAttendanceRecord />} />
-          <Route path="/student-payments" element={<StPayments />} />
+          <Route path="/student-assigments" element={<StAssigments />} />
         </Routes>
       </Suspense>
     </div>

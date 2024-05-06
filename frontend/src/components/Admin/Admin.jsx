@@ -60,6 +60,9 @@ const RegisterTeacher = lazy(() =>
 const UpdateTeacher = lazy(() =>
   import("./components/AllTeachers/UpdateTeacher/UpdateTeacher")
 );
+const AllNotifications = lazy(() =>
+  import("./components/AllNotifications/AllNotifications")
+);
 
 
 // students
@@ -102,6 +105,7 @@ const Admin = () => {
           <Route path="/admin-teacher-details/:id" element={<TrDetails />} />
           <Route path="/admin-teacher-add" element={<RegisterTeacher />} />
           <Route path="/admin-teacher-update/:id" element={<UpdateTeacher />} />
+          <Route path="/admin-all-notifications" element={<AllNotifications />} />
 
           <Route path="/admin-all-subjects" element={<AllSubjects />} />
           <Route path="/admin-subject-details/:id" element={<SbDetaills />} />

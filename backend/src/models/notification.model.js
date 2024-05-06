@@ -13,10 +13,11 @@ const notifySchema = new Schema(
     fileLink:{
       type:String
     },
-    notify:{
-      type: String,
-      required: true,
-      enum: ["singleTeacher", "AllTeachers"],
+    teacherFullName:{
+      type:String
+    },
+    teacherEmail:{
+      type:String
     }
   },
   {

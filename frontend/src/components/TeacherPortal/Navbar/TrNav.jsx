@@ -4,16 +4,26 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { clearErrorsAuth, logout } from "../../../store/features/regLogin";
 import LoaderTr from "../../TeacherPortal/LoaderTr/LoaderTr";
+import {
+  allNotificationsTeachers,
+  personalNotificationsTeacher,
+} from "../../../store/features/teacher.reducers";
+import NotificationModal from "./NotificationModal/NotificationModal";
+import NotiLoader from "./NotiLoader/NotiLoader";
 
 const TrNav = () => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const { loadingAuth, msgAuth, errorAuth } = useSelector(
     (state) => state?.user?.userAuth
   );
   const { userProfile } = useSelector((state) => state?.profile?.userProfile);
-  const { profileTeacher, loadingTeacher } = useSelector(
-    (state) => state?.teacher?.teacherD
-  );
+  const {
+    profileTeacher,
+    loadingTeacher,
+    loadingNotify,
+    notificationsTeachers,
+    personalNotifications,
+  } = useSelector((state) => state?.teacher?.teacherD);
 
   const [isMenuOpen, setMenuOpen] = useState(false);
 
@@ -21,11 +31,11 @@ const TrNav = () => {
     setMenuOpen(!isMenuOpen);
   };
 
-  const handleLogout = ()=>{
-    const confirmLogout = window.confirm("Are you sure you want to logout?")
-    if(!confirmLogout) return
-    dispatch(logout())
-  }
+  const handleLogout = () => {
+    const confirmLogout = window.confirm("Are you sure you want to logout?");
+    if (!confirmLogout) return;
+    dispatch(logout());
+  };
 
   useEffect(() => {
     if (msgAuth) {
@@ -36,23 +46,68 @@ const TrNav = () => {
     }
 
     dispatch(clearErrorsAuth());
-  }, [msgAuth, errorAuth,dispatch]);
+  }, [msgAuth, errorAuth, dispatch]);
+
+  useEffect(() => {
+    dispatch(allNotificationsTeachers());
+    dispatch(personalNotificationsTeacher());
+  }, [dispatch]);
 
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+  const [isMenuOpened, SetisMenuOpened] = useState(false);
+  const [openNotify, setOpenNotify] = useState(false);
+  const [showPersonalNotifications, setShowPersonalNotifications] =
+    useState(false);
+    const [singleNoti, setSingleNoti] = useState([])
 
   const openNotification = () => {
-    // Handle opening the notification or fetching new notifications
-    setIsNotificationOpen(!isNotificationOpen);
+    if(notificationsTeachers?.length > 0){
+      setIsNotificationOpen(!isNotificationOpen);
+    }
+  };
+  const handleMenuClick = () => {
+    SetisMenuOpened(!isMenuOpened);
   };
 
+  // notification detials modal
+  const handleOpenNotificationModal = (noti) => {
+    setOpenNotify(true);
+    if(noti){
+      setSingleNoti(noti)
+    }
+  };
+  const onClose = () => {
+    setOpenNotify(false);
+  };
+
+  // personal notifications
+  const handlePersonal = () => {
+    setShowPersonalNotifications(true);
+    SetisMenuOpened(false)
+    dispatch(personalNotificationsTeacher());
+  };
+
+  // all notifications
+  const handleSchool = () => {
+    setShowPersonalNotifications(false);
+    SetisMenuOpened(false)
+    dispatch(allNotificationsTeachers());
+  };
+
+  const notifications = showPersonalNotifications
+    ? personalNotifications
+    : notificationsTeachers;
 
   return (
     <>
-    {
-      loadingAuth || loadingTeacher && (
-        <LoaderTr/>
-      )
-    }
+      <>
+        <NotificationModal
+          openNotify={openNotify}
+          onClose={onClose}
+          singleNoti={singleNoti}
+        />
+      </>
+      {loadingAuth || (loadingTeacher && <LoaderTr />)}
       {/* <!-- Navbar --> */}
       <div className="flex justify-between items-center mb-4 pr-2">
         <div className="flex items-center">
@@ -72,8 +127,11 @@ const TrNav = () => {
           <div onClick={toggleMenu} className="flex items-center" id="menuid">
             <div className="rounded-full border-2 border-[rebeccapurple] overflow-hidden mr-3 shadow-2xl">
               <img
-                // src="/5. College Student.png"
-                src={userProfile && userProfile?.avatar || "/5. College Student.png"}
+                // src="/st.png"
+                src={
+                  userProfile?.avatar ? userProfile?.avatar :
+                  "/st.png"
+                }
                 alt="Profile"
                 className="w-10 h-10 cursor-pointer"
               />
@@ -90,7 +148,9 @@ const TrNav = () => {
                           userProfile.fullName.substr(1))) ||
                       "Teacher Name"}
                   </p>
-                  <p className="text-gray-500 text-sm">{userProfile && userProfile?.email}</p>
+                  <p className="text-gray-500 text-sm">
+                    {userProfile && userProfile?.email}
+                  </p>
                 </div>
                 <div className="border-t border-gray-300"></div>
                 <div className="py-1">
@@ -106,7 +166,8 @@ const TrNav = () => {
                   >
                     Settings
                   </a>
-                  <a onClick={handleLogout}
+                  <a
+                    onClick={handleLogout}
                     href="#"
                     className="block px-4 py-2 text-red-600 hover:bg-gray-100"
                   >
@@ -126,15 +187,17 @@ const TrNav = () => {
                       userProfile.fullName.substr(1))) ||
                   "Teacher Name"}
               </p>
-              <p className="text-xs text-gray-600"> {profileTeacher?.[1] ? `Teacher ${profileTeacher[1] }`: "Teacher Only"}</p>
+              <p className="text-xs text-gray-600">
+                {" "}
+                {profileTeacher?.[1]
+                  ? `Teacher ${profileTeacher[1]}`
+                  : "Teacher Only"}
+              </p>
             </div>
           </div>
 
-
-
           {/* <!-- Bell Icon with Notification Dot --> */}
           <div className="relative ml-4">
-            {/* Bell Icon with Notification Dot */}
             <div
               className="w-6 h-6 cursor-pointer relative"
               onClick={openNotification}
@@ -142,49 +205,95 @@ const TrNav = () => {
               <span className="fa fa-bell"></span>
 
               {/* Notification Dot */}
+              {notificationsTeachers && notificationsTeachers?.length > 0 && (
                 <div className="absolute -top-1 right-1 h-2 w-2 bg-red-500 rounded-full animate-shake animate-glow "></div>
+              )}
             </div>
 
             {/* Notification Dropdown */}
             {isNotificationOpen && (
               <div className="absolute max-h-[300px] overflow-y-auto top-8 right-0 mt-2 w-72 sm:w-80 bg-white border border-gray-300 rounded-md shadow-md overflow-hidden z-10">
                 {/* Notification Header */}
-                <div className="bg-gray-200 p-3 border-b border-gray-300">
+                <div className="bg-gray-200 p-3 gap-3 flex items-center justify-between border-b border-gray-300">
                   <h3 className="text-gray-800 text-lg font-semibold">
                     Notifications
                   </h3>
+                  {/* small menu */}
+                  <div className="text-black  text-xs z-50">
+                    <button
+                      onClick={handleMenuClick}
+                      className="py-1 px-3 text-[1.125rem] rounded-md shadow-[#8b008bbd] shadow-sm focus:outline-none transition duration-300 transform hover:scale-105"
+                    >
+                      <i
+                        className="fa fa-ellipsis-h text-sm"
+                        aria-hidden="true"
+                      ></i>
+                    </button>
+                    {isMenuOpened && (
+                      <div className="origin-top-right z-50 absolute right-0 mt-2 w-40 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
+                        <div className="py-1">
+                          <button
+                            onClick={handlePersonal}
+                            className="block px-4 py-2 text-[0.820rem] text-gray-700 hover:bg-gray-100 cursor-pointer"
+                          >
+                            Personal Notifica..
+                          </button>
+                          <hr />
+                          <button
+                            onClick={handleSchool}
+                            className="block px-4 py-2 text-[0.820rem] text-gray-700 hover:bg-gray-100"
+                          >
+                            School Notifica..
+                          </button>
+                          {/* Add more menu items as needed */}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 {/* Notification Items (Replace this with your notification content) */}
-                <div className="p-4 flex flex-col gap-2">
-                  <div className="flex items-center space-x-4 hover:bg-gray-50 cursor-pointer">
-                    <div className="w-10 h-10 bg-gray-300 rounded-full flex-shrink-0 items-center flex justify-center">
-                      <i className="fa fa-person"></i>
-                    </div>
-                    <div>
-                      <div className="text-gray-800">Final Exam Alert</div>
-                      <div className="text-sm text-gray-500">
-                        Final Exam is scheduled to begin soon.
-                      </div>
-                    </div>
+                {loadingNotify ? (
+                  <>
+                    <NotiLoader/>
+                  </>
+                ) : (
+                  <div className="p-4 flex flex-col gap-3">
+                    {
+                      notifications &&
+                      notifications?.length > 0 ? (
+                      notifications?.map((noti, index) => (
+                        <div
+                          key={index}
+                          onClick={()=> handleOpenNotificationModal(noti && noti)}
+                          className="flex items-center space-x-4 hover:bg-gray-50 cursor-pointer"
+                        >
+                          <div className="w-10 h-10 bg-gray-300 rounded-full flex-shrink-0 items-center flex justify-center">
+                            <i className={`${noti?.teacherFullName && noti?.teacherEmail ? "fa fa-lock" : 'fa fa-school-flag'}`}></i>
+                          </div>
+                          <div>
+                            <div className="text-gray-800 text-sm">
+                              {noti?.title}
+                            </div>
+                            <div className="text-sm text-gray-500">
+                              {noti.desc?.length > 39
+                                ? noti.desc?.slice(0, 35) + "..."
+                                : "..."}
+                            </div>
+                          </div>
+                        </div>
+                      ))):(
+                        <p className="text-sm text-red-400">Notifications not found !</p>
+                      )
+                      
+                    }
                   </div>
-                  <div className="flex items-center space-x-4 hover:bg-gray-50 cursor-pointer">
-                    <div className="w-10 h-10 bg-gray-300 rounded-full flex-shrink-0 items-center flex justify-center">
-                      <i className="fa fa-person"></i>
-                    </div>
-                    <div>
-                      <div className="text-gray-800">Final Exam Alert</div>
-                      <div className="text-sm text-gray-500">
-                        Final Exam is scheduled to begin soon.
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                )
+                
+                }
               </div>
             )}
           </div>
-
-
 
         </div>
       </div>

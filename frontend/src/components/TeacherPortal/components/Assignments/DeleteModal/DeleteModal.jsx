@@ -1,6 +1,6 @@
 import React from 'react';
 
-const DeleteModal = ({ isOpen, onRequestClose ,handleConfirmDelete}) => {
+const DeleteModal = ({ isOpen, onRequestClose ,handleConfirmDelete,loadingAssigments}) => {
   return (
     <div
       className={`fixed inset-0 flex items-center justify-center z-50 overflow-hidden transition-opacity ${
@@ -19,7 +19,7 @@ const DeleteModal = ({ isOpen, onRequestClose ,handleConfirmDelete}) => {
             onClick={handleConfirmDelete}
             className="bg-red-500 text-white px-4 py-[0.40rem] rounded-md hover:bg-red-600"
           >
-            Yes, Delete
+           { loadingAssigments ? "Deleting...":'Yes, Delete'}
           </button>
           <button
             onClick={onRequestClose}

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import Loader from "../../../../loader/Loader";
 import TrNav from "../../../Navbar/TrNav";
 import {
   classStudentDetail,
@@ -10,13 +9,13 @@ import {
 } from "../../../../../store/features/teacher.reducers";
 import { useParams } from "react-router-dom";
 import toast from "react-hot-toast";
+import LoaderTr from "../../../LoaderTr/LoaderTr";
 
 const StDetails = () => {
   const dispatch = useDispatch();
   const params = useParams();
   const {
-    loadingTeacher,
-    errorTeacher,
+    loadingStudent,
     classStudentDetails,
     msgAvatar,
     errAvatar,
@@ -106,8 +105,8 @@ const StDetails = () => {
 
       <div className="p-[1.25rem] w-4/5 navdashMain">
         <TrNav />
-        {loadingTeacher ? (
-          <Loader />
+        {loadingStudent ? (
+          <LoaderTr />
         ) : (
           <div className=" w-[100%] stprofile shadow-lg border-2 border-[#8d5ade9d] shadow-[#6633996e] rounded-md p-6 overflow-hidden mt-6">
             {/* avatar + fullname + rollno */}

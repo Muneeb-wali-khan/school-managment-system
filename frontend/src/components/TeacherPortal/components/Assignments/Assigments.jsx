@@ -2,11 +2,9 @@ import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   clearErrorsTeacher,
-  allAssignmentsOfClass,
   removeAssignmentOfClass,
 } from "../../../../store/features/teacher.reducers";
 import toast from "react-hot-toast";
-import LoaderTr from "../../LoaderTr/LoaderTr";
 import TrNav from "../../Navbar/TrNav";
 import CreateAssigments from "./createAssigments/CreateAssigments";
 import UpdateAssigment from "./updateAssigment/UpdateAssigment";
@@ -15,8 +13,7 @@ import DeleteModal from "./DeleteModal/DeleteModal";
 const Assigments = () => {
   const dispatch = useDispatch();
   const {
-    loadingTeacher,
-    errorTeacher,
+    loadingAssigments,
     errorAssigment,
     msgAssigment,
     assigments,
@@ -27,9 +24,6 @@ const Assigments = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [delUptId, setDelUptId] = useState(null);
 
-  useEffect(() => {
-    dispatch(allAssignmentsOfClass());
-  }, [dispatch]);
 
 
   // update assigment
@@ -66,7 +60,8 @@ const Assigments = () => {
   useEffect(() => {
     if (msgAssigment) {
       toast.success(msgAssigment);
-      dispatch(allAssignmentsOfClass());
+      onCloseUpdateAssignment()
+        onRequestClose()
     }
     if (errorAssigment) {
       toast.error(errorAssigment);
@@ -81,6 +76,7 @@ const Assigments = () => {
         isOpen={isOpen}
         onRequestClose={onRequestClose}
         handleConfirmDelete={handleConfirmDelete}
+        loadingAssigments={loadingAssigments}
       />
 
       <UpdateAssigment
@@ -91,36 +87,14 @@ const Assigments = () => {
 
       <div className="p-[1.25rem] w-4/5 navdashMain">
         <TrNav />
-        {loadingTeacher ? (
-          <LoaderTr />
-        ) : errorTeacher && errorTeacher ? (
+
           <>
-            <p className="text-red-500 text-lg font-semibold mb-4">
-              <div className="flex flex-col items-center justify-center h-[50vh] mt-10 w-full border border-gray-300 rounded-lg shadow-lg">
-                <h1 className="text-4xl font-extrabold text-red-500 mb-2">
-                  {errorTeacher}
-                </h1>
-                <p className="text-lg text-gray-600 leading-6">
-                  It seems like you haven't been assigned as the Class Teacher
-                  for any class yet.
-                </p>
-                <p className="text-lg text-gray-600 leading-6 mt-4">
-                  Contact your administrator for further assistance.
-                </p>
-                <button className="mt-6 px-4 py-2 bg-red-500 text-white rounded-full hover:bg-red-600 focus:outline-none focus:shadow-outline-red active:bg-red-700">
-                  Request Administrator
-                </button>
-              </div>
-            </p>
-          </>
-        ) : (
-          <>
-            {assigments && assigments?.length > 0 && (
+            {assigments && (
               <div className="flex flex-col sm:flex-row justify-between m-2">
                 {/* create assigments */}
                 <CreateAssigments
                   assigments={assigments}
-                  loadingTeacher={loadingTeacher}
+                  loadingAssigments={loadingAssigments}
                 />
 
                 {/*  show assigments */}
@@ -179,7 +153,6 @@ const Assigments = () => {
               </div>
             )}
           </>
-        )}
       </div>
     </>
   );

@@ -14,6 +14,9 @@ import { extractId } from "../utils/extractCloudinaryId.js";
 import { Student } from "../models/student.model.js";
 import { Attendance } from "../models/attendance.mode.js";
 import sendEmail from "../utils/sendEmail.js";
+import { AdminNotify } from "../models/notification.model.js";
+import { TeacherNotify } from "../models/notificationSt.model.js";
+import { User } from "../models/user.model.js";
 
 
 
@@ -68,7 +71,7 @@ const allStudentsOfSpecificClass = asyncHandler(async (req, res) => {
     classTeacherID: tr?._id,
   }).populate({
     path: "students",
-    select: "fullName email rollNo gender",
+    select: "fullName email rollNo gender age admissionClass fatherName DOB joiningDate bloodGroup address phone avatar academicHistory",
   });
 
   if (!teacherOfClass) {
@@ -178,10 +181,24 @@ const addStudentsToClass = asyncHandler(async (req, res) => {
     ]
   });
 
+  const UserExists = await User.findOne({
+    $or: [
+      {email: email},
+      {fullName: fullName}
+    ]
+  });
+
   if (StudentExists !== null) {
     throw new ApiError(
       400,
       "Student with email and fullName already exists in db !"
+    );
+  } 
+
+  if (UserExists !== null) {
+    throw new ApiError(
+      400,
+      "User with email and fullName already exists in db !"
     );
   } 
   const teacherOfClass = await Class.findOne({ classTeacherID: tr?._id });
@@ -420,7 +437,7 @@ const deleteStudentFromClass = asyncHandler(async (req, res) => {
     .json(
       new ApiResponse(
         200,
-        {},
+        removeStudent,
         `Student deleted from ${teacherOfClass?.className}  !`
       )
     );
@@ -630,11 +647,14 @@ const takeAttendance = asyncHandler(async (req, res) => {
   });
 
   // Save the attendance records to the database
-  await Attendance.insertMany(attendanceRecords);
+  const data = await Attendance.insertMany(attendanceRecords);
+  if (!data) {
+    throw new ApiError(400, "Attendance not taken!");
+  }
 
   res
     .status(200)
-    .json(new ApiResponse(200, {}, "Attendance taken successfully"));
+    .json(new ApiResponse(200, data, "Attendance taken successfully"));
 });
 
 
@@ -922,12 +942,15 @@ const updateAssigment = asyncHandler(async (req, res) => {
       }
     }
   )
-
   if(!updatedAssignment){
     throw new ApiError(404, "No assignments found !")
   }
 
-  return res.status(200).json(new ApiResponse(200, {}, "assignment updated successfully"));
+  const findAssigment = await Assignment.findOne({_id: id})
+  if(!findAssigment){
+    throw new ApiError(404, "No assignment found !")
+  }
+  return res.status(200).json(new ApiResponse(200, findAssigment, "assignment updated successfully"));
 
 })
 
@@ -959,9 +982,293 @@ const deleteAssigment = asyncHandler(async (req, res) => {
     throw new ApiError(404, "No assignment found !")
   }
 
-  return res.status(200).json(new ApiResponse(200, {}, "assignment deleted successfully"));
+  return res.status(200).json(new ApiResponse(200, deletedAssignment, "assignment deleted successfully"));
 
 })
+
+// get for all teachers notifications
+const allTeachersNotifications = asyncHandler(async (req, res) => {
+  const getNotifications = await AdminNotify.find()
+
+  if(!getNotifications){
+    throw new ApiError(404, "No notifications found !")
+  }
+
+  const filterwithoutEmailandFullNameNotifications = getNotifications?.filter(val=> !val?.teacherFullName && !val?.teacherEmail)
+
+  return res.status(200).json(new ApiResponse(200, filterwithoutEmailandFullNameNotifications, "All notifications fetched"));
+})
+
+// get personal teacher notifications
+const singleTeacherNotifications = asyncHandler(async (req, res) => {
+  const fullName = req?.user?.fullName;
+  const email = req?.user?.email;
+
+  const tr = await Teacher.findOne({ email: email, fullName: fullName });
+  const teacherOfClass = await Class.findOne({
+    classTeacherID: tr?._id,
+  })
+    .select("-classTeacherID -teachersOfClass -subjects")
+    .populate({
+      path: "students",
+      select: "fullName",
+    });
+
+  if (!teacherOfClass) {
+    throw new ApiError(400, "You're not yet the Class Teacher of any class !");
+  }
+
+  const getNotifications = await AdminNotify.find({
+    teacherFullName: fullName,
+    teacherEmail: email
+  })
+
+  if(!getNotifications){
+    throw new ApiError(404, "No notifications found !")
+  }
+
+  return res.status(200).json(new ApiResponse(200, getNotifications, "All notifications fetched"));
+  
+})
+
+
+// send notification to all students of class
+const sendNotificationStudents = asyncHandler(async (req, res) => {
+  const fullName = req?.user?.fullName;
+  const email = req?.user?.email;
+
+  const tr = await Teacher.findOne({ email: email, fullName: fullName });
+  const teacherOfClass = await Class.findOne({
+    classTeacherID: tr?._id,
+  })
+    .select("-classTeacherID -teachersOfClass -subjects")
+    .populate({
+      path: "students",
+      select: "fullName",
+    });
+
+  if (!teacherOfClass) {
+    throw new ApiError(400, "You're not yet the Class Teacher of any class !");
+  }
+
+  const { title, desc,fileLink } = req.body;
+
+  if (!title || !desc) {
+    throw new ApiError(400, "All fields are required !");
+  }
+
+  //convert to uppercase each word first character
+  const spl = title?.split(" ");
+  const newTitle = spl?.map((w) => w?.[0].toUpperCase() + w?.slice(1, w?.length))?.join(" ")
+
+  const createNotification = await TeacherNotify.create({
+   title: newTitle,
+   desc,
+   fileLink,
+   forClass: teacherOfClass?.className,
+ })
+
+  if(!createNotification){
+    throw new ApiError(400, "failed to send notification !")
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, createNotification, "notification sent successfully !"));
+})
+
+// // send notification to single student of class
+const notifySingleStudent = asyncHandler(async (req, res) => {
+  const fullName = req?.user?.fullName;
+  const email = req?.user?.email;
+
+  const tr = await Teacher.findOne({ email: email, fullName: fullName });
+  const teacherOfClass = await Class.findOne({
+    classTeacherID: tr?._id,
+  })
+    .select("-classTeacherID -teachersOfClass -subjects")
+    .populate({
+      path: "students",
+      select: "fullName email",
+    });
+
+  if (!teacherOfClass) {
+    throw new ApiError(400, "You're not yet the Class Teacher of any class !");
+  }
+
+  const { title, desc,fileLink,studentFullName,studentEmail } = req.body;
+
+  if (!title || !desc || !studentFullName || !studentEmail) {
+    throw new ApiError(400, "All fields are required !");
+  }
+  const findStudentWithEmailAndFullName = teacherOfClass?.students?.find(val=> val?.fullName === studentFullName?.trim() && val?.email?.trim() === studentEmail)
+
+  if(findStudentWithEmailAndFullName === undefined){
+    throw new ApiError(400, "student with email or Fullname not found !")
+  }
+  //convert to uppercase each word first character
+  const spl = title?.split(" ");
+  const newTitle = spl?.map((w) => w?.[0].toUpperCase() + w?.slice(1, w?.length))?.join(" ")
+
+  const createNotification = await TeacherNotify.create({
+   title: newTitle,
+   desc,
+   fileLink,
+   studentFullName: studentFullName?.trim(),
+   studentEmail: studentEmail?.trim(),
+   forClass: teacherOfClass?.className,
+ })
+
+  if(!createNotification){
+    throw new ApiError(400, "failed to send notification !")
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, createNotification, "notification sent successfully !"));
+})
+
+// get all notifications
+const getAllNotifications = asyncHandler(async (req, res) => {
+  const fullName = req?.user?.fullName;
+  const email = req?.user?.email;
+
+  const tr = await Teacher.findOne({ email: email, fullName: fullName });
+  const teacherOfClass = await Class.findOne({
+    classTeacherID: tr?._id,
+  })
+    .select("-classTeacherID -teachersOfClass -subjects")
+
+  if (!teacherOfClass) {
+    throw new ApiError(400, "You're not yet the Class Teacher of any class !");
+  }
+
+  const notifications = await TeacherNotify.find({forClass: teacherOfClass?.className})
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, notifications, "notifications fetched successfully !"));
+})
+
+
+// get notification by id
+const getNotificationById = asyncHandler(async (req, res) => {
+  const notification = await TeacherNotify.findById(req.params?.id)
+
+  if(!notification){
+    throw new ApiError(404, "notification not found !")
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, notification, "notification fetched successfully !"));
+
+})
+
+
+// update notification
+const updateNotification = asyncHandler(async (req, res) => {
+  const fullName = req?.user?.fullName;
+  const email = req?.user?.email;
+
+  const tr = await Teacher.findOne({ email: email, fullName: fullName });
+  const teacherOfClass = await Class.findOne({
+    classTeacherID: tr?._id,
+  })
+    .select("-classTeacherID -teachersOfClass -subjects")
+    .populate({
+      path: "students",
+      select: "fullName email",
+    })
+
+  if (!teacherOfClass) {
+    throw new ApiError(400, "You're not yet the Class Teacher of any class !");
+  }
+
+  const { title, desc,fileLink ,studentFullName,studentEmail} = req.body;
+
+  if (!title || !desc) {
+    throw new ApiError(400, "All fields are required !");
+  }
+  // if email and fullname are not empty strings then
+  if(studentEmail !== "" && studentFullName !== ""){
+    console.log("done above");
+    const findStudentWithEmailAndFullName = teacherOfClass?.students?.find(val=> val?.fullName === studentFullName?.trim() && val?.email?.trim() === studentEmail)
+
+    if(findStudentWithEmailAndFullName === undefined){
+      throw new ApiError(400, "student with email or Fullname not found !")
+    }
+
+    const updateNotification = await TeacherNotify.findByIdAndUpdate(
+      req.params?.id,
+      {
+        $set: {
+          title,
+          desc,
+          fileLink,
+          studentFullName,
+          studentEmail
+        },
+      },
+      { new: true }
+    );
+    if (!updateNotification) {
+      throw new ApiError(404, "failed to update notification !");
+    }
+    return res
+    .status(200)
+    .json(new ApiResponse(200, updateNotification, "notification updated successfully !"));
+  }
+
+  // if email and fullname are empty strings then
+  const updateNotification = await TeacherNotify.findByIdAndUpdate(
+    req.params?.id,
+    {
+      $set: {
+        title,
+        desc,
+        fileLink
+      },
+    },
+    { new: true }
+  );
+  console.log("done below");
+
+  if (!updateNotification) {
+    throw new ApiError(404, "failed to update notification !");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, updateNotification, "notification updated successfully !"));
+})
+
+// delete notification
+const deleteNotification = asyncHandler(async (req, res) => {
+  const fullName = req?.user?.fullName;
+  const email = req?.user?.email;
+
+  const tr = await Teacher.findOne({ email: email, fullName: fullName });
+  const teacherOfClass = await Class.findOne({
+    classTeacherID: tr?._id,
+  })
+    .select("-classTeacherID -teachersOfClass -subjects")
+
+  if (!teacherOfClass) {
+    throw new ApiError(400, "You're not yet the Class Teacher of any class !");
+  }
+
+  const notification = await TeacherNotify.findByIdAndDelete(req.params?.id)
+
+  if(!notification){
+    throw new ApiError(404, "notification not found !")
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, notification, "notification deleted successfully !"));
+})
+
 
 
 export {
@@ -982,6 +1289,14 @@ export {
   getSingleAssignment,
   updateAssigment,
   deleteAssigment,
+  allTeachersNotifications,
+  singleTeacherNotifications,
+  sendNotificationStudents,
+  notifySingleStudent,
+  getAllNotifications,
+  getNotificationById,
+  updateNotification,
+  deleteNotification,
 
   allTeachersOfSpecificClass,
 

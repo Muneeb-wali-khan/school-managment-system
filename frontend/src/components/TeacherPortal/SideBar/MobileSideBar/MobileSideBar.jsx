@@ -152,6 +152,23 @@ const MobileSideBar = () => {
                     </Link>
                   </div>
 
+                  <div className="flex gap-4 items-center">
+                    <a>
+                      <i
+                        className="fa fa-bell mr-[1px]"
+                        style={{ color: "#ffffff" }}
+                      >
+                        {" "}
+                      </i>
+                    </a>
+                    <Link
+                      to="/teacher-portal/all-notification-class"
+                      className="cursor-pointer font-semibold text-gray-200 hover:text-white transition-all"
+                    >
+                      Notifications
+                    </Link>
+                  </div>
+
                   <div className="flex gap-5 items-center">
                     <a>
                       <i

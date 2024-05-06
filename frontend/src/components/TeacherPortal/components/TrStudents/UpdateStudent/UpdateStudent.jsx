@@ -10,9 +10,10 @@ const UpdateStudent = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate()
   const params = useParams()
-  const { loadingTeacher, msgUptSt, errUptSt, errorTeacher,classStudentDetails } = useSelector(
+  const { loadingStudent, msgUptSt, errUptSt,classStudentDetails } = useSelector(
     (state) => state?.teacher?.teacherD
   );
+
   const [studentData, setStudentData] = useState({
     firstName: "",
     fullName:"",
@@ -31,6 +32,7 @@ const UpdateStudent = () => {
     joiningDate: Date,
     bloodGroup:  "",
   });
+
 
   useEffect(()=>{
     dispatch(classStudentDetail(params?.id))
@@ -68,7 +70,6 @@ const UpdateStudent = () => {
       if(msgUptSt){
         toast.success(msgUptSt)
         navigate("/teacher-portal/teacher-students")
-        dispatch(allStudentsClass())
       }
       if(errUptSt){
         toast.error(errUptSt)
@@ -104,40 +105,13 @@ const UpdateStudent = () => {
     }
   },[classStudentDetails])
 
-  if ((errorTeacher && errorTeacher !== null) || errorTeacher) {
-    return (
-      <>
-        {loadingTeacher ? (
-          <Loader />
-        ) : (
-          <div className="p-[1.25rem] w-4/5 navdashMain">
-            <TrNav />
-            <div className="flex flex-col items-center justify-center h-[50vh] mt-28 w-full border border-gray-300 rounded-lg shadow-lg">
-              <h1 className="text-4xl font-extrabold text-red-500 mb-2">
-                {errorTeacher}
-              </h1>
-              <p className="text-lg text-gray-600 leading-6">
-                It seems like you haven't been assigned as the Class Teacher for
-                any class yet.
-              </p>
-              <p className="text-lg text-gray-600 leading-6 mt-4">
-                Contact your administrator for further assistance.
-              </p>
-              <button className="mt-6 px-4 py-2 bg-red-500 text-white rounded-full hover:bg-red-600 focus:outline-none focus:shadow-outline-red active:bg-red-700">
-                Request Administrator
-              </button>
-            </div>
-          </div>
-        )}
-      </>
-    );
-  } 
+
   
-  else {
+
     return (
       <div className="p-[1.25rem] w-4/5 navdashMain">
         <TrNav />
-        {loadingTeacher ? (
+        {loadingStudent ? (
           <Loader />
         ) : (
           <div className=" max-w-5xl  p-6  shadow-md border-2 border-[#7a49c986]  mt-5 shadow-[#8b59dcc4] rounded-md">
@@ -473,7 +447,7 @@ const UpdateStudent = () => {
       </div>
     );
   }
-};
+
 
 export default UpdateStudent;
 

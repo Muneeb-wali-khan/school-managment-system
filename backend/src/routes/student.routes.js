@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { upload } from "../middlewares/multer.js";
 import {isStudent, jwtVerify } from "../middlewares/auth.middleware.js";
-import { getLogedInStudentAttendanceRecord, getLogedInStudentDetails } from "../controllers/student.controller.js";
+import { allStudentsNotifications, getAssigmentsOfStudentClass, getLogedInStudentAttendanceRecord, getLogedInStudentDetails, singleStudentNotifications } from "../controllers/student.controller.js";
 import multer from "multer";
 import { ApiError } from "../utils/ApiError.js";
 const router = Router();
@@ -12,6 +12,9 @@ const router = Router();
 // --student 
 router.route("/student-profile").get(jwtVerify,isStudent, getLogedInStudentDetails)
 router.route("/student-attendance-record").get(jwtVerify,isStudent, getLogedInStudentAttendanceRecord)
+router.route("/student-class-assigments").get(jwtVerify,isStudent, getAssigmentsOfStudentClass)
+router.route("/student-class-notifications").get(jwtVerify,isStudent, allStudentsNotifications)
+router.route("/single-student-notifications").get(jwtVerify,isStudent, singleStudentNotifications)
 
 
 

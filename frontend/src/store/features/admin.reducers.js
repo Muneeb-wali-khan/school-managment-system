@@ -4,7 +4,7 @@ import {
     combineReducers,
   } from "@reduxjs/toolkit";
   import axios from "axios";
-import { AdminAllAttendancesClassUrl, adminAddAcademicRecordUrl, adminAddClassUrl, adminAddSubjectCurriculumUrl, adminAddSubjectUrl, adminAllClassesUrl, adminAllStudentsUrl, adminAllSubjectCurriculumUrl, adminAllSubjectsUrl, adminAllTeachersUrl, adminAllUsersWebAppUrl, adminDeleteAcademicRecordUrl, adminDeleteCurriculumUrl, adminRemoveClassUrl, adminRemoveSubjectUrl, adminRemoveUserWebAppUrl, adminSingleAcademicRecordUrl, adminSingleClassUrl, adminSingleCurriculumUrl, adminSingleSubjectUrl, adminSingleUserWebAppUrl, adminStudentAcademicRecordUrl, adminStudentAvatarUrl, adminStudentDetailsUrl, adminStudentRegisterUrl, adminStudentRemoveUrl, adminStudentUpdateUrl, adminTeacherAddUrl, adminTeacherDeleteUrl, adminTeacherDetailsUrl, adminTeacherUpdateAvatarUrl, adminTeacherUpdateUrl, adminUpdateAcademicRecordUrl, adminUpdateClassUrl, adminUpdateCurriculumUrl, adminUpdateUserWebAppUrl, updateUserAvatarUrl } from "../urls";
+import { AdminAllAttendancesClassUrl, adminAddAcademicRecordUrl, adminAddClassUrl, adminAddNotificationUrl, adminAddSingleNotificationUrl, adminAddSubjectCurriculumUrl, adminAddSubjectUrl, adminAllClassesUrl, adminAllNotificationsUrl, adminAllStudentsUrl, adminAllSubjectCurriculumUrl, adminAllSubjectsUrl, adminAllTeachersUrl, adminAllUsersWebAppUrl, adminDeleteAcademicRecordUrl, adminDeleteCurriculumUrl, adminDeleteNotificationUrl, adminRemoveClassUrl, adminRemoveSubjectUrl, adminRemoveUserWebAppUrl, adminSingleAcademicRecordUrl, adminSingleClassUrl, adminSingleCurriculumUrl, adminSingleNotificationUrl, adminSingleSubjectUrl, adminSingleUserWebAppUrl, adminStudentAcademicRecordUrl, adminStudentAvatarUrl, adminStudentDetailsUrl, adminStudentRegisterUrl, adminStudentRemoveUrl, adminStudentUpdateUrl, adminTeacherAddUrl, adminTeacherDeleteUrl, adminTeacherDetailsUrl, adminTeacherUpdateAvatarUrl, adminTeacherUpdateUrl, adminUpdateAcademicRecordUrl, adminUpdateClassUrl, adminUpdateCurriculumUrl, adminUpdateNotificationUrl, adminUpdateUserWebAppUrl, updateUserAvatarUrl } from "../urls";
 
   
 // all students 
@@ -410,6 +410,74 @@ export const adminRemoveAcademicRecord = createAsyncThunk("admin/studentDeleteAc
     }
   })
 
+  // all notifications
+  export const adminAllNotifications = createAsyncThunk("admin/allnotifications", async(id, {rejectWithValue})=>{
+    try {
+      const config = { headers: { "Content-Type": "application/json" } };
+      const res = await axios.get(`${adminAllNotificationsUrl}`,config)
+      return res.data
+    } catch (error) {
+      return rejectWithValue(error?.response?.data)
+    }
+  })
+
+
+  // create notification
+  export const adminCreateForAllNotification = createAsyncThunk("admin/CreatenotificationAll", async(data, {rejectWithValue})=>{
+    try {
+      const config = { headers: { "Content-Type": "application/json" } };
+      const res = await axios.post(`${adminAddNotificationUrl}`,data,config)
+      return res.data
+    } catch (error) {
+      return rejectWithValue(error?.response?.data)
+    }
+  })
+
+  // create notification for single
+  export const adminCreateForSingleNotification = createAsyncThunk("admin/CreatenotificationSingle", async(data, {rejectWithValue})=>{
+    try {
+      const config = { headers: { "Content-Type": "application/json" } };
+      const res = await axios.post(`${adminAddSingleNotificationUrl}`,data,config)
+      return res.data
+    } catch (error) {
+      return rejectWithValue(error?.response?.data)
+    }
+  })
+
+
+  // get single notification 
+  export const adminGetSingleNotification = createAsyncThunk("admin/Singlenotification", async(id, {rejectWithValue})=>{
+    try {
+      const config = { headers: { "Content-Type": "application/json" } };
+      const res = await axios.get(`${adminSingleNotificationUrl}${id}`,config)
+      return res.data
+    } catch (error) {
+      return rejectWithValue(error?.response?.data)
+    }
+  })
+
+  // update notification 
+  export const adminUpdateNotification = createAsyncThunk("admin/Updatenotification", async({id:id,data:data}, {rejectWithValue})=>{
+    try {
+      const config = { headers: { "Content-Type": "application/json" } };
+      const res = await axios.put(`${adminUpdateNotificationUrl}${id}`,data,config)
+      return res.data
+    } catch (error) {
+      return rejectWithValue(error?.response?.data)
+    }
+  })
+
+  // remove notification 
+  export const adminRemoveNotification = createAsyncThunk("admin/removeNotification", async(id, {rejectWithValue})=>{
+    try {
+      const config = { headers: { "Content-Type": "application/json" } };
+      const res = await axios.delete(`${adminDeleteNotificationUrl}${id}`,config)
+      return res.data
+    } catch (error) {
+      return rejectWithValue(error?.response?.data)
+    }
+  })
+
 
 
   const teacherOptSlice = createSlice({
@@ -422,10 +490,12 @@ export const adminRemoveAcademicRecord = createAsyncThunk("admin/studentDeleteAc
       errUptTr: null,
       msgDelTr: null,
       errDelTr: null,
+      msgNotify: null,
+      errNotify: null,
       allTr: null,
-      singleTr: null
-
-
+      singleTr: null,
+      notifications: null,
+      singleNotification: null
     },
 
 
@@ -437,6 +507,9 @@ export const adminRemoveAcademicRecord = createAsyncThunk("admin/studentDeleteAc
         state.errUptTr =  null
         state.msgDelTr =  null
         state.errDelTr =  null
+
+        state.msgNotify =  null
+        state.errNotify =  null
       }
     },
 
@@ -525,6 +598,94 @@ export const adminRemoveAcademicRecord = createAsyncThunk("admin/studentDeleteAc
         state.loadingTr = false
         state.errDelTr = action.payload.message
       })
+
+      // all notifications
+      builder.addCase(adminAllNotifications.pending, (state, action)=>{
+        state.loadingTr = true
+        state.errTr = null
+      })
+      builder.addCase(adminAllNotifications.fulfilled, (state, action)=>{
+        state.loadingTr = false
+        state.notifications = action.payload.data
+      })
+      builder.addCase(adminAllNotifications.rejected, (state, action)=>{
+        state.loadingTr = false
+        state.errTr = action.payload.message
+      })
+
+      // create notification for all
+      builder.addCase(adminCreateForAllNotification.pending, (state, action)=>{
+        state.loadingTr = true
+        state.errNotify = null
+      })
+      builder.addCase(adminCreateForAllNotification.fulfilled, (state, action)=>{
+        state.loadingTr = false
+        state.msgNotify = action.payload.message
+      })
+      builder.addCase(adminCreateForAllNotification.rejected, (state, action)=>{
+        state.loadingTr = false
+        state.errNotify = action.payload.message
+      })
+
+      // create notification for single
+      builder.addCase(adminCreateForSingleNotification.pending, (state, action)=>{
+        state.loadingTr = true
+        state.errNotify = null
+      })
+      builder.addCase(adminCreateForSingleNotification.fulfilled, (state, action)=>{
+        state.loadingTr = false
+        state.msgNotify = action.payload.message
+      })
+      builder.addCase(adminCreateForSingleNotification.rejected, (state, action)=>{
+        state.loadingTr = false
+        state.errNotify = action.payload.message
+      })
+
+
+      // single notification
+      builder.addCase(adminGetSingleNotification.pending, (state, action)=>{
+        state.loadingTr = true
+        state.errTr = null
+      })
+      builder.addCase(adminGetSingleNotification.fulfilled, (state, action)=>{
+        state.loadingTr = false
+        state.singleNotification = action.payload.data
+      })
+      builder.addCase(adminGetSingleNotification.rejected, (state, action)=>{
+        state.loadingTr = false
+        state.errTr = action.payload.message
+      })
+
+      // update notification
+      builder.addCase(adminUpdateNotification.pending, (state, action)=>{
+        state.loadingTr = true
+        state.errNotify = null
+      })
+      builder.addCase(adminUpdateNotification.fulfilled, (state, action)=>{
+        state.loadingTr = false
+        state.msgNotify = action.payload.message
+      })
+      builder.addCase(adminUpdateNotification.rejected, (state, action)=>{
+        state.loadingTr = false
+        state.errNotify = action.payload.message
+      })
+
+
+      // remove notification
+      builder.addCase(adminRemoveNotification.pending, (state, action)=>{
+        state.loadingTr = true
+        state.errNotify = null
+      })
+      builder.addCase(adminRemoveNotification.fulfilled, (state, action)=>{
+        state.loadingTr = false
+        state.msgNotify = action.payload.message
+      })
+      builder.addCase(adminRemoveNotification.rejected, (state, action)=>{
+        state.loadingTr = false
+        state.errNotify = action.payload.message
+      })
+
+
 
 
     }
@@ -890,7 +1051,7 @@ export const adminDeleteClass = createAsyncThunk("admin/deleteClass",async(id,{r
 })
 
 
-// All Attendances Class  ❌
+// All Attendances Class ✅
 export const adminAllAttendancesClass = createAsyncThunk("admin/AllAttendancesClass",async(className,{rejectWithValue})=>{
   try {
     const config = {headers: {"Content-Type": "application/json"},withCredentials: true};

@@ -60,7 +60,7 @@ export const updateAvatarUser = createAsyncThunk(
     try {
       const config = { headers: { "Content-Type": "multipart/form-data"},withCredentials: true};
       const response = await axios.put(`${updateAvatarUrl}`, data, config);
-      return response?.data?.message;
+      return response?.data;
     } catch (error) {
       return rejectWithValue(error?.response?.data?.message);
     }
@@ -135,6 +135,10 @@ const userProfileSlice = createSlice({
       state.loadingUser = false;
       state.errorUser3 = null;
       state.msgUser3 = action.payload?.message;
+      const data = action.payload?.data
+      if(data){
+        state.userProfile.userProfile = data
+      }
     });
     builder.addCase(updateProfileUser.rejected, (state, action) => {
       state.loadingUser = false;
@@ -150,7 +154,12 @@ const userProfileSlice = createSlice({
     builder.addCase(updateAvatarUser.fulfilled, (state, action) => {
       state.loadingUser = false;
       state.errorUser4 = null;
-      state.msgUser4 = action.payload;
+      state.msgUser4 = action.payload?.message;
+      const data = action.payload?.data
+      console.log("data", data);
+      if(data){
+        state.userProfile = action.payload?.data
+      }
     });
     builder.addCase(updateAvatarUser.rejected, (state, action) => {
       state.loadingUser = false;

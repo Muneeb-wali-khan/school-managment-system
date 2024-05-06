@@ -8,7 +8,7 @@ import LoaderSt from "../../LoaderSt/LoaderSt";
 
 const StAttendanceRecord = () => {
   const dispatch = useDispatch();
-  const { attendanceRecords, loadingStudent, errorStudent, msgStudent } =
+  const { attendanceRecords, loadingStAttendances, errorStudent } =
     useSelector((state) => state.student?.studentD);
 
   useEffect(() => {
@@ -42,7 +42,7 @@ const StAttendanceRecord = () => {
     <>
       <div className="p-[1.25rem] w-4/5 navdashMain">
         <StNav />
-        {loadingStudent ? (
+        {loadingStAttendances ? (
           <LoaderSt />
         ) : errorStudent ? (
           <>

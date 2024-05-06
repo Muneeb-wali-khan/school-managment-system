@@ -124,7 +124,7 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
 });
 
 
-// send notification for all 
+// send notification for all teachers
 const sendNotification = asyncHandler(async (req, res) => {
   const { title, desc,fileLink } = req.body;
 
@@ -132,8 +132,12 @@ const sendNotification = asyncHandler(async (req, res) => {
     throw new ApiError(400, "All fields are required !");
   }
 
+  //convert to uppercase each word first character
+  const spl = title?.split(" ");
+  const newTitle = spl?.map((w) => w?.[0].toUpperCase() + w?.slice(1, w?.length))?.join(" ")
+
   const createNotification = await AdminNotify.create({
-   title,
+   title: newTitle,
    desc,
    fileLink
  })
@@ -147,6 +151,138 @@ const sendNotification = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, createNotification, "notification sent successfully !"));
 })
 
+// send notification for single teacher
+const notifySingleTeacher = asyncHandler(async (req, res) => {
+  const { title, desc,fileLink,teacherFullName,teacherEmail } = req.body;
+
+  if (!title || !desc || !teacherFullName || !teacherEmail) {
+    throw new ApiError(400, "All fields are required !");
+  }
+
+  const findTeacherWithEmailAndFullName = await Teacher.findOne({
+    $and:[{email: teacherEmail},{fullName: teacherFullName}]
+  })
+
+  if(!findTeacherWithEmailAndFullName){
+    throw new ApiError(400, "teacher with email or Fullname not found !")
+  }
+  
+  //convert to uppercase each word first character
+  const spl = title?.split(" ");
+  const newTitle = spl?.map((w) => w?.[0].toUpperCase() + w?.slice(1, w?.length))?.join(" ")
+
+  const createNotification = await AdminNotify.create({
+   title: newTitle,
+   desc,
+   fileLink,
+   teacherFullName,
+   teacherEmail
+ })
+
+  if(!createNotification){
+    throw new ApiError(400, "failed to send notification !")
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, createNotification, "notification sent successfully !"));
+})
+
+// get all notifications
+const getAllNotifications = asyncHandler(async (req, res) => {
+  const notifications = await AdminNotify.find({})
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, notifications, "notifications fetched successfully !"));
+})
+
+// get notification by id
+const getNotificationById = asyncHandler(async (req, res) => {
+  const notification = await AdminNotify.findById(req.params?.id)
+
+  if(!notification){
+    throw new ApiError(404, "notification not found !")
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, notification, "notification fetched successfully !"));
+
+})
+
+// update notification
+const updateNotification = asyncHandler(async (req, res) => {
+  const { title, desc,fileLink ,teacherFullName,teacherEmail} = req.body;
+
+  if (!title || !desc) {
+    throw new ApiError(400, "All fields are required !");
+  }
+  // if email and fullname are not empty strings then
+  if(teacherEmail !== "" && teacherFullName !== ""){
+    const findTeacherWithEmailAndFullName = await Teacher.findOne({
+      $and:[{email: teacherEmail},{fullName: teacherFullName}]
+    })
+  
+    if(!findTeacherWithEmailAndFullName){
+      throw new ApiError(400, "teacher with email or Fullname not found !")
+    }
+
+    const updateNotification = await AdminNotify.findByIdAndUpdate(
+      req.params?.id,
+      {
+        $set: {
+          title,
+          desc,
+          fileLink,
+          teacherFullName,
+          teacherEmail
+        },
+      },
+      { new: true }
+    );
+    if (!updateNotification) {
+      throw new ApiError(404, "failed to update notification !");
+    }
+    return res
+    .status(200)
+    .json(new ApiResponse(200, updateNotification, "notification updated successfully !"));
+  }
+
+  // if email and fullname are empty strings then
+  const updateNotification = await AdminNotify.findByIdAndUpdate(
+    req.params?.id,
+    {
+      $set: {
+        title,
+        desc,
+        fileLink
+      },
+    },
+    { new: true }
+  );
+
+  if (!updateNotification) {
+    throw new ApiError(404, "failed to update notification !");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, updateNotification, "notification updated successfully !"));
+})
+
+// delete notification
+const deleteNotification = asyncHandler(async (req, res) => {
+  const notification = await AdminNotify.findByIdAndDelete(req.params?.id)
+
+  if(!notification){
+    throw new ApiError(404, "notification not found !")
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, {}, "notification deleted successfully !"));
+})
 
 
 // =======================================USER CONTROLLERS --ADMIN== END =================================================
@@ -783,7 +919,6 @@ const getTeacherById = asyncHandler(async (req, res) => {
 // update teacher avatar
 const updateTeacherAvatar = asyncHandler(async (req, res) => {
   const id = req.params?.id;
-  const { avatar } = req.body;
 
   const teacher = await Teacher.findOne({ _id: id });
 
@@ -791,13 +926,15 @@ const updateTeacherAvatar = asyncHandler(async (req, res) => {
     throw new ApiError(404, "teacher not found");
   }
 
-  const findTeacherOldPublicId = teacher?.avatar;
-  const extractPublicId = extractId(findTeacherOldPublicId);
+  if(teacher?.avatar !== ""){
+    const findTeacherOldPublicId = teacher?.avatar;
+    const extractPublicId = extractId(findTeacherOldPublicId);
 
   if (extractPublicId) {
     const removeOldid = await RemovecloudinaryExistingImg(extractPublicId);
     console.log("done old id admin");
   }
+}
 
   // upload new avatar now
   const localPathAvatar = req.file ? req.file?.path : null;
@@ -1866,6 +2003,11 @@ export {
   getTeacherById,
   getAllAttendacesOfClass,
   sendNotification,
+  notifySingleTeacher,
+  getNotificationById,
+  getAllNotifications,
+  updateNotification,
+  deleteNotification,
 
   // class
   addClass,

@@ -4,8 +4,10 @@ import { lazy, Suspense } from "react";
 import LoaderTr from "./LoaderTr/LoaderTr"
 import { profileUser } from "../../store/features/user.reducer";
 import { useDispatch } from "react-redux";
-import { profileTeacher } from "../../store/features/teacher.reducers";
+import { allNotificationsTeachers, profileTeacher as profileInfoTeacher,allStudentsClass as fetchAllStudents, allNotificationsClass, allSubjectsOfClass, curriculumOfSubjectsClass, allTeachersOfClass, allAssignmentsOfClass, showAttendanceToday  } from "../../store/features/teacher.reducers";
 
+
+const AllNotifications = lazy(()=> import("../../components/TeacherPortal/components/AllNotifications/AllNotifications")) 
 const AllTeachers = lazy(()=> import("../../components/TeacherPortal/components/AllTeachers/AllTeachers")) 
 const AllSubjects = lazy(()=> import("../../components/TeacherPortal/components/AllSubjects/AllSubjects")) 
 const TrStudents = lazy(()=> import("../../components/TeacherPortal/components/TrStudents/TrStudents")) 
@@ -27,7 +29,15 @@ const Teacher = () => {
 
   useEffect(() => {
     dispatch(profileUser());
-    dispatch(profileTeacher())
+    dispatch(profileInfoTeacher())
+    dispatch(allNotificationsTeachers())
+    dispatch(fetchAllStudents());
+    dispatch(allNotificationsClass());
+    dispatch(allSubjectsOfClass());
+    dispatch(curriculumOfSubjectsClass());
+    dispatch(allTeachersOfClass());
+    dispatch(allAssignmentsOfClass());
+    dispatch(showAttendanceToday());
   }, [dispatch]);
 
   return (
@@ -47,6 +57,7 @@ const Teacher = () => {
           <Route path="/curriculum-subject" element={< CurriculumSub/>} />
           <Route path="/take-attendance-student" element={< Attendance/>} />
           <Route path="/give-assigments-class" element={< Assigments/>} />
+          <Route path="/all-notification-class" element={< AllNotifications/>} />
         </Routes>
       </Suspense>
     </div>

@@ -25,8 +25,8 @@ const UpdatePassword = ({ isOpen, onClose }) => {
 
   useEffect(() => {
     if (msgUser2) {
-      onClose();
       toast.success(msgUser2);
+      onClose();
     }
     if (errorUser2) {
       toast.error(errorUser2);

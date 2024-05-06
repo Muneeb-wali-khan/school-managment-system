@@ -22,7 +22,7 @@ const StProfiles = () => {
   const { userProfile, loadingUser, errorUser4, msgUser4 } = useSelector(
     (state) => state?.profile?.userProfile
   );
-  const { profileStudent, loadingStudent } = useSelector(
+  const { profileStudent, loadingStudentProfile } = useSelector(
     (state) => state?.student?.studentD
   );
 
@@ -102,7 +102,7 @@ const StProfiles = () => {
 
       <div className="p-[1.25rem] w-4/5 navdashMain">
         <StNav />
-        {loadingStudent || loadingUser ? (
+        {loadingStudentProfile || loadingUser ? (
           <LoaderSt />
         ) : (
           <>
@@ -133,6 +133,16 @@ const StProfiles = () => {
                       <div className="flex items-center gap-4 border-2 border-[#80808023] py-1 px-3 ">
                         <p className=" font-medium">First Name : </p>
                         <p>{profileStudent && profileStudent?.firstName}</p>
+                      </div>
+
+                      <div className="flex items-center gap-4 border-2 border-[#80808023] py-1 px-3 ">
+                        <p className=" font-medium">Full Name : </p>
+                        <p>{profileStudent && profileStudent?.fullName}</p>
+                      </div>
+
+                      <div className="flex items-center gap-4 border-2 border-[#80808023] py-1 px-3 ">
+                        <p className=" font-medium">Father Name : </p>
+                        <p>{profileStudent && profileStudent?.fatherName}</p>
                       </div>
 
                       <div className="flex items-center gap-4 border-2 border-[#80808023] py-1 px-3 ">
@@ -168,6 +178,10 @@ const StProfiles = () => {
                         <p className=" font-medium">Phone : </p>
                         <p>{profileStudent && profileStudent?.phone}</p>
                       </div>
+                      <div className="flex items-center gap-4 border-2 border-[#80808023] py-1 px-3 ">
+                        <p className=" font-medium">ClassName : </p>
+                        <p>{profileStudent && profileStudent?.className?.className?.toLowerCase()}</p>
+                      </div>
 
                       <div className="flex items-center gap-4 border-2 border-[#80808023] py-1 px-3 ">
                         <p className=" font-medium">Joining Date : </p>
@@ -183,19 +197,6 @@ const StProfiles = () => {
                         </p>
                       </div>
 
-                      <div className="flex items-center gap-4 border-2 border-[#80808023] py-1 px-3 ">
-                        <p className=" font-medium">Status : </p>
-                        <p
-                          className={`${
-                            profileStudent &&
-                            profileStudent?.status === "active"
-                              ? "text-green-500"
-                              : "text-red-500"
-                          }`}
-                        >
-                          {profileStudent && profileStudent?.status}
-                        </p>
-                      </div>
 
                       <div className="flex items-center gap-4 border-2 border-[#80808023] py-1 px-3 ">
                         <p className=" font-medium">Blood Group : </p>
@@ -208,23 +209,20 @@ const StProfiles = () => {
                       </div>
 
                       <div className="flex items-center gap-4 border-2 border-[#80808023] py-1 px-3 ">
-                        <p className=" font-medium">Designation : </p>
-                        <p>
-                          {profileStudent && profileStudent?.designation}
-                        </p>
+                        <p className=" font-medium">MonthlyFee : </p>
+                        <p>{profileStudent && profileStudent?.monthlyFee}</p>
                       </div>
 
                       <div className="flex items-center gap-4 border-2 border-[#80808023] py-1 px-3 ">
-                        <p className=" font-medium">Subject : </p>
-                        <p>{profileStudent && profileStudent?.subject}</p>
+                        <p className=" font-medium">SecurityFee : </p>
+                        <p>{profileStudent && profileStudent?.securityFee}</p>
+                      </div>
+                      
+                      <div className="flex items-center gap-4 border-2 border-[#80808023] py-1 px-3 ">
+                        <p className=" font-medium">LabFee : </p>
+                        <p>{profileStudent && profileStudent?.labFee}</p>
                       </div>
 
-                      <div className="flex gap-1 border-2 border-[#80808023] py-1 px-3 ">
-                        <p className=" font-medium">ClassName : </p>
-                        <p className=" lowercase">
-                          {profileStudent && profileStudent?.className?.className}
-                        </p>
-                      </div>
                     </div>
                   </div>
                 </>

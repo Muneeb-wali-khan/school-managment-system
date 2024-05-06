@@ -25,11 +25,22 @@ const allAssignmentsClass = "/api/v1/teacher/all-assigments-class"
 const singleAssignmentClass = "/api/v1/teacher/single-assigment-class?id="
 const updateAssignmentOfClassUrl = "/api/v1/teacher/update-assigment-class?id="
 const deleteAssignmentOfClassUrl = "/api/v1/teacher/delete-assigment-class?id="
+const allNotificationsForTeachersUrl = "/api/v1/teacher/all-notifications-for-teachers"
+const allNotificationsPersonalTeacherUrl = "/api/v1/teacher/single-teacher-notifications"
+const classAllNotificationsUrl = "/api/v1/teacher/all-notifications-class"
+const createAllNotificationsUrl = "/api/v1/teacher/notify-students-class"
+const createSingleNotificationUrl = "/api/v1/teacher/notify-single-student-class"
+const SingleNotificationClassUrl = "/api/v1/teacher/single-notification-class/"
+const updateSingleNotificationUrl = "/api/v1/teacher/update-notification-class/"
+const deleteSingleNotificationUrl = "/api/v1/teacher/delete-notification-class/"
 
 
 // student urls
 const profileUrlStudent = "/api/v1/student/student-profile"
 const StudentAttendanceUrl = "/api/v1/student/student-attendance-record"
+const StudentAssigmentsUrl = "/api/v1/student/student-class-assigments"
+const StudentsNotificationsUrl = "/api/v1/student/student-class-notifications"
+const SingleStudentNotificationsUrl = "/api/v1/student/single-student-notifications"
 
 
 
@@ -58,6 +69,12 @@ const adminTeacherAddUrl = "/api/v1/admin/add-teacher"
 const adminTeacherUpdateUrl = "/api/v1/admin/update-teacher/"
 const adminTeacherUpdateAvatarUrl = "/api/v1/admin/update-avatar-teacher/"
 const adminTeacherDeleteUrl = "/api/v1/admin/remove-teacher/"
+const adminAllNotificationsUrl = "/api/v1/admin/notifications-all"
+const adminAddNotificationUrl = "/api/v1/admin/notify-teachers"
+const adminAddSingleNotificationUrl = "/api/v1/admin/notify-single-teacher"
+const adminSingleNotificationUrl = "/api/v1/admin/notification-single/"
+const adminUpdateNotificationUrl = "/api/v1/admin/update-notification/"
+const adminDeleteNotificationUrl = "/api/v1/admin/delete-notification/"
 
 // subjects
 const adminAllSubjectsUrl = "/api/v1/admin/all-subjects"
@@ -115,11 +132,22 @@ export  {
     singleAssignmentClass,
     updateAssignmentOfClassUrl,
     deleteAssignmentOfClassUrl,
+    allNotificationsForTeachersUrl,
+    allNotificationsPersonalTeacherUrl,
+    classAllNotificationsUrl,
+    createAllNotificationsUrl,
+    createSingleNotificationUrl,
+    updateSingleNotificationUrl,
+    SingleNotificationClassUrl,
+    deleteSingleNotificationUrl,
 
 
     // student urls
     profileUrlStudent,
     StudentAttendanceUrl,
+    StudentAssigmentsUrl,
+    StudentsNotificationsUrl,
+    SingleStudentNotificationsUrl,
 
 
 
@@ -144,6 +172,12 @@ export  {
     adminTeacherUpdateUrl,
     adminTeacherUpdateAvatarUrl,
     adminTeacherDeleteUrl,
+    adminAllNotificationsUrl,
+    adminAddNotificationUrl,
+    adminAddSingleNotificationUrl,
+    adminUpdateNotificationUrl,
+    adminSingleNotificationUrl,
+    adminDeleteNotificationUrl,
 
     // subjects
     adminAllSubjectsUrl,

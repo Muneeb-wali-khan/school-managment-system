@@ -6,7 +6,7 @@ import { useDispatch } from "react-redux";
 
 const TakeAttendance = ({
   allStudentsClass,
-  loadingTeacher,
+  loadingAttendance,
 }) => {
   const dispatch = useDispatch();
 
@@ -44,6 +44,7 @@ const TakeAttendance = ({
 
   const handleTakeAttendance = () => {
     dispatch(takeAttendance(attendance));
+    setAttendance([]);
   };
 
 
@@ -97,7 +98,7 @@ const TakeAttendance = ({
               type="button"
               onClick={handleTakeAttendance}
             >
-              {loadingTeacher ? "Submitting...." : "Submit Attendance"}
+              {loadingAttendance ? "Submitting...." : "Submit Attendance"}
             </button>
           </div>
         </div>

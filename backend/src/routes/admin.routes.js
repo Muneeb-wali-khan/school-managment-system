@@ -45,6 +45,11 @@ import {
   singleSubject,
   updateCurriculumSubject,
   singleCurriculumRecord,
+  notifySingleTeacher,
+  getNotificationById,
+  getAllNotifications,
+  updateNotification,
+  deleteNotification,
 
 } from "../controllers/admin.controllers.js";
 import multer from "multer";
@@ -88,6 +93,11 @@ router.route("/update-avatar-teacher/:id").put(jwtVerify,isAdmin,upload.single("
 router.route("/remove-teacher/:id").delete(jwtVerify,isAdmin, deleteTeacher)
 router.route("/all-attendances-class/:className").get(jwtVerify,isAdmin, getAllAttendacesOfClass)
 router.route("/notify-teachers").post(jwtVerify,isAdmin, sendNotification)
+router.route("/notify-single-teacher").post(jwtVerify,isAdmin, notifySingleTeacher)
+router.route("/notifications-all").get(jwtVerify,isAdmin, getAllNotifications)
+router.route("/notification-single/:id").get(jwtVerify,isAdmin, getNotificationById)
+router.route("/update-notification/:id").put(jwtVerify,isAdmin, updateNotification)
+router.route("/delete-notification/:id").delete(jwtVerify,isAdmin, deleteNotification)
 
 
 
