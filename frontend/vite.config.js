@@ -5,10 +5,11 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   server: {
-    host: '0.0.0.0',
-    port : 3000,
+    // host: '0.0.0.0',
+    // port : 3000,
     proxy: {
-       "/api/v1": 'http://localhost:8000', // Your server's address
+       // "/api/v1": 'http://localhost:8000', // Your server's address/
+       "/api/v1": 'https://school-managment-system-pi.vercel.app/api/v1', // Your server's address/
     },
   },
 })
