@@ -58,7 +58,7 @@ const router = Router();
 
 
 // USER ROUTES
-router.route("/all-users").get(jwtVerify, getAllUsers);
+router.route("/all-users").get(getAllUsers);
 router.route("/single-user/:id").get(jwtVerify,isAdmin, singleUser);
 router.route("/update-user-role/:id").put(jwtVerify,isAdmin, updateUserRole);
 router.route("/update-user-avatar/:id").put(jwtVerify,isAdmin,upload.single("avatar"), updateUserAvatar);
@@ -68,7 +68,7 @@ router.route("/remove-user/:id").delete(jwtVerify,isAdmin, deleteUser);
 
 
 // -- STUDENTS ROUTES 
-router.route("/all-students").get(jwtVerify, getAllStudent)
+router.route("/all-students").get(jwtVerify,isAdmin getAllStudent)
 router.route("/student/:id").get(jwtVerify,isAdmin, getStudentById)
 router.route("/add-student").post(jwtVerify,isAdmin, upload.single("avatar"), addStudent)
 router.route("/update-student/:id").put(jwtVerify,isAdmin, updateStudent)
