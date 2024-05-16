@@ -68,7 +68,7 @@ router.route("/remove-user/:id").delete(jwtVerify,isAdmin, deleteUser);
 
 
 // -- STUDENTS ROUTES 
-router.route("/all-students").get(jwtVerify,isAdmin, getAllStudent)
+router.route("/all-students").get(jwtVerify, getAllStudent)
 router.route("/student/:id").get(jwtVerify,isAdmin, getStudentById)
 router.route("/add-student").post(jwtVerify,isAdmin, upload.single("avatar"), addStudent)
 router.route("/update-student/:id").put(jwtVerify,isAdmin, updateStudent)
