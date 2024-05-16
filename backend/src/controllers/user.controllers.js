@@ -35,7 +35,7 @@ const cookieOptions = {
   httpOnly: true,
   secure: false, // false because i don't have https ssl
   // secure: true, // false because i don't have https ssl
-  sameSite: "strict",
+  // sameSite: "strict",
   maxAge: 24 * 60 * 60 * 1000, // 1 day
 };
 
