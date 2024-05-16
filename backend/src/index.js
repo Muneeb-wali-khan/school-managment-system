@@ -14,10 +14,6 @@ app.on("error", (error)=>{
   throw error
 })
 
-app.use("/",(req,res)=>{
-  res.send("server is running")
-}
-
 
 connectDB()
   .then(() => {
