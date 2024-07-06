@@ -346,7 +346,7 @@ const addStudent = asyncHandler(async (req, res) => {
     securityFee,
     labFee,
   } = req.body;
-
+console.log(req.body);
   if (
     [
       firstName,
@@ -385,11 +385,11 @@ const addStudent = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Date of birth already exists !");
   }
 
-  const validClass = await Class.find({
+  const validClass = await Class.findOne({
     className: className?.toUpperCase(),
   });
 
-  if (validClass == null) {
+  if (!validClass) {
     throw new ApiError(400, `${className} not found ! please check Classes`);
   }
 
@@ -444,7 +444,7 @@ const addStudent = asyncHandler(async (req, res) => {
     labFee,
   });
 
-  validClass.students.push(student._id);
+  validClass?.students?.push(student._id);
   console.log("done");
   await validClass.save({ validateBeforeSave: false });
   console.log("done saved");
