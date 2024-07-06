@@ -385,11 +385,11 @@ const addStudent = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Date of birth already exists !");
   }
 
-  const validClass = await Class.findOne({
+  const validClass = await Class.find({
     className: className?.toUpperCase(),
   });
 
-  if (validClass === null) {
+  if (validClass == null) {
     throw new ApiError(400, `${className} not found ! please check Classes`);
   }
 
