@@ -389,8 +389,8 @@ const addStudent = asyncHandler(async (req, res) => {
     className: className?.toUpperCase(),
   });
 
-  if (!validClass) {
-    throw new ApiError(400, `${className} not found ! please check Class`);
+  if (validClass === null) {
+    throw new ApiError(400, `${className} not found ! please check Classes`);
   }
 
   // if class  have students

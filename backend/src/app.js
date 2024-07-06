@@ -4,10 +4,13 @@ import cookieParser from "cookie-parser";
 import morgan from "morgan";
 const app = express();
 
+
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN,
+    // origin: process.env.CORS_ORIGIN,
+    origin: "https://school-managment-system-xlqq-frontend.vercel.app",
     credentials: true,
+    methods:["PUT","GET","DELETE","POST"]
   })
 );
 

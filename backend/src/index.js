@@ -15,7 +15,6 @@ app.on("error", (error)=>{
 })
 
 
-
 connectDB()
   .then(() => {
     app.listen(PORT, () => {
