@@ -390,7 +390,7 @@ const addStudent = asyncHandler(async (req, res) => {
   });
 
   if (!validClass) {
-    throw new ApiError(400, `${className} not found ! please check Classes`);
+    throw new ApiError(400, `${className} not found ! please check Class`);
   }
 
   // if class  have students
