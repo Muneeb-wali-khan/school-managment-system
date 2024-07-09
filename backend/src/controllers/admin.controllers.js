@@ -346,7 +346,6 @@ const addStudent = asyncHandler(async (req, res) => {
     securityFee,
     labFee,
   } = req.body;
-console.log(req.body);
   if (
     [
       firstName,
@@ -587,7 +586,6 @@ const updateStudent = asyncHandler(async (req, res) => {
 const updateAvatarStudent = asyncHandler(async (req, res) => {
   const { avatar } = req.body;
   const id = req.params?.id;
-
   // find student by id
   const studentFind = await Student.findOne({ _id: id });
 
@@ -603,14 +601,14 @@ const updateAvatarStudent = asyncHandler(async (req, res) => {
   // now get the new avatar file path
   let avatarLocalPath = req.file ? req.file?.path : null;
   if (!avatarLocalPath) {
-    throw new ApiError(400, "Student image is required !");
+    throw new ApiError(400, "Student image is required 1!");
   }
 
   // now upload new file to cloudinary
   const avatarNew = await cloudinaryUploadImg(avatarLocalPath);
 
   if (!avatarNew?.url) {
-    throw new ApiError(400, "Student image is required !");
+    throw new ApiError(400, "Student image is required 2!");
   }
 
   // now update the student avatar with new url
@@ -668,20 +666,16 @@ const addAcademicRecordStudent = asyncHandler(async (req, res) => {
     totalMarks,
   } = req.body;
 
-  if (
-    [
-      year,
+    if ([
       pClass,
       exam,
       grade,
-      percentage,
-      positionInClass,
-      marksObtained,
-      totalMarks,
-    ].some((val) => val?.trim() === "")
-  ) {
+      positionInClass
+    ].some((val) => val?.trim() === "") ||
+    [year, percentage, marksObtained, totalMarks].some((val) => val === "" || val === null || val === undefined)
+    ) {
     throw new ApiError(400, "All fields are Required !");
-  }
+    }
   const student = await Student.findById(req.params.id);
 
   if (!student) {
