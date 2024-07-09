@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { upload } from "../middlewares/multer.js";
-import { isAdmin, jwtVerify } from "../middlewares/auth.middleware.js";
+import { BothTeacherAdmin, isAdmin, jwtVerify } from "../middlewares/auth.middleware.js";
 
 import { 
   getAllUsers,
@@ -76,11 +76,11 @@ router.route("/update-student-avatar/:id").put(jwtVerify,isAdmin,upload.single("
 router.route("/remove-student/:id").delete(jwtVerify,isAdmin, deleteStudent)
 
 // academic record of students
-router.route("/all-student-academic-record/:id").get(jwtVerify,isAdmin, allAcademicRecordStudent)
-router.route("/single-student-academic-record/:id").get(jwtVerify,isAdmin, singleAcademicRecord)
-router.route("/add-student-academic-record/:id").post(jwtVerify,isAdmin, addAcademicRecordStudent)
-router.route("/update-student-academic-record/:id").post(jwtVerify,isAdmin, updatedStudentAcedamicRecord)
-router.route("/remove-student-academic-record/:id").delete(jwtVerify,isAdmin, deleteAcademicRecord)
+router.route("/all-student-academic-record/:id").get(jwtVerify,BothTeacherAdmin, allAcademicRecordStudent)
+router.route("/single-student-academic-record/:id").get(jwtVerify,BothTeacherAdmin, singleAcademicRecord)
+router.route("/add-student-academic-record/:id").post(jwtVerify,BothTeacherAdmin, addAcademicRecordStudent)
+router.route("/update-student-academic-record/:id").post(jwtVerify,BothTeacherAdmin, updatedStudentAcedamicRecord)
+router.route("/remove-student-academic-record/:id").delete(jwtVerify,BothTeacherAdmin, deleteAcademicRecord)
 
 
 
