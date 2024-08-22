@@ -8,6 +8,7 @@ const app = express();
 app.use(
   cors({
     origin: "https://school-managment-system-xlqq-frontend.vercel.app",
+    credentials: true
   })
 );
 
