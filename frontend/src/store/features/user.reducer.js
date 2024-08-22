@@ -16,7 +16,7 @@ export const profileUser = createAsyncThunk(
   "user/profile",
   async (data, { rejectWithValue }) => {
     try {
-      const config = { headers: { "Content-Type": "application/json"},withCredentials: true};
+      const config = { headers: { "Content-Type": "application/json"}};
       const response = await axios.get(`${userProfileUrl}`, config);
       return response.data;
     } catch (error) {
@@ -30,7 +30,7 @@ export const updatePasswordUser = createAsyncThunk(
   "user/updatePassword",
   async (data, { rejectWithValue }) => {
     try {
-      const config = { headers: { "Content-Type": "application/json"},withCredentials: true};
+      const config = { headers: { "Content-Type": "application/json"}};
       const response = await axios.put(`${updatePasswordUrl}`, data, config);
       return response.data;
     } catch (error) {
@@ -44,7 +44,7 @@ export const updateProfileUser = createAsyncThunk(
   "user/updateProfile",
   async (data, { rejectWithValue }) => {
     try {
-      const config = { headers: { "Content-Type": "application/json"},withCredentials: true};
+      const config = { headers: { "Content-Type": "application/json"}};
       const response = await axios.put(`${updateProfileUrl}`, data, config);
       return response.data;
     } catch (error) {
@@ -58,7 +58,7 @@ export const updateAvatarUser = createAsyncThunk(
   "user/updateAvatarUser",
   async (data, { rejectWithValue }) => {
     try {
-      const config = { headers: { "Content-Type": "multipart/form-data"},withCredentials: true};
+      const config = { headers: { "Content-Type": "multipart/form-data"}};
       const response = await axios.put(`${updateAvatarUrl}`, data, config);
       return response?.data;
     } catch (error) {
