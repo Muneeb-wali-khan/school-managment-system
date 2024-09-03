@@ -31,7 +31,7 @@ export const register = createAsyncThunk(
 
 export const login = createAsyncThunk("auth/login",async(data,{rejectWithValue})=>{
     try {
-      const config = { headers: { "Content-Type": "application/json" }};
+      const config = { headers: { "Content-Type": "application/json"}};
       const response = await axios.post(`${loginUrl}`, data, config);
 
         return response.data

@@ -695,6 +695,67 @@ const getAttendanceOfToday = asyncHandler(async (req, res) => {
 });
 
 
+// get attendance monthly each student
+const getAttendanceOfMonthly = asyncHandler(async (req, res) => {
+  const fullName = req?.user?.fullName;
+  const email = req?.user?.email;
+  const tr = await Teacher.findOne({ email: email, fullName: fullName });
+
+  const teacherOfClass = await Class.findOne({
+    classTeacherID: tr?._id,
+  })
+    .select("-classTeacherID -teachersOfClass -subjects")
+    .populate({
+      path: "students",
+      select: "fullName",
+    });
+
+  if (!teacherOfClass) {
+    throw new ApiError(400, "You're not yet the Class Teacher of any class !");
+  }
+
+  const MonthlyAttendanceOfStudent = await Attendance.find({
+    AttClass: teacherOfClass?.className,
+    studentID: req.params.id,
+    // get this month attendance
+    date: {
+      $gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1), // Start of current month
+      $lte: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0), // End of current month
+    }
+
+  }).select('studentName status date studentID');
+
+  // get get total present percentage of month
+  const AttendacePercentage = MonthlyAttendanceOfStudent?.length
+  // get total month days
+  const totalDays = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate()
+  // get total attendance percentage monthly
+  const presentPercentage = (AttendacePercentage / totalDays) * 100
+
+  // total present out of month
+  const totalPresent = MonthlyAttendanceOfStudent?.filter((val)=> val?.status === "present").length
+  // total absent out of month
+  const totalAbsent = MonthlyAttendanceOfStudent?.filter((val)=> val?.status === "absent").length
+  
+
+  if (!MonthlyAttendanceOfStudent) {
+    throw new ApiError(404, "Attendances Not Found !");
+  }
+
+  const monthlyData = {
+    totalDays,
+    presentPercentage,
+    totalPresent,
+    totalAbsent,
+    MonthlyAttendanceOfStudent,
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, monthlyData, "Attendance fetched"));
+});
+
+
 // get curruculum of  subject of class
 const curriculumOfSubjectOfClass = asyncHandler(async (req, res) => {
   const fullName = req?.user?.fullName;
@@ -1297,6 +1358,7 @@ export {
   getNotificationById,
   updateNotification,
   deleteNotification,
+  getAttendanceOfMonthly,
 
   allTeachersOfSpecificClass,
 

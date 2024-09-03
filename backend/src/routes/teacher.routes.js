@@ -3,7 +3,7 @@ import { ApiError } from "../utils/ApiError.js";
 import multer from "multer";
 import { upload } from "../middlewares/multer.js";
 import {  isTeacher, jwtVerify } from "../middlewares/auth.middleware.js";
-import { addStudentsToClass, allAssignmentsOfClass, allStudentsOfSpecificClass, allSubjectsOfClass, allTeachersNotifications, allTeachersOfSpecificClass, curriculumOfSubjectOfClass, deleteAssigment, deleteNotification, deleteStudentFromClass, getAllNotifications, getAttendanceOfToday, getLogedInTeacherDetails, getNotificationById, getSingleAssignment, getStudentDetail,  giveAssignments,  notifyAbsenties,  notifySingleStudent,  sendNotificationStudents,  singleTeacherNotifications,  takeAttendance, updateAssigment, updateNotification, updateStudentAvatar, updateStudentsOfClass } from "../controllers/teacher.controller.js";
+import { addStudentsToClass, allAssignmentsOfClass, allStudentsOfSpecificClass, allSubjectsOfClass, allTeachersNotifications, allTeachersOfSpecificClass, curriculumOfSubjectOfClass, deleteAssigment, deleteNotification, deleteStudentFromClass, getAllNotifications, getAttendanceOfMonthly, getAttendanceOfToday, getLogedInTeacherDetails, getNotificationById, getSingleAssignment, getStudentDetail,  giveAssignments,  notifyAbsenties,  notifySingleStudent,  sendNotificationStudents,  singleTeacherNotifications,  takeAttendance, updateAssigment, updateNotification, updateStudentAvatar, updateStudentsOfClass } from "../controllers/teacher.controller.js";
 const router = Router();
 
 
@@ -17,6 +17,7 @@ router.route("/update-student-class/:id").put(jwtVerify,isTeacher, updateStudent
 router.route("/update-student-avatar/:id").put(jwtVerify,isTeacher,upload.single("avatar"), updateStudentAvatar)
 router.route("/remove-student-class/:id").delete(jwtVerify,isTeacher, deleteStudentFromClass)
 router.route("/take-attendance-class").post(jwtVerify,isTeacher, takeAttendance)
+router.route("/monthly-attendance-student/:id").get(jwtVerify,isTeacher, getAttendanceOfMonthly)
 router.route("/attendance-class-today").get(jwtVerify,isTeacher, getAttendanceOfToday)
 router.route("/notify-students-absent").post(jwtVerify,isTeacher, notifyAbsenties)
 router.route("/give-assigment-class").post(jwtVerify,isTeacher, giveAssignments)
