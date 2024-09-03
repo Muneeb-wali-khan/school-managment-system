@@ -723,7 +723,7 @@ const getAttendanceOfMonthly = asyncHandler(async (req, res) => {
       $lte: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0), // End of current month
     }
 
-  }).select('studentName status date studentID');
+  }).select('studentName status date studentID').sort({ date: 1 });
 
   // get get total present percentage of month
   const AttendacePercentage = MonthlyAttendanceOfStudent?.length
