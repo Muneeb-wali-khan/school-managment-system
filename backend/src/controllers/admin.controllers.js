@@ -1357,18 +1357,16 @@ const deleteTeacher = asyncHandler(async (req, res) => {
 
 // get all atendances of class
 const getAllAttendacesOfClass = asyncHandler(async(req, res)=>{
-  const { className } = req.params;
-
-  // Find all attendances for the specified class
-  const findclass = await Attendance.find({ AttClass: className?.toUpperCase() });
+  const { className } = req.body;
+  const upperClass = className?.toUpperCase() 
   
-  if (!findclass || findclass.length === 0) {
-    // If no attendances are found, return an error
-    throw new ApiError(404, "Attendances not found for class " + className);
-  }
+    const findclass = await Attendance.find({ AttClass: upperClass});  
+    if (findclass === null) {
+      throw new ApiError(404, "Attendances not found for class " + className);
+    }
+  
+    return res.status(200).json(new ApiResponse(200, findclass, "class"));
 
-  // Return the found attendances
-  return res.status(200).json(new ApiResponse(200, findclass, "class"));
 })
 
 

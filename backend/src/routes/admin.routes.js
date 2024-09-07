@@ -91,7 +91,7 @@ router.route("/add-teacher").post(jwtVerify,isAdmin, upload.single("avatar"), ad
 router.route("/update-teacher/:id").put(jwtVerify,isAdmin, updateTeacher)
 router.route("/update-avatar-teacher/:id").put(jwtVerify,isAdmin,upload.single("avatar"), updateTeacherAvatar)
 router.route("/remove-teacher/:id").delete(jwtVerify,isAdmin, deleteTeacher)
-router.route("/all-attendances-class/:className").get(jwtVerify,isAdmin, getAllAttendacesOfClass)
+router.route("/all-attendances-class").post(jwtVerify,isAdmin, getAllAttendacesOfClass)
 router.route("/notify-teachers").post(jwtVerify,isAdmin, sendNotification)
 router.route("/notify-single-teacher").post(jwtVerify,isAdmin, notifySingleTeacher)
 router.route("/notifications-all").get(jwtVerify,isAdmin, getAllNotifications)
