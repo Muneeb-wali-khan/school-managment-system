@@ -7,7 +7,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: "https://remarkable-scone-6f13ec.netlify.app",
+    origin: "https://school-management-system-web.netlify.app",
     credentials: true
   })
 );
