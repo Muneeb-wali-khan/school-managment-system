@@ -10,48 +10,47 @@ import {
   loginUrl,
 } from "../urls"
 
-
 export const register = createAsyncThunk(
   "auth/register",
   async (data, { rejectWithValue }) => {
     try {
-      const config = { headers: { "Content-Type": "multipart/form-data" } };
+      const config = { 
+        headers: { "Content-Type": "multipart/form-data" },
+        withCredentials: true // Include credentials (cookies)
+      };
       const response = await axios.post(`${registerUrl}`, data, config);
-
-      console.log(response.data);
-        return response.data
-
+      return response.data;
     } catch (error) {
-       return rejectWithValue(error?.response?.data)
+      return rejectWithValue(error?.response?.data);
     }
   }
 );
 
+export const login = createAsyncThunk("auth/login", async (data, { rejectWithValue }) => {
+  try {
+    const config = { 
+      headers: { "Content-Type": "application/json" },
+      withCredentials: true // Include credentials (cookies)
+    };
+    const response = await axios.post(`${loginUrl}`, data, config);
+    return response.data;
+  } catch (error) {
+    return rejectWithValue(error?.response?.data);
+  }
+});
 
-
-export const login = createAsyncThunk("auth/login",async(data,{rejectWithValue})=>{
-    try {
-      const config = { headers: { "Content-Type": "application/json"}};
-      const response = await axios.post(`${loginUrl}`, data, config);
-
-        return response.data
-    } catch (error) {
-        return rejectWithValue(error?.response?.data)
-    }
-})
-
-
-export const logout = createAsyncThunk("auth/logout",async(data,{rejectWithValue})=>{
-    try {
-      const config = { headers: { "Content-Type": "application/json" }};
-      const response = await axios.post(`${logoutUrl}`, config);
-        return response.data
-    } catch (error) {
-        return rejectWithValue(error?.response?.data)
-    }
-})
-
-
+export const logout = createAsyncThunk("auth/logout", async (data, { rejectWithValue }) => {
+  try {
+    const config = { 
+      headers: { "Content-Type": "application/json" },
+      withCredentials: true // Include credentials (cookies)
+    };
+    const response = await axios.post(`${logoutUrl}`, config);
+    return response.data;
+  } catch (error) {
+    return rejectWithValue(error?.response?.data);
+  }
+});
 
 
 const userAuthorizationSlice = createSlice({
