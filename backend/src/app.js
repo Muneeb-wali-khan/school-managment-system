@@ -5,11 +5,16 @@ import morgan from "morgan";
 const app = express();
 
 
-app.use(cors());
+app.use(
+  cors({
+    origin: "https://remarkable-scone-6f13ec.netlify.app",
+    credentials: true
+  })
+);
 
 
 
-app.use(express.json({ limit: "10mb" }));
+app.use(express.json({ limit: "16kb" }));
 app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 app.use(express.static("public"));
 app.use(cookieParser());
