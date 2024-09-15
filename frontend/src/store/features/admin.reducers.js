@@ -10,7 +10,7 @@ import { AdminAllAttendancesClassUrl, adminAddAcademicRecordUrl, adminAddClassUr
 // all students 
 export const adminFetchAllStudents = createAsyncThunk("admin/allStudents", async(none, { rejectWithValue })=>{
       try {
-        const config = { headers: { "Content-Type": "application/json" } };
+        const config = { headers: { "Content-Type": "application/json" },withCredentials: true  };
         const res = await axios.get(`${adminAllStudentsUrl}`,config)
         
         return res.data
@@ -23,7 +23,7 @@ export const adminFetchAllStudents = createAsyncThunk("admin/allStudents", async
 // single student
 export const adminFetchSingleStudent = createAsyncThunk("admin/singleStudent", async(id, { rejectWithValue })=>{
       try {
-        const config = { headers: { "Content-Type": "application/json" } };
+        const config = { headers: { "Content-Type": "application/json" },withCredentials: true  };
         const res = await axios.get(`${adminStudentDetailsUrl}${id}`,config)
         
         return res.data
@@ -62,7 +62,7 @@ export const adminRegisterStudent = createAsyncThunk("admin/registerStudent", as
 // update student 
 export const adminUpdateStudent = createAsyncThunk("admin/UpdateStudent", async({id: id, data:data}, { rejectWithValue })=>{
       try {
-        const config = { headers: { "Content-Type": "application/json" } };
+        const config = { headers: { "Content-Type": "application/json" },withCredentials: true  };
         const res = await axios.put(`${adminStudentUpdateUrl}${id}`,data, config)
         
         return res.data
@@ -75,7 +75,7 @@ export const adminUpdateStudent = createAsyncThunk("admin/UpdateStudent", async(
 // update student 
 export const adminRemoveStudent = createAsyncThunk("admin/RemoveStudent", async(id, { rejectWithValue })=>{
       try {
-        const config = { headers: { "Content-Type": "application/json" } };
+        const config = { headers: { "Content-Type": "application/json" },withCredentials: true  };
         const res = await axios.delete(`${adminStudentRemoveUrl}${id}`, config)
         
         return res.data
@@ -88,7 +88,7 @@ export const adminRemoveStudent = createAsyncThunk("admin/RemoveStudent", async(
 // acdemic record student 
 export const adminAllStudentAcademicRecord = createAsyncThunk("admin/studentAcademicRecordAll", async(id, { rejectWithValue })=>{
       try {
-        const config = { headers: { "Content-Type": "application/json" } };
+        const config = { headers: { "Content-Type": "application/json" },withCredentials: true  };
         const res = await axios.get(`${adminStudentAcademicRecordUrl}${id}`, config)
         
         return res.data
@@ -101,7 +101,7 @@ export const adminAllStudentAcademicRecord = createAsyncThunk("admin/studentAcad
 // single acdemic record student 
 export const adminSingleAcademicRecord = createAsyncThunk("admin/singleAcademicRecord", async(id, { rejectWithValue })=>{
       try {
-        const config = { headers: { "Content-Type": "application/json" } };
+        const config = { headers: { "Content-Type": "application/json" },withCredentials: true  };
         const res = await axios.get(`${adminSingleAcademicRecordUrl}${id}`, config)
         
         return res.data
@@ -114,7 +114,7 @@ export const adminSingleAcademicRecord = createAsyncThunk("admin/singleAcademicR
 // add acdemic record student 
 export const adminAddAcademicRecord = createAsyncThunk("admin/studentAddAcademicRecord", async({id: id, data: data}, { rejectWithValue })=>{
       try {
-        const config = { headers: { "Content-Type": "application/json" } };
+        const config = { headers: { "Content-Type": "application/json" },withCredentials: true  };
         const res = await axios.post(`${adminAddAcademicRecordUrl}${id}`,data, config)
         
         return res.data
@@ -127,7 +127,7 @@ export const adminAddAcademicRecord = createAsyncThunk("admin/studentAddAcademic
 // update acdemic record student 
 export const adminUpdateAcademicRecord = createAsyncThunk("admin/studentUpdateAcademicRecord", async({id: id, data: data}, { rejectWithValue })=>{
       try {
-        const config = { headers: { "Content-Type": "application/json" } };
+        const config = { headers: { "Content-Type": "application/json" },withCredentials: true  };
         const res = await axios.post(`${adminUpdateAcademicRecordUrl}${id}`,data, config)
         
         return res.data
@@ -139,7 +139,7 @@ export const adminUpdateAcademicRecord = createAsyncThunk("admin/studentUpdateAc
 // delete acdemic record student 
 export const adminRemoveAcademicRecord = createAsyncThunk("admin/studentDeleteAcademicRecord", async(id, { rejectWithValue })=>{
       try {
-        const config = { headers: { "Content-Type": "application/json" } };
+        const config = { headers: { "Content-Type": "application/json" },withCredentials: true  };
         const res = await axios.delete(`${adminDeleteAcademicRecordUrl}${id}`, config)
         
         return res.data
@@ -342,7 +342,7 @@ export const adminRemoveAcademicRecord = createAsyncThunk("admin/studentDeleteAc
   // all teachers
   export const adminFetchAllTeachers = createAsyncThunk("admin/fetchAllTeachers", async(id, {rejectWithValue})=>{
     try {
-      const config = { headers: { "Content-Type": "application/json" } };
+      const config = { headers: { "Content-Type": "application/json" },withCredentials: true  };
       const res = await axios.get(`${adminAllTeachersUrl}`,config)
       return res.data
     } catch (error) {
@@ -354,7 +354,7 @@ export const adminRemoveAcademicRecord = createAsyncThunk("admin/studentDeleteAc
   // single teacher details
   export const adminFetchSingleTeacher = createAsyncThunk("admin/fetchSingleTeacher", async(id, {rejectWithValue})=>{
     try {
-      const config = { headers: { "Content-Type": "application/json" } };
+      const config = { headers: { "Content-Type": "application/json" },withCredentials: true  };
       const res = await axios.get(`${adminTeacherDetailsUrl}${id}`,config)
       return res.data
     } catch (error) {
@@ -378,7 +378,7 @@ export const adminRemoveAcademicRecord = createAsyncThunk("admin/studentDeleteAc
   // Update teacher
   export const adminUpdateTeacher = createAsyncThunk("admin/UpdateTeacher", async({id: id, data:data}, {rejectWithValue})=>{
     try {
-      const config = { headers: { "Content-Type": "application/json" } };
+      const config = { headers: { "Content-Type": "application/json" },withCredentials: true  };
       const res = await axios.put(`${adminTeacherUpdateUrl}${id}`,data,config)
       return res.data
     } catch (error) {
@@ -402,7 +402,7 @@ export const adminRemoveAcademicRecord = createAsyncThunk("admin/studentDeleteAc
   // Delete teacher
   export const adminRemoveTeacher = createAsyncThunk("admin/removeAvatarTeacher", async(id, {rejectWithValue})=>{
     try {
-      const config = { headers: { "Content-Type": "application/json" } };
+      const config = { headers: { "Content-Type": "application/json" },withCredentials: true  };
       const res = await axios.delete(`${adminTeacherDeleteUrl}${id}`,config)
       return res.data
     } catch (error) {
@@ -413,7 +413,7 @@ export const adminRemoveAcademicRecord = createAsyncThunk("admin/studentDeleteAc
   // all notifications
   export const adminAllNotifications = createAsyncThunk("admin/allnotifications", async(id, {rejectWithValue})=>{
     try {
-      const config = { headers: { "Content-Type": "application/json" } };
+      const config = { headers: { "Content-Type": "application/json" },withCredentials: true  };
       const res = await axios.get(`${adminAllNotificationsUrl}`,config)
       return res.data
     } catch (error) {
@@ -425,7 +425,7 @@ export const adminRemoveAcademicRecord = createAsyncThunk("admin/studentDeleteAc
   // create notification
   export const adminCreateForAllNotification = createAsyncThunk("admin/CreatenotificationAll", async(data, {rejectWithValue})=>{
     try {
-      const config = { headers: { "Content-Type": "application/json" } };
+      const config = { headers: { "Content-Type": "application/json" },withCredentials: true  };
       const res = await axios.post(`${adminAddNotificationUrl}`,data,config)
       return res.data
     } catch (error) {
@@ -436,7 +436,7 @@ export const adminRemoveAcademicRecord = createAsyncThunk("admin/studentDeleteAc
   // create notification for single
   export const adminCreateForSingleNotification = createAsyncThunk("admin/CreatenotificationSingle", async(data, {rejectWithValue})=>{
     try {
-      const config = { headers: { "Content-Type": "application/json" } };
+      const config = { headers: { "Content-Type": "application/json" },withCredentials: true  };
       const res = await axios.post(`${adminAddSingleNotificationUrl}`,data,config)
       return res.data
     } catch (error) {
@@ -448,7 +448,7 @@ export const adminRemoveAcademicRecord = createAsyncThunk("admin/studentDeleteAc
   // get single notification 
   export const adminGetSingleNotification = createAsyncThunk("admin/Singlenotification", async(id, {rejectWithValue})=>{
     try {
-      const config = { headers: { "Content-Type": "application/json" } };
+      const config = { headers: { "Content-Type": "application/json" },withCredentials: true  };
       const res = await axios.get(`${adminSingleNotificationUrl}${id}`,config)
       return res.data
     } catch (error) {
@@ -459,7 +459,7 @@ export const adminRemoveAcademicRecord = createAsyncThunk("admin/studentDeleteAc
   // update notification 
   export const adminUpdateNotification = createAsyncThunk("admin/Updatenotification", async({id:id,data:data}, {rejectWithValue})=>{
     try {
-      const config = { headers: { "Content-Type": "application/json" } };
+      const config = { headers: { "Content-Type": "application/json" },withCredentials: true  };
       const res = await axios.put(`${adminUpdateNotificationUrl}${id}`,data,config)
       return res.data
     } catch (error) {
@@ -470,7 +470,7 @@ export const adminRemoveAcademicRecord = createAsyncThunk("admin/studentDeleteAc
   // remove notification 
   export const adminRemoveNotification = createAsyncThunk("admin/removeNotification", async(id, {rejectWithValue})=>{
     try {
-      const config = { headers: { "Content-Type": "application/json" } };
+      const config = { headers: { "Content-Type": "application/json" },withCredentials: true  };
       const res = await axios.delete(`${adminDeleteNotificationUrl}${id}`,config)
       return res.data
     } catch (error) {
