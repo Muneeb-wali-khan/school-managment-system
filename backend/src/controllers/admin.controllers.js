@@ -1355,7 +1355,7 @@ const deleteTeacher = asyncHandler(async (req, res) => {
 });
 
 
-// get all atendances of class
+// get all atendances of class     CHANGES MADE ❓✏✏🖊
 const getAllAttendacesOfClass = asyncHandler(async(req, res)=>{
   const { className } = req.body;
   const upperClass = className?.toUpperCase() 

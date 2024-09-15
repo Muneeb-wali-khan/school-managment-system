@@ -7,7 +7,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: "https://school-managment-system-xlqq-frontend.vercel.app",
+    origin: "https://66e6c9e06eaa798c203c7c29--remarkable-scone-6f13ec.netlify.app",
     credentials: true
   })
 );
