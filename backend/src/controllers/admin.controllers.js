@@ -1080,7 +1080,6 @@ const addTeacher = asyncHandler(async (req, res) => {
     gender: changeToUpperCase(gender),
     DOB,
     status,
-    leavingDate,
     avatar: avatar.url,
     joiningDate,
     bloodGroup: bloodGroup.toUpperCase(),
