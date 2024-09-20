@@ -978,6 +978,7 @@ const addTeacher = asyncHandler(async (req, res) => {
     DOB,
     status,
     joiningDate,
+    leavingDate,
     sallary,
     bloodGroup,
     subject,
