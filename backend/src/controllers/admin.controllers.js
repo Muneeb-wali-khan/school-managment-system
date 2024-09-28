@@ -1383,7 +1383,7 @@ const getAllAttendacesOfClass = asyncHandler(async(req, res)=>{
 //  all-classes
 const allClasses = asyncHandler(async (req, res) => {
   const findclass = await Class.find({})
-    .select("-students -teachersOfClass -subjects createdAt")
+    .select("-students -teachersOfClass -subjects")
     .populate({
       path: "classTeacherID",
       select: "fullName",
