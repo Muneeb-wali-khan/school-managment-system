@@ -1383,7 +1383,7 @@ const getAllAttendacesOfClass = asyncHandler(async(req, res)=>{
 //  all-classes
 const allClasses = asyncHandler(async (req, res) => {
   const findclass = await Class.find({})
-    .select("-students -teachersOfClass -subjects")
+    .select("-students -teachersOfClass -subjects createdAt")
     .populate({
       path: "classTeacherID",
       select: "fullName",
@@ -1557,7 +1557,7 @@ const updateClass = asyncHandler(async (req, res) => {
       if (teacherExist) {
         throw new ApiError(
           400,
-          "Class teacher already assigned to another class"
+          `Class teacher already assigned to another class ${teacherExist?.className}`
         );
       }
     }
