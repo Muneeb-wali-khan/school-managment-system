@@ -28,6 +28,8 @@ const classSchema = new Schema({
       ref: "Subject",
     },
   ],
+},{
+  timestamps: true
 });
 
 export const Class = mongoose.model("Class", classSchema);
