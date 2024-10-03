@@ -1644,7 +1644,7 @@ const deleteClass = asyncHandler(async (req, res) => {
     console.log("save subject");
   }
 
-  // // remove deleted className from students className connects with it
+  // // remove deleted className from students className 
   const students = await Student.find({ className: classId });
 
   for (const student of students) {
@@ -1653,7 +1653,7 @@ const deleteClass = asyncHandler(async (req, res) => {
     console.log("Saved student");
   }
 
-  // remove  deleted class classTeachers connects with it
+  // remove  deleted class classTeachers 
   const teachersOfClass = await Teacher.find();
   teachersOfClass?.forEach(async (cls) => {
     if (cls?.classesTaught?.some((ids) => ids?._id?.toString() === classId)) {
