@@ -1523,7 +1523,7 @@ const updateClass = asyncHandler(async (req, res) => {
   if ([className].some((fields) => fields?.trim() === "")) {
     throw new ApiError(400, "all feilds are required !");
   }
-  if (subjects === '') {
+  if (subjects?.length === 0) {
     throw new ApiError(400, "subjects are required !");
   }
   const findteacher = await Teacher.findOne({
