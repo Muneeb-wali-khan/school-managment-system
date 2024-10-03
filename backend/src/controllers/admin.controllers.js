@@ -1583,7 +1583,7 @@ const updateClass = asyncHandler(async (req, res) => {
     );
   }
 
-  if (!subjects) {
+  if (subjects?.length == 0) {
     throw new ApiError(400, "subjects are required !");
   }
 
