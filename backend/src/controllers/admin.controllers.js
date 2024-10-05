@@ -1400,7 +1400,7 @@ const allClasses = asyncHandler(async (req, res) => {
 const addClass = asyncHandler(async (req, res) => {
   const { className, email, fullName, subjects } = req.body;
 
-  const spl = subjects?.split(",");
+  const spl = subjects && subjects?.split(",");
 
   if (spl?.length < 3) {
     if (!subjects?.match(",")) {
