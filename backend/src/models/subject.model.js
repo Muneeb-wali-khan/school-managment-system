@@ -1,57 +1,64 @@
 import mongoose, { Schema } from "mongoose";
 
-const subjectSchema = new Schema({
-  subjectName: {
-    type: String,
-    required: true,
-    trim: true,
-  },
-  teachers: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: "Teacher",
+const subjectSchema = new Schema(
+  {
+    subjectName: {
+      type: String,
+      required: true,
+      trim: true,
     },
-  ],
-  classes: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: "Class",
-    },
-  ],
+    teachers: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Teacher",
+      },
+    ],
+    classes: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Class",
+      },
+    ],
 
-  curriculum: [
-    {
-      curriculumClass: {
-        type: String,
-        required: true,
-        default: "no class",
-      },
-      year: {
-        type: Number,
-        required: true,
-        default: 0,
-      },
-      description: {
-        type: String,
-        default: "no description",
-      },
-      documentationLink: {
-        type: String,
-        default: "no link",
-        validate: {
-          validator: (v) => {
-            const urlRegex = /^(ftp|http|https):\/\/[^ "]+$/;
-            return urlRegex.test(v);
+    curriculum: [
+      {
+        curriculumClass: {
+          type: String,
+          required: true,
+          default: "no class",
+        },
+        year: {
+          type: Number,
+          required: true,
+          default: 0,
+        },
+        description: {
+          type: String,
+          default: "no description",
+        },
+        documentationLink: {
+          type: String,
+          default: "no link",
+          validate: {
+            validator: (v) => {
+              const urlRegex = /^(ftp|http|https):\/\/[^ "]+$/;
+              return urlRegex.test(v);
+            },
+            message: "Invalid URL format",
           },
-          message: "Invalid URL format",
+        },
+        keyTopics: {
+          type: String,
+          default: "no topics",
+        },
+        createdAt: {
+          type: Date,
+          default: Date.now,
         },
       },
-      keyTopics: {
-        type: String,
-        default: "no topics",
-      },
-    },
-  ],
-});
+    ],
+  },
+  { timestamps: true }
+);
 
 export const Subject = mongoose.model("Subject", subjectSchema);
