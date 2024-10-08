@@ -1711,7 +1711,7 @@ const singleSubject = asyncHandler(async (req, res) => {
 
 // add subjects
 const addSubject = asyncHandler(async (req, res) => {
-  // remeber teachers and classes is not required
+  // remeber teachers and classes are not required
   // it will
   const { subjectName, teachers, classes, curriculum } = req.body;
 
