@@ -13,6 +13,7 @@ import { extractId } from "../utils/extractCloudinaryId.js";
 import { parseDate } from "../utils/parseDate.js";
 import { Attendance } from "../models/attendance.mode.js";
 import { AdminNotify } from "../models/notification.model.js";
+import { Curriculum } from "../models/curriculum.model.js";
 
 // =======================================USER CONTROLLERS --ADMIN== START =================================================
 
@@ -1826,6 +1827,42 @@ const addCurriculumSubject = asyncHandler(async (req, res) => {
     );
 });
 
+// add curriculum for all subjects  for each class in one shot --- new ✨
+const addCurriculumSingleClassSubjects = asyncHandler(async (req, res) => {
+  const { curriculumClass, year, description,month, curriculumSubjects, documentationLink } =
+    req.body;
+
+  const findClass = await Class.findOne({
+    className: curriculumClass?.toUpperCase(),
+  });
+
+  if (!findClass) {
+    throw new ApiError(404, "class not found or invalid className ! ");
+  }
+
+  const allCurriculums = await Curriculum.findOne({curriculumClass: curriculumClass});
+
+  if (allCurriculums) {
+    throw new ApiError(404, `curriculum of ${curriculumClass} already exists !`);
+  }
+  
+  const curSubjects = curriculumSubjects
+
+  if(!curSubjects?.length > 0 ){
+    throw new ApiError(404, `curriculum Subjects are required !`);
+  }
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        allSubjects,
+        `${curriculumClass} Curriculum added successfully for all subjects`
+      )
+    );
+});
+
 // single academic record of student
 const singleCurriculumRecord = asyncHandler(async (req, res) => {
   const subject = await Subject.find({});
@@ -2013,6 +2050,7 @@ export {
   removeSubject,
   allCurriculumSubject,
   addCurriculumSubject,
+  addCurriculumSingleClassSubjects,
   updateCurriculumSubject,
   deleteCurriculumSubject,
   singleCurriculumRecord,
