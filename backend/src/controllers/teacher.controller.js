@@ -17,6 +17,7 @@ import sendEmail from "../utils/sendEmail.js";
 import { AdminNotify } from "../models/notification.model.js";
 import { TeacherNotify } from "../models/notificationSt.model.js";
 import { User } from "../models/user.model.js";
+import { Curriculum } from "../models/curriculum.model.js";
 
 
 
@@ -797,6 +798,37 @@ const curriculumOfSubjectOfClass = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, finalCur, "curiculum"));
 });
 
+// get curruculum of  subject of class --new ✨
+const curriculumOfSubjectsOfSingleClass = asyncHandler(async (req, res) => {
+  const fullName = req?.user?.fullName;
+  const email = req?.user?.email;
+
+  const tr = await Teacher.findOne({ email: email, fullName: fullName });
+
+  const teacherOfClass = await Class.findOne({
+    classTeacherID: tr?._id,
+  }).populate({
+    path: "subjects",
+    select: "subjectName",
+  })
+
+  if (!teacherOfClass) {
+    throw new ApiError(400, "Your'r not yet Class Teacher of any class !");
+  }
+
+  const findCurriculumClass = teacherOfClass?.className;
+
+  // Filter curriculum for the teacher's class
+  const findMyClassCurriculum = await Curriculum.findOne({
+    curriculumClass: findCurriculumClass,
+  })
+  console.log(findMyClassCurriculum);
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, findMyClassCurriculum, "curiculum"));
+});
+
 
 // notify student for absenties if greater than 3 days
 const notifyAbsenties = asyncHandler(async (req, res) => {
@@ -1363,5 +1395,6 @@ export {
   allTeachersOfSpecificClass,
 
   allSubjectsOfClass,
-  curriculumOfSubjectOfClass
+  curriculumOfSubjectOfClass,
+  curriculumOfSubjectsOfSingleClass // -- new
 };

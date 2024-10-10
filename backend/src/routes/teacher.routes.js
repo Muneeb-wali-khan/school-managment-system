@@ -3,7 +3,7 @@ import { ApiError } from "../utils/ApiError.js";
 import multer from "multer";
 import { upload } from "../middlewares/multer.js";
 import {  isTeacher, jwtVerify } from "../middlewares/auth.middleware.js";
-import { addStudentsToClass, allAssignmentsOfClass, allStudentsOfSpecificClass, allSubjectsOfClass, allTeachersNotifications, allTeachersOfSpecificClass, curriculumOfSubjectOfClass, deleteAssigment, deleteNotification, deleteStudentFromClass, getAllNotifications, getAttendanceOfMonthly, getAttendanceOfToday, getLogedInTeacherDetails, getNotificationById, getSingleAssignment, getStudentDetail,  giveAssignments,  notifyAbsenties,  notifySingleStudent,  sendNotificationStudents,  singleTeacherNotifications,  takeAttendance, updateAssigment, updateNotification, updateStudentAvatar, updateStudentsOfClass } from "../controllers/teacher.controller.js";
+import { addStudentsToClass, allAssignmentsOfClass, allStudentsOfSpecificClass, allSubjectsOfClass, allTeachersNotifications, allTeachersOfSpecificClass, curriculumOfSubjectOfClass, curriculumOfSubjectsOfSingleClass, deleteAssigment, deleteNotification, deleteStudentFromClass, getAllNotifications, getAttendanceOfMonthly, getAttendanceOfToday, getLogedInTeacherDetails, getNotificationById, getSingleAssignment, getStudentDetail,  giveAssignments,  notifyAbsenties,  notifySingleStudent,  sendNotificationStudents,  singleTeacherNotifications,  takeAttendance, updateAssigment, updateNotification, updateStudentAvatar, updateStudentsOfClass } from "../controllers/teacher.controller.js";
 const router = Router();
 
 
@@ -39,6 +39,7 @@ router.route("/all-teachers-class").get(jwtVerify,isTeacher, allTeachersOfSpecif
 
 router.route("/all-subjects-class").get(jwtVerify,isTeacher, allSubjectsOfClass)
 router.route("/curriculum-subject").get(jwtVerify,isTeacher, curriculumOfSubjectOfClass)
+router.route("/curriculum-subjects-class").get(jwtVerify,isTeacher, curriculumOfSubjectsOfSingleClass)
 
 
 

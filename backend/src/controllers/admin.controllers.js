@@ -1827,79 +1827,6 @@ const addCurriculumSubject = asyncHandler(async (req, res) => {
     );
 });
 
-// add curriculum for all subjects  for each class in one shot --- new ✨
-const addCurriculumSingleClassSubjects = asyncHandler(async (req, res) => {
-  const { curriculumClass, year, description,month, curriculumSubjects, documentationLink } =
-    req.body;
-
-  const findClass = await Class.findOne({
-    className: curriculumClass?.toUpperCase(),
-  });
-
-  if (!findClass) {
-    throw new ApiError(404, "class not found or invalid className ! ");
-  }
-
-  const allCurriculums = await Curriculum.findOne({curriculumClass: curriculumClass});
-
-  if (allCurriculums) {
-    throw new ApiError(404, `curriculum of ${curriculumClass} already exists !`);
-  }
-  
-  const curSubjects = curriculumSubjects
-  const curriculumSubjectsString = curSubjects?.split(",")
-  .map((sub) => changeToUpperCase(sub))
-  .join(", ")
-  .trim();
-
-  if(curriculumSubjectsString === 'undefined'){
-    throw new ApiError(404, `curriculum Subjects are required !`);
-  }
-
-  
-  const createCurriculum = await Curriculum.create({
-    curriculumClass: curriculumClass?.toUpperCase(),
-    year,
-    month,
-    description,
-    documentationLink,
-    curriculumSubjects: curriculumSubjectsString,
-  })
-
-
-  if(!createCurriculum){
-    throw new ApiError(404, `curriculum not created !`);
-  }
-
-  return res
-    .status(200)
-    .json(
-      new ApiResponse(
-        200,
-        allSubjects,
-        `${curriculumClass} Curriculum added successfully for all subjects`
-      )
-    );
-});
-
-// single curriculum record of class  --- new ✨
-const singleCurriculumSingleClassSubjects = asyncHandler(async (req, res) => {
-  const curriculums = await Curriculum.findOne({_id: req.params.id});
-
-  if (!curriculums) {
-    throw new ApiError(404, "Curriculums not found!");
-  }
-
-
-  return res
-    .status(200)
-    .json(
-      new ApiResponse(200, {}, "Curriculum record fetched")
-    );
-});
-
-
-
 // single academic record of student
 const singleCurriculumRecord = asyncHandler(async (req, res) => {
   const subject = await Subject.find({});
@@ -2026,6 +1953,169 @@ const deleteCurriculumSubject = asyncHandler(async (req, res) => {
   }
 });
 
+// all curruiculms class subjec --- new ✨
+const allCurriculumsClassSubjects = asyncHandler(async (req, res) => {
+  const curriculums = await Curriculum.find({});
+  if (!curriculums) {
+    throw new ApiError(404, "Curriculums not found !");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, curriculums, "curriculums fetched"));
+});
+
+// add curriculum for all subjects  for each class in one shot --- new ✨
+const addCurriculumSingleClassSubjects = asyncHandler(async (req, res) => {
+  const { curriculumClass, year, description,month, curriculumSubjects, documentationLink } =
+    req.body;
+
+  const findClass = await Class.findOne({
+    className: curriculumClass?.toUpperCase(),
+  });
+
+  if (!findClass) {
+    throw new ApiError(404, "class not found or invalid className ! ");
+  }
+
+  const allCurriculums = await Curriculum.findOne({curriculumClass: curriculumClass});
+
+  if (allCurriculums) {
+    throw new ApiError(404, `curriculum of ${curriculumClass} already exists !`);
+  }
+  
+  const curSubjects = curriculumSubjects
+  const curriculumSubjectsString = curSubjects?.split(",")
+  .map((sub) => changeToUpperCase(sub))
+  .join(", ")
+  .trim();
+
+  if(curriculumSubjectsString === 'undefined'){
+    throw new ApiError(404, `curriculum Subjects are required !`);
+  }
+
+  
+  const createCurriculum = await Curriculum.create({
+    curriculumClass: curriculumClass?.toUpperCase(),
+    year,
+    month,
+    description,
+    documentationLink,
+    curriculumSubjects: curriculumSubjectsString,
+  })
+
+
+  if(!createCurriculum){
+    throw new ApiError(404, `curriculum not created !`);
+  }
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        allSubjects,
+        `${curriculumClass} Curriculum added successfully for all subjects`
+      )
+    );
+});
+
+// update curriculum --- new ✨
+const updateCurriculumSubjectClass = asyncHandler(async (req, res) => {
+  const { curriculumClass, year, description,month, curriculumSubjects, documentationLink } =
+    req.body;
+  const id  = req.params?.id;
+
+  const allCurriculums = await Curriculum.findOne({_id: id});
+
+  if (!allCurriculums) {
+    throw new ApiError(404, `curriculum not found !`);
+  }
+
+  const findClass = await Class.findOne({
+    className: curriculumClass?.toUpperCase(),
+  });
+
+  if (!findClass) {
+    throw new ApiError(404, "class not found or invalid className ! ");
+  }
+  
+  const curSubjects = curriculumSubjects
+  const curriculumSubjectsString = curSubjects?.split(",")
+  .map((sub) => changeToUpperCase(sub))
+  .join(", ")
+  .trim();
+
+  if(curriculumSubjectsString === 'undefined'){
+    throw new ApiError(404, `curriculum Subjects are required !`);
+  }
+
+  
+  const updateCurriculum = await Curriculum.findOneAndUpdate({_id: id},{
+    curriculumClass: curriculumClass?.toUpperCase(),
+    year,
+    month,
+    description,
+    documentationLink,
+    curriculumSubjects: curriculumSubjectsString,
+  })
+
+  const updatedCurriculum = await Curriculum.findById(id)
+
+  if(!updateCurriculum){
+    throw new ApiError(404, `curriculum not updated !`);
+  }
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        updatedCurriculum,
+        `Curriculum updated successfully`
+      )
+    );
+});
+
+// single curriculum record of class  --- new ✨
+const singleCurriculumSingleClassSubjects = asyncHandler(async (req, res) => {
+  const curriculums = await Curriculum.findOne({_id: req.params.id});
+
+  if (!curriculums) {
+    throw new ApiError(404, "Curriculums not found!");
+  }
+
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, curriculums, "Curriculum record fetched")
+    );
+});
+
+// delete curriculum of a subject --- new ✨
+const deleteCurriculumSubjectsClass = asyncHandler(async (req, res) => {
+  const curriculum = await Curriculum.find({});
+  const id  = req.params?.id;
+
+  if (!curriculum) {
+    throw new ApiError(404, "curriculums not found!");
+  }
+
+  // Remove the specific curriculum record using update and $pull
+  const removeRecord = await Curriculum.findByIdAndDelete(id);
+
+  if (removeRecord) {
+    return res
+      .status(201)
+      .json(new ApiResponse(201, {}, `Curriculum record deleted successfuly`));
+  }
+  else{
+    throw new ApiError(404, `curriculum not removed !`);
+  }
+
+});
+
 // =======================================SUBJECT CONTROLLERS --ADMIN == END =================================================
 
 
@@ -2087,7 +2177,11 @@ export {
   removeSubject,
   allCurriculumSubject,
   addCurriculumSubject,
+  allCurriculumsClassSubjects,
   addCurriculumSingleClassSubjects,
+  updateCurriculumSubjectClass,
+  singleCurriculumSingleClassSubjects,
+  deleteCurriculumSubjectsClass,
   updateCurriculumSubject,
   deleteCurriculumSubject,
   singleCurriculumRecord,
