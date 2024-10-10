@@ -1847,9 +1847,28 @@ const addCurriculumSingleClassSubjects = asyncHandler(async (req, res) => {
   }
   
   const curSubjects = curriculumSubjects
+  const curriculumSubjectsString = curSubjects?.split(",")
+  .map((sub) => changeToUpperCase(sub))
+  .join(", ")
+  .trim();
 
-  if(!curSubjects?.length > 0 ){
+  if(curriculumSubjectsString === 'undefined'){
     throw new ApiError(404, `curriculum Subjects are required !`);
+  }
+
+  
+  const createCurriculum = await Curriculum.create({
+    curriculumClass: curriculumClass?.toUpperCase(),
+    year,
+    month,
+    description,
+    documentationLink,
+    curriculumSubjects: curriculumSubjectsString,
+  })
+
+
+  if(!createCurriculum){
+    throw new ApiError(404, `curriculum not created !`);
   }
 
   return res
@@ -1862,6 +1881,24 @@ const addCurriculumSingleClassSubjects = asyncHandler(async (req, res) => {
       )
     );
 });
+
+// single curriculum record of class  --- new ✨
+const singleCurriculumSingleClassSubjects = asyncHandler(async (req, res) => {
+  const curriculums = await Curriculum.findOne({_id: req.params.id});
+
+  if (!curriculums) {
+    throw new ApiError(404, "Curriculums not found!");
+  }
+
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, {}, "Curriculum record fetched")
+    );
+});
+
+
 
 // single academic record of student
 const singleCurriculumRecord = asyncHandler(async (req, res) => {
