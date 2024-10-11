@@ -1978,7 +1978,7 @@ const addCurriculumSingleClassSubjects = asyncHandler(async (req, res) => {
     throw new ApiError(404, "class not found or invalid className ! ");
   }
 
-  const allCurriculums = await Curriculum.findOne({curriculumClass: curriculumClass});
+  const allCurriculums = await Curriculum.findOne({curriculumClass: curriculumClass?.toUpperCase()});
 
   if (allCurriculums) {
     throw new ApiError(404, `curriculum of ${curriculumClass} already exists !`);
