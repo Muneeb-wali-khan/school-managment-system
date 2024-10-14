@@ -2097,14 +2097,16 @@ const singleCurriculumSingleClassSubjects = asyncHandler(async (req, res) => {
 // delete curriculum of a subject --- new ✨
 const deleteCurriculumSubjectsClass = asyncHandler(async (req, res) => {
   const id  = req.params?.id;
-  const curriculum = await Curriculum.findOne({_id: mongoose.Types.ObjectId(id)});
+  const curriculum = await Curriculum.findById(id);
 
   if (!curriculum) {
     throw new ApiError(404, "curriculum not found!");
   }
 
   // Remove the specific curriculum record
-  const removeRecord = await Curriculum.findByIdAndDelete(id);
+  const removeRecord = await Curriculum.findOneAndDelete(
+    {_id: id}
+  );
 
   if (removeRecord) {
     return res
