@@ -2095,14 +2095,14 @@ const singleCurriculumSingleClassSubjects = asyncHandler(async (req, res) => {
 
 // delete curriculum of a subject --- new ✨
 const deleteCurriculumSubjectsClass = asyncHandler(async (req, res) => {
-  const curriculum = await Curriculum.find({});
   const id  = req.params?.id;
+  const curriculum = await Curriculum.findOne({_id: id});
 
   if (!curriculum) {
-    throw new ApiError(404, "curriculums not found!");
+    throw new ApiError(404, "curriculum not found!");
   }
 
-  // Remove the specific curriculum record using update and $pull
+  // Remove the specific curriculum record
   const removeRecord = await Curriculum.findByIdAndDelete(id);
 
   if (removeRecord) {
