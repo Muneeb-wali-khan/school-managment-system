@@ -14,6 +14,7 @@ import { parseDate } from "../utils/parseDate.js";
 import { Attendance } from "../models/attendance.mode.js";
 import { AdminNotify } from "../models/notification.model.js";
 import { Curriculum } from "../models/curriculum.model.js";
+import mongoose from "mongoose";
 
 // =======================================USER CONTROLLERS --ADMIN== START =================================================
 
@@ -2096,7 +2097,7 @@ const singleCurriculumSingleClassSubjects = asyncHandler(async (req, res) => {
 // delete curriculum of a subject --- new ✨
 const deleteCurriculumSubjectsClass = asyncHandler(async (req, res) => {
   const id  = req.params?.id;
-  const curriculum = await Curriculum.findOne({_id: id});
+  const curriculum = await Curriculum.findOne({_id: mongoose.Types.ObjectId(id)});
 
   if (!curriculum) {
     throw new ApiError(404, "curriculum not found!");
