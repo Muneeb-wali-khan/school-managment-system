@@ -258,7 +258,9 @@ const updateNotification = asyncHandler(async (req, res) => {
       $set: {
         title,
         desc,
-        fileLink
+        fileLink,
+        teacherFullName,
+        teacherEmail
       },
     },
     { new: true }
